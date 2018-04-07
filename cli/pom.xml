@@ -45,7 +45,7 @@
             <configuration>
               <archive>
                 <manifest>
-                  <mainClass>com.pitest.highwheel.modules.cli.Main</mainClass>
+                  <mainClass>com.github.fburato.highwheelmodulescli.Main</mainClass>
                 </manifest>
               </archive>
               <descriptorRefs>
