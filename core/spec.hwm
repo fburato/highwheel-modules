@@ -1,10 +1,10 @@
 modules:
-    Core = "org.pitest.highwheel.modules.core.*"
-    ExternalAdapters = "org.pitest.highwheel.modules.externaladapters.*"
-    Model = "org.pitest.highwheel.modules.model.*"
-    Specification = "org.pitest.highwheel.modules.specification.*"
-    ModuleAnalyser = "org.pitest.highwheel.modules.ModuleAnalyser", "org.pitest.highwheel.modules.AnalyserException", "org.pitest.highwheel.modules.AnalyserModel"
-    Facade = "org.pitest.highwheel.modules.AnalyserFacade"
+    Core = "com.github.fburato.highwheelmodules.core.*"
+    ExternalAdapters = "com.github.fburato.highwheelmodules.externaladapters.*"
+    Model = "com.github.fburato.highwheelmodules.model.*"
+    Specification = "com.github.fburato.highwheelmodules.specification.*"
+    ModuleAnalyser = "com.github.fburato.highwheelmodules.ModuleAnalyser", "com.github.fburato.highwheelmodules.AnalyserException", "com.github.fburato.highwheelmodules.AnalyserModel"
+    Facade = "com.github.fburato.highwheelmodules.AnalyserFacade"
 
 rules:
     Core -> Model

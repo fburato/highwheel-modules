@@ -1,4 +1,4 @@
 modules:
-    Util = "org.pitest.highwheel.util.*"
+    Util = "com.github.fburato.highwheelmodules.util.*"
 
 rules:

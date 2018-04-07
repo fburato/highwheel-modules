@@ -1,0 +1,7 @@
+modules:
+    Core = "com.github.fburato.highwheelmodules.*"
+    Cli = "com.github.fburato.highwheelmodulescli.*"
+    MavenPlugin = "com.github.fburato.highwheelmodulesmaven.*"
+rules:
+    MavenPlugin -> Core
+    Cli -> Core
