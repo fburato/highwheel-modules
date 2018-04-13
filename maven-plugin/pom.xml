@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.github.fburato</groupId>
-    <artifactId>highweel-modules-parent</artifactId>
+    <artifactId>highwheel-modules-parent</artifactId>
     <version>1.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>highwheel-modules-maven-plugin</artifactId>
