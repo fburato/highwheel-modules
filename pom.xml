@@ -10,8 +10,8 @@
   <url>https://github.com/fburato/highwheel-modules</url>
   <description>Enforce dependencies modules dependencies on Java project</description>
   <scm>
-    <connection>scm:git:https://github.com/fburato/highwheel-modules.git</connection>
-    <developerConnection>scm:git:https://github.com/fburato/highwheel-modules.git</developerConnection>
+    <connection>scm:git:git@github.com:fburato/highwheel-modules.git</connection>
+    <developerConnection>scm:git:git@github.com:fburato/highwheel-modules.git</developerConnection>
     <url>https://github.com/fburato/highwheel-modules</url>
     <tag>HEAD</tag>
   </scm>
