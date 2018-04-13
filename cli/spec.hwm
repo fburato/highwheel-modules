@@ -1,5 +1,5 @@
 modules:
-    Main = "com.github.fburato.highwheelmodulescli.Main"
-    CmdParser = "com.github.fburato.highwheelmodulescli.CmdParser"
+    Main = "com.github.fburato.highwheelmodules.cli.Main"
+    CmdParser = "com.github.fburato.highwheelmodules.cli.CmdParser"
 rules:
     Main -> CmdParser

@@ -76,14 +76,14 @@ structure of it.
 
 ## Command line tool
 
-The highwheel modules command line tool is contained in the module `highwheel-modules-cli`. In order to
+The highwheel modules command line tool is contained in the module `cli`. In order to
 build the tool just build the entire project with 
 
 ```
 mvn clean install
 ```
 
-The executable jar will be available at `highwheel-modules-cli/target/modulesAnalyser-jar-with-dependencies.jar`.
+The executable jar will be available at `cli/target/modulesAnalyser-jar-with-dependencies.jar`.
 
 ### Using the command line tool
 
@@ -108,7 +108,7 @@ It is possible to change both the specification file and the mode with the follo
 
 ## Highwheel modules maven plugin
 
-The highwheel modules maven plugin is contained in the module `highwheel-modules-maven`. In order to build the tool,
+The highwheel modules maven plugin is contained in the module `maven-plugin`. In order to build the tool,
 just build the entire project with:
 
 ```
@@ -120,7 +120,7 @@ mvn clean install
 In order to run the plugin on a project execute:
 
 ```
-mvn com.github.fburato:highwheel-modules-maven:analyse
+mvn com.github.fburato:highwheel-modules-maven-plugin:analyse
 ```
 
 The plugin will:

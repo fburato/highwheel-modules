@@ -1,19 +1,19 @@
 modules:
-    Core = "com.github.fburato.highwheelmodules.core.*"
-    ExternalAdapters = "com.github.fburato.highwheelmodules.externaladapters.*"
-    Model = "com.github.fburato.highwheelmodules.model.*"
-    Specification = "com.github.fburato.highwheelmodules.specification.*"
-    ModuleAnalyser = "com.github.fburato.highwheelmodules.ModuleAnalyser", "com.github.fburato.highwheelmodules.AnalyserException", "com.github.fburato.highwheelmodules.AnalyserModel"
-    Facade = "com.github.fburato.highwheelmodules.AnalyserFacade"
+    Algorithms = "com.github.fburato.highwheelmodules.core.algorithms.*"
+    ExternalAdapters = "com.github.fburato.highwheelmodules.core.externaladapters.*"
+    Model = "com.github.fburato.highwheelmodules.core.model.*"
+    Specification = "com.github.fburato.highwheelmodules.core.specification.*"
+    ModuleAnalyser = "com.github.fburato.highwheelmodules.core.ModuleAnalyser", "com.github.fburato.highwheelmodules.core.AnalyserException", "com.github.fburato.highwheelmodules.core.AnalyserModel"
+    Facade = "com.github.fburato.highwheelmodules.core.AnalyserFacade"
 
 rules:
-    Core -> Model
+    Algorithms -> Model
     ExternalAdapters -> Model
     Specification -> Model
-    ModuleAnalyser -> Core
+    ModuleAnalyser -> Algorithms
     ModuleAnalyser -> Model
     ModuleAnalyser -> ExternalAdapters
     Facade -> ModuleAnalyser
     Facade -> Model
-    Facade -/-> Core
+    Facade -/-> Algorithms
     Facade -> Specification

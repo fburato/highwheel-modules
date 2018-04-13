@@ -1,7 +1,11 @@
 modules:
-    Core = "com.github.fburato.highwheelmodules.*"
-    Cli = "com.github.fburato.highwheelmodulescli.*"
-    MavenPlugin = "com.github.fburato.highwheelmodulesmaven.*"
+    Utils = "com.github.fburato.highwheelmodules.utils.*"
+    Core = "com.github.fburato.highwheelmodules.core.*"
+    Cli = "com.github.fburato.highwheelmodules.cli.*"
+    MavenPlugin = "com.github.fburato.highwheelmodules.maven.*"
 rules:
     MavenPlugin -> Core
     Cli -> Core
+    Core -> Utils
+    MavenPlugin -> Utils
+    Cli -> Utils

@@ -227,7 +227,7 @@
     <hamcrest.version>1.3.RC2</hamcrest.version>
     <junit.version>4.12</junit.version>
     <surefire.version>2.21.0</surefire.version>
-    <highwheel.version>1.3-SNAPSHOT</highwheel.version>
+    <highwheel.version>1.3</highwheel.version>
   </properties>
 
 </project>
