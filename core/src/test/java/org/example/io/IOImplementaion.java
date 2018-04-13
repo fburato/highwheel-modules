@@ -5,9 +5,9 @@ import org.example.core.api.IOInterface;
 import org.example.core.model.Entity1;
 
 public class IOImplementaion implements IOInterface {
-    @Override
-    public Entity1 reader() {
-        Utility.util();
-        return new Entity1();
-    }
+  @Override
+  public Entity1 reader() {
+    Utility.util();
+    return new Entity1();
+  }
 }

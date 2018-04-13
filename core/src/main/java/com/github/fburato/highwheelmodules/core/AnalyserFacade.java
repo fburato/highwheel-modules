@@ -92,11 +92,11 @@ public class AnalyserFacade {
     this.looseAnalysisEventSink = looseAnalysisEventSink;
   }
 
-
-  public void runAnalysis(final List<String> classPathRoots, final String specificationPath, final ExecutionMode executionMode) {
+  public void runAnalysis(final List<String> classPathRoots, final String specificationPath,
+      final ExecutionMode executionMode) {
     final ClasspathRoot classpathRoot = getAnalysisScope(classPathRoots);
     final File specificationFile = new File(specificationPath);
-    if(!specificationFile.exists() || specificationFile.isDirectory() || !specificationFile.canRead()) {
+    if (!specificationFile.exists() || specificationFile.isDirectory() || !specificationFile.canRead()) {
       throw new AnalyserException(String.format("Cannot read from specification file '%s'.", specificationPath));
     }
     printer.info("Compiling specification...");
@@ -106,26 +106,26 @@ public class AnalyserFacade {
     final ClassParser classParser = new ClassPathParser(includeAll);
     final ModuleAnalyser analyser = new ModuleAnalyser(classParser);
     if (executionMode == ExecutionMode.STRICT) {
-      strictAnalysis(analyser,definition,classpathRoot);
+      strictAnalysis(analyser, definition, classpathRoot);
     } else {
-      looseAnalysis(analyser,definition,classpathRoot);
+      looseAnalysis(analyser, definition, classpathRoot);
     }
-    
+
   }
 
   public void runAnalysis(final List<String> classPathRoots, final String specificationPath) {
-    runAnalysis(classPathRoots,specificationPath,ExecutionMode.STRICT);
+    runAnalysis(classPathRoots, specificationPath, ExecutionMode.STRICT);
   }
 
   private ClasspathRoot getAnalysisScope(List<String> paths) {
     final List<File> jars = new ArrayList<>();
     final List<File> dirs = new ArrayList<>();
     final List<String> ignored = new ArrayList<>();
-    for(String path : paths) {
+    for (String path : paths) {
       final File f = new File(path);
-      if(!f.exists() || ! f.canRead() || (f.isFile() && !path.endsWith(".jar"))) {
+      if (!f.exists() || !f.canRead() || (f.isFile() && !path.endsWith(".jar"))) {
         ignored.add(path);
-      } else if(f.isDirectory()) {
+      } else if (f.isDirectory()) {
         dirs.add(f);
       } else {
         jars.add(f);
@@ -136,10 +136,10 @@ public class AnalyserFacade {
     pathEventSink.jars(getPaths(jars));
 
     final List<ClasspathRoot> classpathRoots = new ArrayList<ClasspathRoot>();
-    for(File jar : jars) {
+    for (File jar : jars) {
       classpathRoots.add(new ArchiveClassPathRoot(jar));
     }
-    for(File dir : dirs) {
+    for (File dir : dirs) {
       classpathRoots.add(new DirectoryClassPathRoot(dir));
     }
 
@@ -148,7 +148,7 @@ public class AnalyserFacade {
 
   private List<String> getPaths(List<File> files) {
     final List<String> result = new ArrayList<String>();
-    for(File f: files) {
+    for (File f : files) {
       result.add(f.getAbsolutePath());
     }
     return result;
@@ -158,8 +158,8 @@ public class AnalyserFacade {
     final DefinitionParser definitionParser = new DefinitionParser();
     try {
       return definitionParser.parse(new FileReader(specificationFile));
-    } catch(IOException e) {
-      throw new AnalyserException("Error while parsing the specification file: "+ e.getMessage());
+    } catch (IOException e) {
+      throw new AnalyserException("Error while parsing the specification file: " + e.getMessage());
     }
   }
 
@@ -173,61 +173,62 @@ public class AnalyserFacade {
     printer.info("Analysis complete");
     printMetrics(analysisResult.metrics);
     boolean error = !analysisResult.dependencyViolations.isEmpty() || !analysisResult.noStrictDependencyViolations.isEmpty();
-    if(analysisResult.dependencyViolations.isEmpty()) {
+    if (analysisResult.dependencyViolations.isEmpty()) {
       strictAnalysisEventSink.dependenciesCorrect();
     } else {
       strictAnalysisEventSink.dependencyViolationsPresent();
       printDependencyViolations(analysisResult.dependencyViolations);
     }
-    if(analysisResult.noStrictDependencyViolations.isEmpty()) {
+    if (analysisResult.noStrictDependencyViolations.isEmpty()) {
       strictAnalysisEventSink.directDependenciesCorrect();
     } else {
       strictAnalysisEventSink.noDirectDependenciesViolationPresent();
       printNoDirectDependecyViolation(analysisResult.noStrictDependencyViolations);
     }
-    if(error){
+    if (error) {
       throw new AnalyserException("Analysis failed");
     }
   }
 
-  private void looseAnalysis(ModuleAnalyser analyser, Definition definition, ClasspathRoot classpathRoot){
+  private void looseAnalysis(ModuleAnalyser analyser, Definition definition, ClasspathRoot classpathRoot) {
     AnalyserModel.LooseAnalysisResult analysisResult = analyser.analyseLoose(classpathRoot, definition);
     printer.info("Analysis complete");
     printMetrics(analysisResult.metrics);
-    boolean error = !analysisResult.absentDependencyViolations.isEmpty() || !analysisResult.undesiredDependencyViolations.isEmpty();
-    if(analysisResult.absentDependencyViolations.isEmpty()) {
+    boolean error =
+        !analysisResult.absentDependencyViolations.isEmpty() || !analysisResult.undesiredDependencyViolations.isEmpty();
+    if (analysisResult.absentDependencyViolations.isEmpty()) {
       looseAnalysisEventSink.allDependenciesPresent();
     } else {
       looseAnalysisEventSink.absentDependencyViolationsPresent();
       printAbsentDependencies(analysisResult.absentDependencyViolations);
     }
-    if(analysisResult.undesiredDependencyViolations.isEmpty()) {
+    if (analysisResult.undesiredDependencyViolations.isEmpty()) {
       looseAnalysisEventSink.noUndesiredDependencies();
     } else {
       looseAnalysisEventSink.undesiredDependencyViolationsPresent();
       printUndesiredDependencies(analysisResult.undesiredDependencyViolations);
     }
-    if(error){
+    if (error) {
       throw new AnalyserException("Analysis failed");
     }
   }
 
   private void printMetrics(Collection<AnalyserModel.Metrics> metrics) {
-    for(AnalyserModel.Metrics m : metrics) {
-      measureEventSink.fanInOutMeasure(m.module,m.fanIn,m.fanOut);
+    for (AnalyserModel.Metrics m : metrics) {
+      measureEventSink.fanInOutMeasure(m.module, m.fanIn, m.fanOut);
     }
   }
 
   private void printDependencyViolations(Collection<AnalyserModel.DependencyViolation> violations) {
-    for(AnalyserModel.DependencyViolation violation: violations) {
-      strictAnalysisEventSink.dependencyViolation(violation.sourceModule,violation.destinationModule,
-          appendStartIfNotEmpty(violation.specificationPath,violation.sourceModule),
-          appendStartIfNotEmpty(violation.actualPath,violation.sourceModule));
+    for (AnalyserModel.DependencyViolation violation : violations) {
+      strictAnalysisEventSink.dependencyViolation(violation.sourceModule, violation.destinationModule,
+          appendStartIfNotEmpty(violation.specificationPath, violation.sourceModule),
+          appendStartIfNotEmpty(violation.actualPath, violation.sourceModule));
     }
   }
 
   private <T> List<T> appendStartIfNotEmpty(List<T> collection, T element) {
-    if(collection.isEmpty()) {
+    if (collection.isEmpty()) {
       return collection;
     } else {
       final List<T> result = new ArrayList<>(collection.size() + 1);
@@ -236,26 +237,26 @@ public class AnalyserFacade {
       return result;
     }
   }
+
   private void printNoDirectDependecyViolation(Collection<AnalyserModel.NoStrictDependencyViolation> violations) {
-    for(AnalyserModel.NoStrictDependencyViolation violation: violations) {
+    for (AnalyserModel.NoStrictDependencyViolation violation : violations) {
       strictAnalysisEventSink.noDirectDependencyViolation(violation.sourceModule, violation.destinationModule);
     }
   }
 
   private void printAbsentDependencies(Collection<AnalyserModel.AbsentDependencyViolation> violations) {
-    for(AnalyserModel.AbsentDependencyViolation violation: violations) {
-      looseAnalysisEventSink.absentDependencyViolation(violation.sourceModule,violation.destinationModule);
+    for (AnalyserModel.AbsentDependencyViolation violation : violations) {
+      looseAnalysisEventSink.absentDependencyViolation(violation.sourceModule, violation.destinationModule);
     }
   }
 
   private void printUndesiredDependencies(Collection<AnalyserModel.UndesiredDependencyViolation> violations) {
-    for(AnalyserModel.UndesiredDependencyViolation violation: violations) {
+    for (AnalyserModel.UndesiredDependencyViolation violation : violations) {
       looseAnalysisEventSink.undesiredDependencyViolation(
           violation.sourceModule,
           violation.destinationModule,
-          appendStartIfNotEmpty(violation.evidence,violation.sourceModule));
+          appendStartIfNotEmpty(violation.evidence, violation.sourceModule));
     }
   }
 
-  
 }

@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.model;
 
-import org.pitest.highwheel.model.ElementName;
 import com.github.fburato.highwheelmodules.utils.GlobToRegex;
+import org.pitest.highwheel.model.ElementName;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,55 +14,57 @@ import java.util.stream.Stream;
 
 public final class Module {
 
-    public final String name;
-    public final List<String> patternLiterals;
-    private final List<Pattern> patterns;
+  public final String name;
+  public final List<String> patternLiterals;
+  private final List<Pattern> patterns;
 
-    private Module(String name, Stream<String> patternLiteral) {
-        this.name = name;
-        this.patternLiterals = patternLiteral.collect(Collectors.toList());
-        this.patterns = patternLiterals.stream().map(Pattern::compile).collect(Collectors.toList());
+  private Module(String name, Stream<String> patternLiteral) {
+    this.name = name;
+    this.patternLiterals = patternLiteral.collect(Collectors.toList());
+    this.patterns = patternLiterals.stream().map(Pattern::compile).collect(Collectors.toList());
+  }
+
+  public static Optional<Module> make(String moduleName, String... globs) {
+    return make(moduleName, Arrays.asList(globs));
+  }
+
+  public static Optional<Module> make(String moduleName, List<String> globs) {
+    try {
+      return Optional.of(new Module(moduleName, globs.stream().map(GlobToRegex::convertGlobToRegex)));
+    } catch (PatternSyntaxException e) {
+      return Optional.empty();
     }
+  }
 
-    public static Optional<Module> make(String moduleName, String ... globs) {
-        return make(moduleName,Arrays.asList(globs));
-    }
+  public boolean contains(ElementName elementName) {
+    return patterns.stream().anyMatch((p) -> p.matcher(elementName.asJavaName()).matches());
+  }
 
-    public static Optional<Module> make(String moduleName, List<String> globs) {
-      try {
-        return Optional.of(new Module(moduleName, globs.stream().map(GlobToRegex::convertGlobToRegex)));
-      } catch(PatternSyntaxException e) {
-        return Optional.empty();
-      }
-    }
+  @Override
+  public String toString() {
+    return "Module{" +
+        "name='" + name + '\'' +
+        ", patternLiteral='" + patternLiterals + '\'' +
+        '}';
+  }
 
-    public boolean contains(ElementName elementName) {
-        return patterns.stream().anyMatch((p) -> p.matcher(elementName.asJavaName()).matches());
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
 
-    @Override
-    public String toString() {
-        return "Module{" +
-                "name='" + name + '\'' +
-                ", patternLiteral='" + patternLiterals + '\'' +
-                '}';
-    }
+    Module module = (Module) o;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    return Objects.equals(this.name, module.name) &&
+        Objects.equals(this.patternLiterals, module.patternLiterals);
+  }
 
-        Module module = (Module) o;
-
-        return Objects.equals(this.name,module.name) &&
-                Objects.equals(this.patternLiterals, module.patternLiterals);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + patternLiterals.hashCode();
-        return result;
-    }
+  @Override
+  public int hashCode() {
+    int result = name.hashCode();
+    result = 31 * result + patternLiterals.hashCode();
+    return result;
+  }
 }

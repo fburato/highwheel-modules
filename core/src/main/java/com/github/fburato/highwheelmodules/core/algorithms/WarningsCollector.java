@@ -6,6 +6,7 @@ import org.pitest.highwheel.model.ElementName;
 import java.util.Collection;
 
 public interface WarningsCollector {
-    void constructionWarning(Module m);
-    void accessPointWarning(ElementName elementName, Collection<Module> matchingModules);
+  void constructionWarning(Module m);
+
+  void accessPointWarning(ElementName elementName, Collection<Module> matchingModules);
 }

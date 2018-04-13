@@ -18,7 +18,7 @@ import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 @Mojo(name = "analyse")
 public class ModuleAnalyserMojo extends AbstractMojo {
 
-  private class MavenPrinter implements  AnalyserFacade.Printer {
+  private class MavenPrinter implements AnalyserFacade.Printer {
 
     @Override
     public void info(String msg) {
@@ -26,13 +26,12 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     }
   }
 
-
   private class MavenPathEventSink implements AnalyserFacade.EventSink.PathEventSink {
 
     @Override
     public void ignoredPaths(List<String> ignored) {
       final String ignoredString = "Ignored: " + join(", ", ignored);
-      if(ignored.isEmpty()) {
+      if (ignored.isEmpty()) {
         getLog().info(ignoredString);
       } else {
         getLog().warn(ignoredString);
@@ -141,7 +140,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
   }
 
   private static String printGraphPath(List<String> pathComponents) {
-    if(pathComponents.isEmpty()) {
+    if (pathComponents.isEmpty()) {
       return "(empty)";
     } else {
       return join(" -> ", pathComponents);
@@ -183,7 +182,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     }
     final List<String> roots = getRootsForProject(packaging);
     final AnalyserFacade.ExecutionMode executionMode = getExecutionMode(analysisMode);
-    analyse(roots,executionMode,specFile);
+    analyse(roots, executionMode, specFile);
   }
 
   private List<String> getRootsForProject(final String packaging) {
@@ -210,22 +209,23 @@ public class ModuleAnalyserMojo extends AbstractMojo {
   }
 
   private AnalyserFacade.ExecutionMode getExecutionMode(String analysisMode) throws MojoExecutionException {
-    if(Objects.equals(analysisMode, "strict")) {
+    if (Objects.equals(analysisMode, "strict")) {
       return AnalyserFacade.ExecutionMode.STRICT;
-    } else if(Objects.equals(analysisMode,"loose")) {
+    } else if (Objects.equals(analysisMode, "loose")) {
       return AnalyserFacade.ExecutionMode.LOOSE;
     } else {
       throw new MojoExecutionException("Parameter 'analysisMode' needs to be either 'strict' or 'loose''");
     }
   }
 
-  private void analyse(List<String> roots, AnalyserFacade.ExecutionMode executionMode, String specFilePath) throws MojoFailureException {
+  private void analyse(List<String> roots, AnalyserFacade.ExecutionMode executionMode, String specFilePath)
+      throws MojoFailureException {
     try {
       final AnalyserFacade.Printer printer = new MavenPrinter();
       final AnalyserFacade facade = new AnalyserFacade(printer, new MavenPathEventSink(),
           new MavenMeasureSink(), new MavenStrictAnalysisSink(), new MavenLooseAnalysisEventSink());
-      facade.runAnalysis(roots,specFilePath,executionMode);
-    } catch(Exception e) {
+      facade.runAnalysis(roots, specFilePath, executionMode);
+    } catch (Exception e) {
       throw new MojoFailureException("Error during analysis: " + e.getMessage());
     }
   }
