@@ -103,17 +103,17 @@ public class ModuleAnalyserMojo extends AbstractMojo {
 
     @Override
     public void allDependenciesPresent() {
-      getLog().info(" - All dependencies specified exist");
+      getLog().info("All dependencies specified exist");
     }
 
     @Override
     public void noUndesiredDependencies() {
-      getLog().info(" - No dependency violation detected");
+      getLog().info("No dependency violation detected");
     }
 
     @Override
     public void absentDependencyViolationsPresent() {
-      getLog().error(" - The following dependencies do not exist:");
+      getLog().error("The following dependencies do not exist:");
     }
 
     @Override
@@ -126,7 +126,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
 
     @Override
     public void undesiredDependencyViolationsPresent() {
-      getLog().error(" - The following dependencies violate the specification:");
+      getLog().error("The following dependencies violate the specification:");
     }
 
     @Override
@@ -150,16 +150,16 @@ public class ModuleAnalyserMojo extends AbstractMojo {
   @Parameter(property = "project", readonly = true, required = true)
   private MavenProject project;
 
-  @Parameter(property = "parentOnly", defaultValue = "false")
+  @Parameter(property = "hwmParentOnly", defaultValue = "false")
   private boolean parentOnly;
 
-  @Parameter(property = "childOnly", defaultValue = "false")
+  @Parameter(property = "hwmChildOnly", defaultValue = "false")
   private boolean childOnly;
 
-  @Parameter(property = "specFile", defaultValue = "spec.hwm")
+  @Parameter(property = "hwmSpecFile", defaultValue = "spec.hwm")
   private String specFile;
 
-  @Parameter(property = "analysisMode", defaultValue = "strict")
+  @Parameter(property = "hwmAnalysisMode", defaultValue = "strict")
   private String analysisMode;
 
   @Override

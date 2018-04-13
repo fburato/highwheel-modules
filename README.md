@@ -134,10 +134,10 @@ errors.
 
 It is possible to change the behaviour of the plugin as follows:
 
-* `-DspecFile=<path to spec file>`: use the path provided instead of `spec.hwm` from the base dir if the path is 
+* `-DhwmSpecFile=<path to spec file>`: use the path provided instead of `spec.hwm` from the base dir if the path is 
 relative, otherwise use the path as is if the path is absolute.
-* `-DchildOnly=true`: in a multi-module build, run the analysis only on the child modules.
-* `-DparentOnly=true`: in a multi-module build, run the analysis only on the parent.
-* `-DanalysisMode=(strict|loose)`: run strict or loose analysis
+* `-DhwmChildOnly=true`: in a multi-module build, run the analysis only on the child modules.
+* `-DhwmParentOnly=true`: in a multi-module build, run the analysis only on the parent.
+* `-DhwmAnalysisMode=(strict|loose)`: run strict or loose analysis
 
 In a multi-module build, the plugin will use all the child output directories as elements of the analysis.
