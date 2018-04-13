@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/fburato/highwheel-modules.svg?branch=master)](https://travis-ci.org/fburato/highwheel-modules)
 # Highwheel-Modules
 
 Highwheel modules is an extension of the class dependency visualisation tool [Highwheel](https://github.com/hcoles/highwheel)
