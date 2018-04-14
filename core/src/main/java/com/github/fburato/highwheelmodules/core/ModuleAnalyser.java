@@ -62,7 +62,7 @@ public class ModuleAnalyser {
       specModuleGraph.addModule(module);
     }
     for (Dependency dep : dependencies) {
-      specModuleGraph.addDependency(dep.source, dep.dest);
+      specModuleGraph.addDependency(new ModuleDependency(dep.source,dep.dest));
     }
 
     return specModuleGraph;
@@ -74,8 +74,9 @@ public class ModuleAnalyser {
   }
 
   private void runAnalysis(Collection<Module> modules, ModuleGraph<ModuleDependency> moduleGraph, ClasspathRoot root, Module other) {
+    final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency>  builder = (sourceModule, destModule, sourceAP, destAP, type) -> new ModuleDependency(sourceModule,destModule);
     final ModuleDependenciesGraphBuildingVisitor<ModuleDependency> visitor =
-        new ModuleDependenciesGraphBuildingVisitor<>(modules, moduleGraph, other);
+        new ModuleDependenciesGraphBuildingVisitor<>(modules, moduleGraph, other, builder);
 
     try {
       classParser.parse(root, visitor);

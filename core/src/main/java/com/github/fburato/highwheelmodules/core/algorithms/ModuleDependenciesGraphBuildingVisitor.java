@@ -12,6 +12,10 @@ import java.util.*;
 
 public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor {
 
+  public interface DependencyBuilder<G> {
+    G build(Module m1, Module m2, AccessPoint source, AccessPoint dest, AccessType type);
+  }
+
   private static class NoOpWarningsCollector implements WarningsCollector {
     @Override
     public void constructionWarning(Module m) {
@@ -26,14 +30,17 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
   private final ModuleGraph<T> graph;
   private final WarningsCollector warningsCollector;
   private final Module other;
+  private final DependencyBuilder<T> dependencyBuilder;
 
   public ModuleDependenciesGraphBuildingVisitor(
       final Collection<Module> modules,
       final ModuleGraph<T> graph,
       final Module other,
+      final DependencyBuilder<T> dependencyBuilder,
       final WarningsCollector warningsCollector) {
     this.modules = modules;
     this.graph = graph;
+    this.dependencyBuilder = dependencyBuilder;
     this.warningsCollector = warningsCollector;
     this.other = other;
     addModulesToGraph();
@@ -51,8 +58,8 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
     }
   }
 
-  public ModuleDependenciesGraphBuildingVisitor(final Collection<Module> modules, final ModuleGraph<T> graph, final Module other) {
-    this(modules, graph, other, new NoOpWarningsCollector());
+  public ModuleDependenciesGraphBuildingVisitor(final Collection<Module> modules, final ModuleGraph<T> graph, final Module other, final DependencyBuilder<T> dependencyBuilder) {
+    this(modules, graph, other, dependencyBuilder, new NoOpWarningsCollector());
   }
 
   @Override
@@ -63,19 +70,19 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
     for (Module sourceModule : modulesMatchingSource) {
       for (Module destModule : moduleMatchingDest) {
         if (!sourceModule.equals(destModule))
-          graph.addDependency(sourceModule, destModule);
+          graph.addDependency(dependencyBuilder.build(sourceModule,destModule,source,dest,type));
       }
     }
 
     if (modulesMatchingSource.isEmpty() && !moduleMatchingDest.isEmpty()) {
       for (Module destModule : moduleMatchingDest) {
-        graph.addDependency(other, destModule);
+        graph.addDependency(dependencyBuilder.build(other,destModule,source,dest,type));
       }
     }
 
     if (!modulesMatchingSource.isEmpty() && moduleMatchingDest.isEmpty()) {
       for (Module sourceModule : modulesMatchingSource) {
-        graph.addDependency(sourceModule, other);
+        graph.addDependency(dependencyBuilder.build(sourceModule,other,source,dest,type));
       }
     }
   }

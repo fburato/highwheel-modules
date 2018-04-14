@@ -58,8 +58,9 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
   private final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
   private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
   private final WarningsCollector warningsCollector = new AddToListWarnings();
-  private final ModuleDependenciesGraphBuildingVisitor testee =
-      new ModuleDependenciesGraphBuildingVisitor(modules, moduleGraph, OTHER);
+  private final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> builder = (m1, m2, source, dest, type) -> new ModuleDependency(m1,m2);
+  private final ModuleDependenciesGraphBuildingVisitor<ModuleDependency> testee =
+      new ModuleDependenciesGraphBuildingVisitor<>(modules, moduleGraph, OTHER, builder);
 
   @Test
   public void constructorShouldAddAllModulesToTheModuleGraph() {
@@ -79,7 +80,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final WarningsCollector warningsCollector = new AddToListWarnings();
-    new ModuleDependenciesGraphBuildingVisitor(repeatedModules, moduleGraph, OTHER, warningsCollector);
+    new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph,  OTHER, builder, warningsCollector);
 
     assertThat(constructionWarnings.size()).isEqualTo(1);
     assertThat(constructionWarnings.get(0).name).isEqualTo("Core");
@@ -158,7 +159,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final ModuleDependenciesGraphBuildingVisitor testee =
-        new ModuleDependenciesGraphBuildingVisitor(repeatedModules, moduleGraph, OTHER);
+        new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder);
 
     final AccessPoint source = AccessPoint.create(ElementName.fromString("org.example.core.Service"));
     final AccessPoint dest = AccessPoint.create(ElementName.fromString("org.example.io.Component"));
@@ -184,7 +185,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final ModuleDependenciesGraphBuildingVisitor testee =
-        new ModuleDependenciesGraphBuildingVisitor(repeatedModules, moduleGraph, OTHER, warningsCollector);
+        new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
 
     final AccessPoint source = AccessPoint.create(ElementName.fromString("org.example.core.Service"));
     final AccessPoint dest = AccessPoint.create(ElementName.fromString("org.example.io.Component"));

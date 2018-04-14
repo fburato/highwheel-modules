@@ -12,7 +12,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 
 public class JungModuleGraphTest {
 
-  private final DirectedGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
+  private final DirectedGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<>();
   private final JungModuleGraph testee = new JungModuleGraph(graph);
 
   private final Module m1 = Module.make("module a", "A").get();
@@ -39,7 +39,7 @@ public class JungModuleGraphTest {
   public void addDependencyShouldAddEdgeToJungGraph() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     final ModuleDependency dependency = graph.findEdge(m1, m2);
 
@@ -50,7 +50,7 @@ public class JungModuleGraphTest {
   @Test
   public void addEdgeShouldFailToAddIfOneVertexDoesNotExist() {
     testee.addModule(m1);
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     assertThat(graph.findEdge(m1, m2)).isNull();
   }
@@ -59,7 +59,7 @@ public class JungModuleGraphTest {
   public void addEdgeShouldIncreaseCounterIfDependencyAdded() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     assertThat(graph.findEdge(m1, m2).getCount()).isEqualTo(1);
   }
@@ -68,8 +68,8 @@ public class JungModuleGraphTest {
   public void addEdgeShouldIncreaseCounterIfDependencyAddedMoreTimes() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(m1, m2);
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     assertThat(graph.findEdge(m1, m2).getCount()).isEqualTo(2);
   }
@@ -78,7 +78,7 @@ public class JungModuleGraphTest {
   public void findEdgeShouldFindEdgeInExistingGraph() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     final Optional<ModuleDependency> dependencyOptional = testee.findDependency(m1, m2);
     assertThat(dependencyOptional.isPresent()).isTrue();
@@ -92,7 +92,7 @@ public class JungModuleGraphTest {
   public void findEdgeShouldReturnEmptyIfEdgeGoesInOppositeDirection() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     Optional<ModuleDependency> dependencyOptional = testee.findDependency(m2, m1);
 
@@ -103,7 +103,7 @@ public class JungModuleGraphTest {
   public void findEdgeShouldReturnEmptyIfEdgeDoesNotExist() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     Optional<ModuleDependency> dependencyOptional = testee.findDependency(m1, m3);
 
@@ -134,8 +134,8 @@ public class JungModuleGraphTest {
     testee.addModule(m2);
     testee.addModule(m3);
 
-    testee.addDependency(m2, m1);
-    testee.addDependency(m3, m1);
+    testee.addDependency(new ModuleDependency(m2, m1));
+    testee.addDependency(new ModuleDependency(m3, m1));
 
     assertThat(testee.fanInOf(m1).get()).isEqualTo(2);
   }
@@ -146,8 +146,8 @@ public class JungModuleGraphTest {
     testee.addModule(m2);
     testee.addModule(m3);
 
-    testee.addDependency(m1, m2);
-    testee.addDependency(m1, m3);
+    testee.addDependency(new ModuleDependency(m1, m2));
+    testee.addDependency(new ModuleDependency(m1, m3));
 
     assertThat(testee.fanOutOf(m1).get()).isEqualTo(2);
   }
@@ -157,8 +157,8 @@ public class JungModuleGraphTest {
     testee.addModule(m1);
     testee.addModule(m2);
 
-    testee.addDependency(m2, m1);
-    testee.addDependency(m2, m1);
+    testee.addDependency(new ModuleDependency(m2, m1));
+    testee.addDependency(new ModuleDependency(m2, m1));
 
     assertThat(testee.fanInOf(m1).get()).isEqualTo(1);
   }
@@ -168,8 +168,8 @@ public class JungModuleGraphTest {
     testee.addModule(m1);
     testee.addModule(m2);
 
-    testee.addDependency(m2, m1);
-    testee.addDependency(m1, m1);
+    testee.addDependency(new ModuleDependency(m2, m1));
+    testee.addDependency(new ModuleDependency(m1, m1));
 
     assertThat(testee.fanInOf(m1).get()).isEqualTo(1);
   }
@@ -179,8 +179,8 @@ public class JungModuleGraphTest {
     testee.addModule(m1);
     testee.addModule(m2);
 
-    testee.addDependency(m1, m2);
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     assertThat(testee.fanOutOf(m1).get()).isEqualTo(1);
   }
@@ -190,8 +190,8 @@ public class JungModuleGraphTest {
     testee.addModule(m1);
     testee.addModule(m2);
 
-    testee.addDependency(m1, m2);
-    testee.addDependency(m1, m1);
+    testee.addDependency(new ModuleDependency(m1, m2));
+    testee.addDependency(new ModuleDependency(m1, m1));
 
     assertThat(testee.fanOutOf(m1).get()).isEqualTo(1);
   }
@@ -201,7 +201,7 @@ public class JungModuleGraphTest {
     testee.addModule(m1);
     testee.addModule(m2);
 
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     assertThat(testee.dependencies(m2).isEmpty()).isTrue();
   }
@@ -211,7 +211,7 @@ public class JungModuleGraphTest {
     testee.addModule(m1);
     testee.addModule(m2);
 
-    testee.addDependency(m1, m2);
+    testee.addDependency(new ModuleDependency(m1, m2));
 
     assertThat(testee.dependencies(m3).isEmpty()).isTrue();
   }
@@ -222,8 +222,8 @@ public class JungModuleGraphTest {
     testee.addModule(m2);
     testee.addModule(m3);
 
-    testee.addDependency(m1, m2);
-    testee.addDependency(m1, m3);
+    testee.addDependency(new ModuleDependency(m1, m2));
+    testee.addDependency(new ModuleDependency(m1, m3));
 
     assertThat(testee.dependencies(m1)).contains(m2, m3);
   }

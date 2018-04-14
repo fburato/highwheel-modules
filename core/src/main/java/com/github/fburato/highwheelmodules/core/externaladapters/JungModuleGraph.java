@@ -5,6 +5,8 @@ import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
 import com.github.fburato.highwheelmodules.core.model.ModuleMetrics;
 import edu.uci.ics.jung.graph.DirectedGraph;
+import org.pitest.highwheel.model.AccessPoint;
+import org.pitest.highwheel.model.AccessType;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,12 +27,11 @@ public class JungModuleGraph implements ModuleGraph<ModuleDependency>, ModuleMet
   }
 
   @Override
-  public void addDependency(final Module vertex1, final Module vertex2) {
-    if (graph.getVertices().containsAll(Arrays.asList(vertex1, vertex2))) {
-      Optional<ModuleDependency> dependencyOptional = Optional.ofNullable(graph.findEdge(vertex1, vertex2));
+  public void addDependency(final ModuleDependency dependency) {
+    if (graph.getVertices().containsAll(Arrays.asList(dependency.source, dependency.dest))) {
+      Optional<ModuleDependency> dependencyOptional = Optional.ofNullable(graph.findEdge(dependency.source, dependency.dest));
       final ModuleDependency moduleDependency = dependencyOptional.orElseGet(() -> {
-        final ModuleDependency dependency = new ModuleDependency(vertex1, vertex2);
-        graph.addEdge(dependency, vertex1, vertex2);
+        graph.addEdge(dependency, dependency.source, dependency.dest);
         return dependency;
       });
       moduleDependency.incrementCount();

@@ -31,15 +31,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules) {
       moduleGraph.addModule(module);
     }
-    moduleGraph.addDependency(CORE, COMMONS);
-    moduleGraph.addDependency(FACADE, CORE);
-    moduleGraph.addDependency(IO, COMMONS);
-    moduleGraph.addDependency(ENDPOINTS, COMMONS);
-    moduleGraph.addDependency(ENDPOINTS, FACADE);
-    moduleGraph.addDependency(IO, CORE);
-    moduleGraph.addDependency(MAIN, ENDPOINTS);
-    moduleGraph.addDependency(MAIN, IO);
-    moduleGraph.addDependency(MAIN, CORE);
+    moduleGraph.addDependency(new ModuleDependency(CORE, COMMONS));
+    moduleGraph.addDependency(new ModuleDependency(FACADE, CORE));
+    moduleGraph.addDependency(new ModuleDependency(IO, COMMONS));
+    moduleGraph.addDependency(new ModuleDependency(ENDPOINTS, COMMONS));
+    moduleGraph.addDependency(new ModuleDependency(ENDPOINTS, FACADE));
+    moduleGraph.addDependency(new ModuleDependency(IO, CORE));
+    moduleGraph.addDependency(new ModuleDependency(MAIN, ENDPOINTS));
+    moduleGraph.addDependency(new ModuleDependency(MAIN, IO));
+    moduleGraph.addDependency(new ModuleDependency(MAIN, CORE));
     testee = new ModuleGraphTransitiveClosure(moduleGraph, modules);
   }
 
@@ -158,15 +158,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    moduleGraph_2.addDependency(MAIN_2, CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
 
@@ -189,15 +189,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    moduleGraph_2.addDependency(MAIN_2, CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
 
@@ -220,15 +220,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    //moduleGraph_2.addDependency(MAIN_2,CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    //moduleGraph_2.addDependency(new ModuleDependency(MAIN_2,CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
 
@@ -251,15 +251,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    moduleGraph_2.addDependency(MAIN_2, CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
 
@@ -282,15 +282,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    moduleGraph_2.addDependency(MAIN_2, CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
 
@@ -313,15 +313,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    //moduleGraph_2.addDependency(MAIN_2,CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    //moduleGraph_2.addDependency(new ModuleDependency(MAIN_2,CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
     final List<ModuleGraphTransitiveClosure.Difference> differences = testee.diff(otherTestee).get();
@@ -350,15 +350,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    moduleGraph_2.addDependency(MAIN_2, CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
 
@@ -381,15 +381,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    moduleGraph_2.addDependency(MAIN_2, CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
 
@@ -412,15 +412,15 @@ public class ModuleGraphTransitiveClosureTest {
     for (Module module : modules_2) {
       moduleGraph_2.addModule(module);
     }
-    moduleGraph_2.addDependency(CORE_2, COMMONS_2);
-    moduleGraph_2.addDependency(FACADE_2, CORE_2);
-    moduleGraph_2.addDependency(IO_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, COMMONS_2);
-    moduleGraph_2.addDependency(ENDPOINTS_2, FACADE_2);
-    moduleGraph_2.addDependency(IO_2, CORE_2);
-    moduleGraph_2.addDependency(MAIN_2, ENDPOINTS_2);
-    moduleGraph_2.addDependency(MAIN_2, IO_2);
-    //moduleGraph_2.addDependency(MAIN_2,CORE_2);
+    moduleGraph_2.addDependency(new ModuleDependency(CORE_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(FACADE_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, COMMONS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(ENDPOINTS_2, FACADE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(IO_2, CORE_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, ENDPOINTS_2));
+    moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
+    //moduleGraph_2.addDependency(new ModuleDependency(MAIN_2,CORE_2));
 
     final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
     final List<ModuleGraphTransitiveClosure.PathDifference> differences = testee.diffPath(otherTestee).get();
