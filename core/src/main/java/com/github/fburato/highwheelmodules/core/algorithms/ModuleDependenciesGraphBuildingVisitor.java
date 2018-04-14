@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
 import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
 import org.pitest.highwheel.classpath.AccessVisitor;
 import org.pitest.highwheel.model.AccessPoint;
@@ -9,7 +10,7 @@ import org.pitest.highwheel.model.ElementName;
 
 import java.util.*;
 
-public class ModuleDependenciesGraphBuildingVisitor implements AccessVisitor {
+public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor {
 
   private static class NoOpWarningsCollector implements WarningsCollector {
     @Override
@@ -22,13 +23,13 @@ public class ModuleDependenciesGraphBuildingVisitor implements AccessVisitor {
   }
 
   private final Collection<Module> modules;
-  private final ModuleGraph graph;
+  private final ModuleGraph<T> graph;
   private final WarningsCollector warningsCollector;
   private final Module other;
 
   public ModuleDependenciesGraphBuildingVisitor(
       final Collection<Module> modules,
-      final ModuleGraph graph,
+      final ModuleGraph<T> graph,
       final Module other,
       final WarningsCollector warningsCollector) {
     this.modules = modules;
@@ -50,7 +51,7 @@ public class ModuleDependenciesGraphBuildingVisitor implements AccessVisitor {
     }
   }
 
-  public ModuleDependenciesGraphBuildingVisitor(final Collection<Module> modules, final ModuleGraph graph, final Module other) {
+  public ModuleDependenciesGraphBuildingVisitor(final Collection<Module> modules, final ModuleGraph<T> graph, final Module other) {
     this(modules, graph, other, new NoOpWarningsCollector());
   }
 

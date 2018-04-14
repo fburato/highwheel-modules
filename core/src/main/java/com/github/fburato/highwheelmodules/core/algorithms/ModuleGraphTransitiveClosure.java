@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
 import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
 
 import java.util.*;
@@ -65,7 +66,7 @@ public class ModuleGraphTransitiveClosure {
   private final Map<Module, Integer> indexMap;
   private final Collection<Module> modules;
 
-  public ModuleGraphTransitiveClosure(ModuleGraph moduleGraph, Collection<Module> modules) {
+  public ModuleGraphTransitiveClosure(ModuleGraph<ModuleDependency> moduleGraph, Collection<Module> modules) {
     this.modules = modules;
     minimumPathMatrix = initialiseSquareMatrixTo(modules.size());
     indexMap = createMapModuleIndex(modules);
@@ -93,7 +94,7 @@ public class ModuleGraphTransitiveClosure {
     return map;
   }
 
-  private void initialiseDistanceOneModules(Collection<Module> modules, ModuleGraph moduleGraph) {
+  private void initialiseDistanceOneModules(Collection<Module> modules, ModuleGraph<ModuleDependency> moduleGraph) {
     for (Module module : modules) {
       for (Module dependency : moduleGraph.dependencies(module)) {
         minimumPathMatrix[indexMap.get(module)][indexMap.get(dependency)].add(dependency);

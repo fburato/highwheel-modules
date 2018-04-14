@@ -73,9 +73,9 @@ public class ModuleAnalyser {
     return new JungModuleGraph(actualGraph);
   }
 
-  private void runAnalysis(Collection<Module> modules, ModuleGraph moduleGraph, ClasspathRoot root, Module other) {
-    final ModuleDependenciesGraphBuildingVisitor visitor =
-        new ModuleDependenciesGraphBuildingVisitor(modules, moduleGraph, other);
+  private void runAnalysis(Collection<Module> modules, ModuleGraph<ModuleDependency> moduleGraph, ClasspathRoot root, Module other) {
+    final ModuleDependenciesGraphBuildingVisitor<ModuleDependency> visitor =
+        new ModuleDependenciesGraphBuildingVisitor<>(modules, moduleGraph, other);
 
     try {
       classParser.parse(root, visitor);
@@ -111,9 +111,9 @@ public class ModuleAnalyser {
     return noStrictDependencyViolations;
   }
 
-  private List<AnalyserModel.Metrics> getMetrics(ModuleMetrics moduleMetrics, Collection<Module> modules, ModuleGraph graph,
+  private List<AnalyserModel.Metrics> getMetrics(ModuleMetrics moduleMetrics, Collection<Module> modules, ModuleGraph<ModuleDependency> graph,
       Module other) {
-    final List<AnalyserModel.Metrics> metrics = new ArrayList<AnalyserModel.Metrics>(modules.size());
+    final List<AnalyserModel.Metrics> metrics = new ArrayList<>(modules.size());
     for (Module module : modules) {
       metrics.add(new AnalyserModel.Metrics(module.name, moduleMetrics.fanInOf(module).get() +
           (graph.findDependency(other, module).isPresent() ? -1 : 0),

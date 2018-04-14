@@ -11,7 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-public class JungModuleGraph implements ModuleGraph, ModuleMetrics {
+public class JungModuleGraph implements ModuleGraph<ModuleDependency>, ModuleMetrics {
 
   private final DirectedGraph<Module, ModuleDependency> graph;
 
