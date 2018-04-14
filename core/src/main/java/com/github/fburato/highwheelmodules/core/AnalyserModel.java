@@ -148,12 +148,12 @@ public interface AnalyserModel {
   class UndesiredDependencyViolation {
     public final String sourceModule;
     public final String destinationModule;
-    public final List<String> evidence;
+    public final List<String> moduleEvidence;
 
-    public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> evidence) {
+    public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence) {
       this.sourceModule = sourceModule;
       this.destinationModule = destinationModule;
-      this.evidence = evidence;
+      this.moduleEvidence = moduleEvidence;
     }
 
     @Override
@@ -161,7 +161,7 @@ public interface AnalyserModel {
       return "UndesiredDependencyViolation{" +
           "sourceModule='" + sourceModule + '\'' +
           ", destinationModule='" + destinationModule + '\'' +
-          ", evidence=" + sourceModule + " -> " + join(" -> ", evidence) +
+          ", moduleEvidence=" + sourceModule + " -> " + join(" -> ", moduleEvidence) +
           '}';
     }
 
@@ -176,7 +176,7 @@ public interface AnalyserModel {
 
       return Objects.equals(this.sourceModule, that.sourceModule) &&
           Objects.equals(this.destinationModule, that.destinationModule) &&
-          Objects.equals(this.evidence, that.evidence);
+          Objects.equals(this.moduleEvidence, that.moduleEvidence);
     }
   }
 

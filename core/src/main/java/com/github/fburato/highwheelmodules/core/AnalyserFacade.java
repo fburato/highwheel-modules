@@ -255,7 +255,7 @@ public class AnalyserFacade {
       looseAnalysisEventSink.undesiredDependencyViolation(
           violation.sourceModule,
           violation.destinationModule,
-          appendStartIfNotEmpty(violation.evidence, violation.sourceModule));
+          appendStartIfNotEmpty(violation.moduleEvidence, violation.sourceModule));
     }
   }
 
