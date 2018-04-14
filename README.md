@@ -44,6 +44,31 @@ In order for a specification to be compiled correctly:
 * All the identifiers used in the rules section need to be defined in the modules section.
 * The file needs to end with a new-line
 
+An example of specification can be found in this project in the `spec.hwm` files of every project modules and would look
+like this:
+
+```
+modules:
+    Algorithms = "com.github.fburato.highwheelmodules.core.algorithms.*"
+    ExternalAdapters = "com.github.fburato.highwheelmodules.core.externaladapters.*"
+    Model = "com.github.fburato.highwheelmodules.core.model.*"
+    Specification = "com.github.fburato.highwheelmodules.core.specification.*"
+    ModuleAnalyser = "com.github.fburato.highwheelmodules.core.ModuleAnalyser", "com.github.fburato.highwheelmodules.core.AnalyserException", "com.github.fburato.highwheelmodules.core.AnalyserModel"
+    Facade = "com.github.fburato.highwheelmodules.core.AnalyserFacade"
+
+rules:
+    Algorithms -> Model
+    ExternalAdapters -> Model
+    Specification -> Model
+    ModuleAnalyser -> Algorithms
+    ModuleAnalyser -> Model
+    ModuleAnalyser -> ExternalAdapters
+    Facade -> ModuleAnalyser
+    Facade -> Model
+    Facade -/-> Algorithms
+    Facade -> Specification
+```
+
 ## Modes of operation
 
 Highwheel modules supports two modes of operation: **strict** and **loose**.
