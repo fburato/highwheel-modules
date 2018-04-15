@@ -60,13 +60,13 @@ public class Main {
     }
 
     @Override
-    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath,
-        List<String> actualPath) {
-      System.err.println(String.format("  %s -> %s. Expected path: %s, Actual path: %s",
+    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<String> evidencePath) {
+      System.err.println(String.format("  %s -> %s. Expected path: %s, Actual module path: %s\n    Actual usage path: %s",
           sourceModule,
           destModule,
           printGraphPath(expectedPath),
-          printGraphPath(actualPath)
+          printGraphPath(actualPath),
+          printGraphPath(evidencePath)
       ));
     }
 
@@ -115,11 +115,12 @@ public class Main {
     }
 
     @Override
-    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path) {
-      System.err.println(String.format("  %s -/-> %s. Actual path: %s",
+    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<String> evidencePath) {
+      System.err.println(String.format("  %s -/-> %s. Actual module path: %s\n    Actual usage path: %s",
           sourceModule,
           destModule,
-          printGraphPath(path)
+          printGraphPath(path),
+          printGraphPath(evidencePath)
       ));
     }
   }

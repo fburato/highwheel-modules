@@ -109,6 +109,23 @@ public class ModuleAnalyserTest {
   }
 
   @Test
+  public void analyseStrictShouldProvideEvidencesForDependencyViolations() {
+    final Definition definition = new Definition(
+        Arrays.asList(MAIN, CONTROLLER, FACADE),
+        Collections.emptyList(),
+        Collections.emptyList()
+    );
+
+    final AnalyserModel.StrictAnalysisResult actual = testee.analyseStrict(orgExamples, definition);
+
+    assertThat(actual.dependencyViolations).containsAll(Arrays.asList(
+        depV("Main", "Controllers", Collections.emptyList(), Arrays.asList("Controllers"), Arrays.asList("org.example.Main:main","org.example.controller.Controller1:access")),
+        depV("Main", "Facade", Collections.emptyList(), Arrays.asList("Facade"), Arrays.asList("org.example.Main:main","org.example.core.CoreFacade:(init)")),
+        depV("Controllers", "Facade", Collections.emptyList(), Arrays.asList("Facade"), Arrays.asList("org.example.controller.Controller1:access", "org.example.core.CoreFacade:facadeMethod1"))
+    ));
+  }
+
+  @Test
   public void analyseStrictShouldAnalyseAllModulesInScope() {
     final Definition definition = new Definition(
         Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
@@ -154,8 +171,14 @@ public class ModuleAnalyserTest {
   }
 
   private static AnalyserModel.DependencyViolation depV(String source, String dest, List<String> specPath,
-      List<String> actualPath) {
+                                                        List<String> actualPath) {
     return new AnalyserModel.DependencyViolation(source, dest, specPath, actualPath);
+  }
+
+
+  private static AnalyserModel.DependencyViolation depV(String source, String dest, List<String> specPath,
+      List<String> actualPath, List<String> evidences) {
+    return new AnalyserModel.DependencyViolation(source, dest, specPath, actualPath, evidences);
   }
 
   private static AnalyserModel.NoStrictDependencyViolation noDepV(String source, String dest) {
@@ -216,7 +239,7 @@ public class ModuleAnalyserTest {
         aDep("Controllers", "Main")
     ));
     assertThat(actual.undesiredDependencyViolations).contains(
-        unDep("Main", "Facade", Arrays.asList("Facade"))
+        unDep("Main", "Facade", Arrays.asList("Facade"), Arrays.asList("org.example.Main:main", "org.example.core.CoreFacade:(init)"))
     );
     assertThat(actual.metrics).isEqualTo(Arrays.asList(
         met("Main", 0, 2),
@@ -225,12 +248,27 @@ public class ModuleAnalyserTest {
     ));
   }
 
+  @Test
+  public void analyseLooseShouldProvideEvidenceForUndesiredDependency() {
+    final Definition definition = new Definition(
+        Arrays.asList(MAIN, CONTROLLER, FACADE),
+        Collections.emptyList(),
+        Arrays.asList(noSD(MAIN, CONTROLLER))
+    );
+
+    final AnalyserModel.LooseAnalysisResult actual = testee.analyseLoose(orgExamples, definition);
+
+    assertThat(actual.undesiredDependencyViolations).contains(
+        unDep("Main", "Controllers", Arrays.asList("Controllers"), Arrays.asList("org.example.Main:main","org.example.controller.Controller1:access"))
+    );
+  }
+
   private static AnalyserModel.AbsentDependencyViolation aDep(String source, String dest) {
     return new AnalyserModel.AbsentDependencyViolation(source, dest);
   }
 
-  private static AnalyserModel.UndesiredDependencyViolation unDep(String source, String dest, List<String> evidence) {
-    return new AnalyserModel.UndesiredDependencyViolation(source, dest, evidence);
+  private static AnalyserModel.UndesiredDependencyViolation unDep(String source, String dest, List<String> evidence, List<String> evidencePath) {
+    return new AnalyserModel.UndesiredDependencyViolation(source, dest, evidence,evidencePath);
   }
 
   @Test

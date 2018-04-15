@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.core;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,36 +14,49 @@ public interface AnalyserModel {
     public final String destinationModule;
     public final List<String> specificationPath;
     public final List<String> actualPath;
+    public final List<String> evidencePath;
 
     public DependencyViolation(String sourceModule, String destinationModule, List<String> specificationPath,
         List<String> actualPath) {
+      this(sourceModule,destinationModule,specificationPath,actualPath,Collections.emptyList());
+    }
+
+    public DependencyViolation(String sourceModule, String destinationModule, List<String> specificationPath,
+                               List<String> actualPath, List<String> evidencePath) {
       this.sourceModule = sourceModule;
       this.destinationModule = destinationModule;
       this.specificationPath = specificationPath;
       this.actualPath = actualPath;
+      this.evidencePath = evidencePath;
     }
 
     @Override
     public String toString() {
       return "DependencyViolation{" +
-          "specificationPath=" + sourceModule + " -> " + join(" -> ", specificationPath) +
-          ", actualPath=" + sourceModule + " -> " + join(" -> ", actualPath) +
+          "sourceModule='" + sourceModule + '\'' +
+          ", destinationModule='" + destinationModule + '\'' +
+          ", specificationPath=" + specificationPath +
+          ", actualPath=" + actualPath +
+          ", evidencePath=" + evidencePath +
           '}';
     }
 
     @Override
     public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
       DependencyViolation that = (DependencyViolation) o;
+      return Objects.equals(sourceModule, that.sourceModule) &&
+          Objects.equals(destinationModule, that.destinationModule) &&
+          Objects.equals(specificationPath, that.specificationPath) &&
+          Objects.equals(actualPath, that.actualPath) &&
+          Objects.equals(evidencePath, that.evidencePath);
+    }
 
-      return Objects.equals(this.sourceModule, that.sourceModule) &&
-          Objects.equals(this.destinationModule, that.destinationModule) &&
-          Objects.equals(this.specificationPath, that.specificationPath) &&
-          Objects.equals(this.actualPath, that.actualPath);
+    @Override
+    public int hashCode() {
+
+      return Objects.hash(sourceModule, destinationModule, specificationPath, actualPath, evidencePath);
     }
   }
 
@@ -149,11 +163,17 @@ public interface AnalyserModel {
     public final String sourceModule;
     public final String destinationModule;
     public final List<String> moduleEvidence;
+    public final List<String> evidencePath;
 
     public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence) {
+      this(sourceModule,destinationModule,moduleEvidence, Collections.emptyList());
+    }
+
+    public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence, List<String> evidencePath) {
       this.sourceModule = sourceModule;
       this.destinationModule = destinationModule;
       this.moduleEvidence = moduleEvidence;
+      this.evidencePath = evidencePath;
     }
 
     @Override
@@ -161,22 +181,26 @@ public interface AnalyserModel {
       return "UndesiredDependencyViolation{" +
           "sourceModule='" + sourceModule + '\'' +
           ", destinationModule='" + destinationModule + '\'' +
-          ", moduleEvidence=" + sourceModule + " -> " + join(" -> ", moduleEvidence) +
+          ", moduleEvidence=" + moduleEvidence +
+          ", evidencePath=" + evidencePath +
           '}';
     }
 
     @Override
     public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
       UndesiredDependencyViolation that = (UndesiredDependencyViolation) o;
+      return Objects.equals(sourceModule, that.sourceModule) &&
+          Objects.equals(destinationModule, that.destinationModule) &&
+          Objects.equals(moduleEvidence, that.moduleEvidence) &&
+          Objects.equals(evidencePath, that.evidencePath);
+    }
 
-      return Objects.equals(this.sourceModule, that.sourceModule) &&
-          Objects.equals(this.destinationModule, that.destinationModule) &&
-          Objects.equals(this.moduleEvidence, that.moduleEvidence);
+    @Override
+    public int hashCode() {
+
+      return Objects.hash(sourceModule, destinationModule, moduleEvidence, evidencePath);
     }
   }
 

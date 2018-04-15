@@ -51,7 +51,7 @@ public class AnalyserFacade {
 
       void dependencyViolationsPresent();
 
-      void dependencyViolation(String sourceModel, String destModel, List<String> expectedPath, List<String> actualPath);
+      void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<String> evidencePath);
 
       void noDirectDependenciesViolationPresent();
 
@@ -70,7 +70,7 @@ public class AnalyserFacade {
 
       void undesiredDependencyViolationsPresent();
 
-      void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path);
+      void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<String> evidencePath);
     }
   }
 
@@ -223,7 +223,8 @@ public class AnalyserFacade {
     for (AnalyserModel.DependencyViolation violation : violations) {
       strictAnalysisEventSink.dependencyViolation(violation.sourceModule, violation.destinationModule,
           appendStartIfNotEmpty(violation.specificationPath, violation.sourceModule),
-          appendStartIfNotEmpty(violation.actualPath, violation.sourceModule));
+          appendStartIfNotEmpty(violation.actualPath, violation.sourceModule),
+          violation.evidencePath);
     }
   }
 
@@ -255,7 +256,8 @@ public class AnalyserFacade {
       looseAnalysisEventSink.undesiredDependencyViolation(
           violation.sourceModule,
           violation.destinationModule,
-          appendStartIfNotEmpty(violation.moduleEvidence, violation.sourceModule));
+          appendStartIfNotEmpty(violation.moduleEvidence, violation.sourceModule),
+          violation.evidencePath);
     }
   }
 

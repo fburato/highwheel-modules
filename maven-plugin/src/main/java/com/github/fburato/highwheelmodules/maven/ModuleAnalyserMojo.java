@@ -75,13 +75,13 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     }
 
     @Override
-    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath,
-        List<String> actualPath) {
-      getLog().error(String.format("  %s -> %s. Expected path: %s, Actual path: %s",
+    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<String> evidencePath) {
+      getLog().error(String.format("  %s -> %s. Expected path: %s, Actual module path: %s\n    Actual usage path: %s",
           sourceModule,
           destModule,
           printGraphPath(expectedPath),
-          printGraphPath(actualPath)
+          printGraphPath(actualPath),
+          printGraphPath(evidencePath)
       ));
     }
 
@@ -130,11 +130,12 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     }
 
     @Override
-    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path) {
-      getLog().error(String.format("  %s -/-> %s. Actual path: %s",
+    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<String> evidencePath) {
+      getLog().error(String.format("  %s -/-> %s. Actual module path: %s\n    Actual evidence path: ",
           sourceModule,
           destModule,
-          printGraphPath(path)
+          printGraphPath(path),
+          printGraphPath(evidencePath)
       ));
     }
   }

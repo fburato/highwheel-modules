@@ -182,7 +182,9 @@ public class AnalyserFacadeTest {
       testee.runAnalysis(Arrays.asList(orgExamplePath), wrongStrictDefinitionSpec);
     } finally {
       verify(strictAnalysisEventSink).dependencyViolationsPresent();
-      verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(), Arrays.asList("IO", "Utils"));
+      verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(),
+          Arrays.asList("IO", "Utils"),
+          Arrays.asList("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"));
       verify(strictAnalysisEventSink).noDirectDependenciesViolationPresent();
       verify(strictAnalysisEventSink).noDirectDependencyViolation("Facade", "CoreInternals");
     }
@@ -196,7 +198,9 @@ public class AnalyserFacadeTest {
       verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
       verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent();
       verify(looseAnalysisEventSink).absentDependencyViolation("IO", "CoreInternals");
-      verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model", Arrays.asList("IO", "Model"));
+      verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model",
+          Arrays.asList("IO", "Model"),
+          Arrays.asList("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1:(init)"));
     }
   }
 
