@@ -1,7 +1,6 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
 import com.github.fburato.highwheelmodules.core.model.Module;
-import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
 import org.pitest.highwheel.classpath.AccessVisitor;
 import org.pitest.highwheel.model.AccessPoint;
@@ -70,19 +69,19 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
     for (Module sourceModule : modulesMatchingSource) {
       for (Module destModule : moduleMatchingDest) {
         if (!sourceModule.equals(destModule))
-          graph.addDependency(dependencyBuilder.build(sourceModule,destModule,source,dest,type));
+          graph.addDependency(dependencyBuilder.build(sourceModule, destModule, source, dest, type));
       }
     }
 
     if (modulesMatchingSource.isEmpty() && !moduleMatchingDest.isEmpty()) {
       for (Module destModule : moduleMatchingDest) {
-        graph.addDependency(dependencyBuilder.build(other,destModule,source,dest,type));
+        graph.addDependency(dependencyBuilder.build(other, destModule, source, dest, type));
       }
     }
 
     if (!modulesMatchingSource.isEmpty() && moduleMatchingDest.isEmpty()) {
       for (Module sourceModule : modulesMatchingSource) {
-        graph.addDependency(dependencyBuilder.build(sourceModule,other,source,dest,type));
+        graph.addDependency(dependencyBuilder.build(sourceModule, other, source, dest, type));
       }
     }
   }

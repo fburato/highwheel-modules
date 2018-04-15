@@ -2,7 +2,7 @@ package com.github.fburato.highwheelmodules.utils;
 
 import java.util.Objects;
 
-public final class Pair<A,B> {
+public final class Pair<A, B> {
   public final A first;
   public final B second;
 
@@ -11,13 +11,13 @@ public final class Pair<A,B> {
     this.second = second;
   }
 
-  public static <A1,B1> Pair<A1,B1> make(A1 first, B1 second) {
-    return new Pair<>(first,second);
+  public static <A1, B1> Pair<A1, B1> make(A1 first, B1 second) {
+    return new Pair<>(first, second);
   }
 
   @Override
   public String toString() {
-    return "("  + first + "," + second + ')';
+    return "(" + first + "," + second + ')';
   }
 
   @Override

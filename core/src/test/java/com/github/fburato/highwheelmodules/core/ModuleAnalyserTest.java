@@ -121,18 +121,18 @@ public class ModuleAnalyserTest {
 
     assertThat(actual.dependencyViolations).containsAll(Arrays.asList(
         depV("Main", "Controllers", Collections.emptyList(), Arrays.asList("Controllers"), Arrays.asList(Arrays.asList(
-            Pair.make("org.example.Main:main","org.example.controller.Controller1:access"),
-            Pair.make("org.example.Main:main","org.example.controller.Controller1"),
-            Pair.make("org.example.Main:main","org.example.controller.Controller1:(init)")
+            Pair.make("org.example.Main:main", "org.example.controller.Controller1:access"),
+            Pair.make("org.example.Main:main", "org.example.controller.Controller1"),
+            Pair.make("org.example.Main:main", "org.example.controller.Controller1:(init)")
         ))),
         depV("Main", "Facade", Collections.emptyList(), Arrays.asList("Facade"), Arrays.asList(Arrays.asList(
-            Pair.make("org.example.Main:main","org.example.core.CoreFacade:(init)"),
-            Pair.make("org.example.Main:main","org.example.core.CoreFacade")
+            Pair.make("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
+            Pair.make("org.example.Main:main", "org.example.core.CoreFacade")
         ))),
         depV("Controllers", "Facade", Collections.emptyList(), Arrays.asList("Facade"), Arrays.asList(Arrays.asList(
             Pair.make("org.example.controller.Controller1:access", "org.example.core.CoreFacade:facadeMethod1"),
-            Pair.make("org.example.controller.Controller1","org.example.core.CoreFacade"),
-            Pair.make("org.example.controller.Controller1:(init)","org.example.core.CoreFacade")
+            Pair.make("org.example.controller.Controller1", "org.example.core.CoreFacade"),
+            Pair.make("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade")
         )))
     ));
   }
@@ -189,7 +189,7 @@ public class ModuleAnalyserTest {
 
 
   private static AnalyserModel.DependencyViolation depV(String source, String dest, List<String> specPath,
-      List<String> actualPath, List<List<Pair<String,String>>> evidences) {
+                                                        List<String> actualPath, List<List<Pair<String, String>>> evidences) {
     return new AnalyserModel.DependencyViolation(source, dest, specPath, actualPath, evidences);
   }
 
@@ -252,8 +252,8 @@ public class ModuleAnalyserTest {
     ));
     assertThat(actual.undesiredDependencyViolations).contains(
         unDep("Main", "Facade", Arrays.asList("Facade"), Arrays.asList(Arrays.asList(
-            Pair.make("org.example.Main:main","org.example.core.CoreFacade:(init)"),
-            Pair.make("org.example.Main:main","org.example.core.CoreFacade")
+            Pair.make("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
+            Pair.make("org.example.Main:main", "org.example.core.CoreFacade")
         )))
     );
     assertThat(actual.metrics).isEqualTo(Arrays.asList(
@@ -275,9 +275,9 @@ public class ModuleAnalyserTest {
 
     assertThat(actual.undesiredDependencyViolations).contains(
         unDep("Main", "Controllers", Arrays.asList("Controllers"), Arrays.asList(Arrays.asList(
-            Pair.make("org.example.Main:main","org.example.controller.Controller1:access"),
-            Pair.make("org.example.Main:main","org.example.controller.Controller1"),
-            Pair.make("org.example.Main:main","org.example.controller.Controller1:(init)")
+            Pair.make("org.example.Main:main", "org.example.controller.Controller1:access"),
+            Pair.make("org.example.Main:main", "org.example.controller.Controller1"),
+            Pair.make("org.example.Main:main", "org.example.controller.Controller1:(init)")
         )))
     );
   }
@@ -286,8 +286,8 @@ public class ModuleAnalyserTest {
     return new AnalyserModel.AbsentDependencyViolation(source, dest);
   }
 
-  private static AnalyserModel.UndesiredDependencyViolation unDep(String source, String dest, List<String> evidence, List<List<Pair<String,String>>> evidencePath) {
-    return new AnalyserModel.UndesiredDependencyViolation(source, dest, evidence,evidencePath);
+  private static AnalyserModel.UndesiredDependencyViolation unDep(String source, String dest, List<String> evidence, List<List<Pair<String, String>>> evidencePath) {
+    return new AnalyserModel.UndesiredDependencyViolation(source, dest, evidence, evidencePath);
   }
 
   @Test

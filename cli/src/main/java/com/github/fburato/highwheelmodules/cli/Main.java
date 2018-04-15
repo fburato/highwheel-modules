@@ -61,13 +61,13 @@ public class Main {
     }
 
     @Override
-    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<List<Pair<String,String>>> evidencePath) {
+    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<List<Pair<String, String>>> evidencePath) {
       System.err.println(String.format("  %s -> %s. Expected path: %s, Actual module path: %s\n    Actual usage paths:\n%s",
           sourceModule,
           destModule,
           printGraphPath(expectedPath),
           printGraphPath(actualPath),
-          printEvidences(actualPath,evidencePath)
+          printEvidences(actualPath, evidencePath)
       ));
     }
 
@@ -116,12 +116,12 @@ public class Main {
     }
 
     @Override
-    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<List<Pair<String,String>>> evidences) {
+    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<List<Pair<String, String>>> evidences) {
       System.err.println(String.format("  %s -/-> %s. Actual module path: %s\n    Actual usage paths:\n%s",
           sourceModule,
           destModule,
           printGraphPath(path),
-          printEvidences(path,evidences)
+          printEvidences(path, evidences)
       ));
     }
   }
@@ -134,15 +134,15 @@ public class Main {
     }
   }
 
-  private static String printEvidences(List<String> modules, List<List<Pair<String,String>>> evidences) {
+  private static String printEvidences(List<String> modules, List<List<Pair<String, String>>> evidences) {
     final StringBuilder result = new StringBuilder("");
-    for(int i = 0; i < modules.size() - 1; ++i) {
+    for (int i = 0; i < modules.size() - 1; ++i) {
       final String current = modules.get(i);
       final String next = modules.get(i + 1);
-      final List<Pair<String,String>> currentToNextEvidences = evidences.get(i);
-      result.append(String.format("      %s -> %s:\n",current, next));
-      for(Pair<String,String> evidence: currentToNextEvidences) {
-        result.append(String.format("        %s -> %s\n",evidence.first, evidence.second));
+      final List<Pair<String, String>> currentToNextEvidences = evidences.get(i);
+      result.append(String.format("      %s -> %s:\n", current, next));
+      for (Pair<String, String> evidence : currentToNextEvidences) {
+        result.append(String.format("        %s -> %s\n", evidence.first, evidence.second));
       }
     }
     return result.toString();

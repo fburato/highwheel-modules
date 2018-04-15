@@ -12,7 +12,7 @@ public class TrackingModuleDependencyTest {
   private final Module moduleB = Module.make("module B", "module B").get();
   private final AccessPoint exampleSource = AccessPoint.create(ElementName.fromString("A"));
   private final AccessPoint exampleDest = AccessPoint.create(ElementName.fromString("B"));
-  private final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA,moduleB);
+  private final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB);
 
   @Test
   public void evidencesShouldBeEmptyOnEmptyTrackingDependency() {
@@ -22,7 +22,7 @@ public class TrackingModuleDependencyTest {
 
   @Test
   public void sourcesShouldReturnAddedEvidences() {
-    testee.addEvidence(exampleSource,exampleDest);
+    testee.addEvidence(exampleSource, exampleDest);
 
     assertThat(testee.getSources()).contains(exampleSource);
     assertThat(testee.getDestinations()).contains(exampleDest);
@@ -35,14 +35,14 @@ public class TrackingModuleDependencyTest {
 
   @Test
   public void getDestinationShouldReturnEmptyOnEvidenceOnDifferentSource() {
-    testee.addEvidence(exampleDest,exampleDest);
+    testee.addEvidence(exampleDest, exampleDest);
 
     assertThat(testee.getDestinationsFromSource(exampleSource).isEmpty()).isTrue();
   }
 
   @Test
   public void getDestinationShouldReturnExpectedEvidences() {
-    testee.addEvidence(exampleSource,exampleDest);
+    testee.addEvidence(exampleSource, exampleDest);
 
     assertThat(testee.getDestinationsFromSource(exampleSource)).contains(exampleDest);
   }

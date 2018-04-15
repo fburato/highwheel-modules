@@ -52,7 +52,7 @@ public class AnalyserFacade {
 
       void dependencyViolationsPresent();
 
-      void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<List<Pair<String,String>>> evidences);
+      void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<List<Pair<String, String>>> evidences);
 
       void noDirectDependenciesViolationPresent();
 
@@ -71,7 +71,7 @@ public class AnalyserFacade {
 
       void undesiredDependencyViolationsPresent();
 
-      void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<List<Pair<String,String>>> evidences);
+      void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<List<Pair<String, String>>> evidences);
     }
   }
 
@@ -82,10 +82,10 @@ public class AnalyserFacade {
   private final EventSink.LooseAnalysisEventSink looseAnalysisEventSink;
 
   public AnalyserFacade(final Printer printer,
-      final EventSink.PathEventSink pathEventSink,
-      final EventSink.MeasureEventSink measureEventSink,
-      final EventSink.StrictAnalysisEventSink strictAnalysisEventSink,
-      final EventSink.LooseAnalysisEventSink looseAnalysisEventSink) {
+                        final EventSink.PathEventSink pathEventSink,
+                        final EventSink.MeasureEventSink measureEventSink,
+                        final EventSink.StrictAnalysisEventSink strictAnalysisEventSink,
+                        final EventSink.LooseAnalysisEventSink looseAnalysisEventSink) {
     this.printer = printer;
     this.pathEventSink = pathEventSink;
     this.measureEventSink = measureEventSink;
@@ -94,7 +94,7 @@ public class AnalyserFacade {
   }
 
   public void runAnalysis(final List<String> classPathRoots, final String specificationPath,
-      final ExecutionMode executionMode) {
+                          final ExecutionMode executionMode) {
     final ClasspathRoot classpathRoot = getAnalysisScope(classPathRoots);
     final File specificationFile = new File(specificationPath);
     if (!specificationFile.exists() || specificationFile.isDirectory() || !specificationFile.canRead()) {

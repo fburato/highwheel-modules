@@ -58,7 +58,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
   private final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
   private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
   private final WarningsCollector warningsCollector = new AddToListWarnings();
-  private final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> builder = (m1, m2, source, dest, type) -> new ModuleDependency(m1,m2);
+  private final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> builder = (m1, m2, source, dest, type) -> new ModuleDependency(m1, m2);
   private final ModuleDependenciesGraphBuildingVisitor<ModuleDependency> testee =
       new ModuleDependenciesGraphBuildingVisitor<>(modules, moduleGraph, OTHER, builder);
 
@@ -80,7 +80,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final WarningsCollector warningsCollector = new AddToListWarnings();
-    new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph,  OTHER, builder, warningsCollector);
+    new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
 
     assertThat(constructionWarnings.size()).isEqualTo(1);
     assertThat(constructionWarnings.get(0).name).isEqualTo("Core");

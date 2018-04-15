@@ -51,7 +51,7 @@ public class Compiler {
   }
 
   private Pair<List<Dependency>, List<NoStrictDependency>> compileRules(List<SyntaxTree.Rule> rulesDefinition,
-      Map<String, Module> modules) {
+                                                                        Map<String, Module> modules) {
     final List<Dependency> dependencies = new ArrayList<Dependency>();
     final List<NoStrictDependency> noDirectDependencies = new ArrayList<NoStrictDependency>();
     for (SyntaxTree.Rule ruleDefinition : rulesDefinition) {

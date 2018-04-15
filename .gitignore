@@ -3,6 +3,8 @@
 *.iml
 dependency-reduced-pom.xml
 # Package Files #
+*.releaseBackup
+release.properties
 *.jar
 *.war
 *.ear

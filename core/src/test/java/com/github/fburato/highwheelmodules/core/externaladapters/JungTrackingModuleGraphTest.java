@@ -46,7 +46,7 @@ public class JungTrackingModuleGraphTest {
   public void addDependencyShouldAddEdgeToJungGraph() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(new EvidenceModuleDependency(m1, m2,ap1,ap2));
+    testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
 
     final TrackingModuleDependency dependency = graph.findEdge(m1, m2);
 
@@ -57,7 +57,7 @@ public class JungTrackingModuleGraphTest {
   @Test
   public void addEdgeShouldFailToAddIfOneVertexDoesNotExist() {
     testee.addModule(m1);
-    testee.addDependency(new EvidenceModuleDependency(m1, m2,ap1,ap2));
+    testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
 
     assertThat(graph.findEdge(m1, m2)).isNull();
   }
@@ -66,7 +66,7 @@ public class JungTrackingModuleGraphTest {
   public void addEdgeShouldAddEdgeToDestinationMapping() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1,ap2));
+    testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
 
     assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap1)).contains(ap2);
   }
@@ -75,18 +75,18 @@ public class JungTrackingModuleGraphTest {
   public void addEdgeShouldAddEvidenceIfMappingAlreadyExistWithDifferentAccessPoint() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1,ap2));
+    testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
     assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap1)).contains(ap2);
 
     testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap3));
-    assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap1)).contains(ap2,ap3);
+    assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap1)).contains(ap2, ap3);
   }
 
   @Test
   public void addEdgeShouldSkipIfMappingAlreadyExistWithSameAccessPoint() {
     testee.addModule(m1);
     testee.addModule(m2);
-    testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1,ap2));
+    testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
     assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap1)).contains(ap2);
 
     testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));

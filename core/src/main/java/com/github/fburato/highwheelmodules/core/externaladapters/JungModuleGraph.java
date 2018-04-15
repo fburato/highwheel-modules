@@ -5,8 +5,6 @@ import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
 import com.github.fburato.highwheelmodules.core.model.ModuleMetrics;
 import edu.uci.ics.jung.graph.DirectedGraph;
-import org.pitest.highwheel.model.AccessPoint;
-import org.pitest.highwheel.model.AccessType;
 
 import java.util.Arrays;
 import java.util.Collection;

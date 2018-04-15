@@ -8,7 +8,7 @@ public final class TrackingModuleDependency {
 
   public final Module source;
   public final Module dest;
-  private final Map<AccessPoint,Set<AccessPoint>> evidences;
+  private final Map<AccessPoint, Set<AccessPoint>> evidences;
 
   public TrackingModuleDependency(final Module source, final Module dest) {
     this.source = source;
@@ -19,7 +19,7 @@ public final class TrackingModuleDependency {
   public void addEvidence(AccessPoint source, AccessPoint dest) {
     final Set<AccessPoint> newDestinations = evidences.getOrDefault(source, new HashSet<>());
     newDestinations.add(dest);
-    evidences.put(source,newDestinations);
+    evidences.put(source, newDestinations);
   }
 
   public Set<AccessPoint> getSources() {

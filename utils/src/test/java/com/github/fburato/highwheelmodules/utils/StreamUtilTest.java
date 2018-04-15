@@ -1,14 +1,14 @@
 package com.github.fburato.highwheelmodules.utils;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class StreamUtilTest {
 
@@ -25,11 +25,11 @@ public class StreamUtilTest {
     final byte[] actual = StreamUtil.streamToByteArray(bis);
     assertArrayEquals(expected, actual);
   }
-  
+
   @Test
   public void shouldCopyStreamsLargerThanBufferSize() throws IOException {
     final byte[] expected = new byte[(17 * 1024)];
-    Arrays.fill(expected, (byte)2);
+    Arrays.fill(expected, (byte) 2);
     final ByteArrayInputStream bis = new ByteArrayInputStream(expected);
     final byte[] actual = StreamUtil.streamToByteArray(bis);
     assertArrayEquals(expected, actual);
@@ -46,7 +46,7 @@ public class StreamUtilTest {
   }
 
   private byte[] createByteArray() {
-    final byte[] expected = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0xA };
+    final byte[] expected = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0xA};
     return expected;
   }
 }

@@ -14,6 +14,7 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import org.pitest.highwheel.classpath.AccessVisitor;
 import org.pitest.highwheel.classpath.ClassParser;
 import org.pitest.highwheel.classpath.ClasspathRoot;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +35,7 @@ public class ModuleAnalyser {
       throw new AnalyserException("No modules provided in definition");
     final JungModuleGraph specModuleGraph = initialiseSpecificationGraph(modules, definition.dependencies);
     final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
-    final DirectedSparseGraph<Module,TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
+    final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
     final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph);
 
     runAnalysis(modules, actualModuleGraph, trackingGraph, root, other);
@@ -67,7 +68,7 @@ public class ModuleAnalyser {
       specModuleGraph.addModule(module);
     }
     for (Dependency dep : dependencies) {
-      specModuleGraph.addDependency(new ModuleDependency(dep.source,dep.dest));
+      specModuleGraph.addDependency(new ModuleDependency(dep.source, dep.dest));
     }
 
     return specModuleGraph;
@@ -81,15 +82,15 @@ public class ModuleAnalyser {
   private void runAnalysis(Collection<Module> modules, ModuleGraph<ModuleDependency> moduleGraph,
                            ModuleGraph<EvidenceModuleDependency> evidenceModuleDependencyModuleGraph,
                            ClasspathRoot root, Module other) {
-    final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency>  moduleGraphBuilder =
-        (sourceModule, destModule, sourceAP, destAP, type) -> new ModuleDependency(sourceModule,destModule);
+    final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> moduleGraphBuilder =
+        (sourceModule, destModule, sourceAP, destAP, type) -> new ModuleDependency(sourceModule, destModule);
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<EvidenceModuleDependency> evidenceGraphBuilder =
-        (sourceModule, destModule, sourceAP, destAP, type) -> new EvidenceModuleDependency(sourceModule,destModule,sourceAP,destAP);
+        (sourceModule, destModule, sourceAP, destAP, type) -> new EvidenceModuleDependency(sourceModule, destModule, sourceAP, destAP);
     final ModuleDependenciesGraphBuildingVisitor<ModuleDependency> moduleGraphVisitor =
         new ModuleDependenciesGraphBuildingVisitor<>(modules, moduleGraph, other, moduleGraphBuilder);
     final ModuleDependenciesGraphBuildingVisitor<EvidenceModuleDependency> evidenceGraphVisitor =
-        new ModuleDependenciesGraphBuildingVisitor<>(modules,evidenceModuleDependencyModuleGraph,other,evidenceGraphBuilder);
-    final AccessVisitor accessVisitor = new CompoundAccessVisitor(moduleGraphVisitor,evidenceGraphVisitor);
+        new ModuleDependenciesGraphBuildingVisitor<>(modules, evidenceModuleDependencyModuleGraph, other, evidenceGraphBuilder);
+    final AccessVisitor accessVisitor = new CompoundAccessVisitor(moduleGraphVisitor, evidenceGraphVisitor);
     try {
       classParser.parse(root, accessVisitor);
     } catch (IOException e) {
@@ -98,31 +99,31 @@ public class ModuleAnalyser {
   }
 
   private List<AnalyserModel.DependencyViolation> getDependencyViolations(
-      List<ModuleGraphTransitiveClosure.PathDifference> differences, Module other, DirectedGraph<Module,TrackingModuleDependency> trackingGraph) {
+      List<ModuleGraphTransitiveClosure.PathDifference> differences, Module other, DirectedGraph<Module, TrackingModuleDependency> trackingGraph) {
     final List<AnalyserModel.DependencyViolation> dependencyViolations =
         new ArrayList<>(differences.size());
     for (ModuleGraphTransitiveClosure.PathDifference difference : differences) {
       if (!difference.source.equals(other) && !difference.dest.equals(other)) {
         dependencyViolations.add(
             new AnalyserModel.DependencyViolation(difference.source.name, difference.dest.name, getNames(difference.firstPath),
-                getNames(difference.secondPath),getEvidence(trackingGraph,difference.source,difference.secondPath)));
+                getNames(difference.secondPath), getEvidence(trackingGraph, difference.source, difference.secondPath)));
       }
     }
     return dependencyViolations;
   }
 
-  private List<List<Pair<String,String>>> getEvidence(DirectedGraph<Module,TrackingModuleDependency> trackingGraph, Module source, List<Module> path) {
+  private List<List<Pair<String, String>>> getEvidence(DirectedGraph<Module, TrackingModuleDependency> trackingGraph, Module source, List<Module> path) {
     final List<Module> completePath = new ArrayList<>();
     completePath.add(source);
     completePath.addAll(path);
-    final List<List<Pair<String,String>>> result = new ArrayList<>();
-    for(int i = 0; i < completePath.size() -1; ++i) {
+    final List<List<Pair<String, String>>> result = new ArrayList<>();
+    for (int i = 0; i < completePath.size() - 1; ++i) {
       final Module current = completePath.get(i);
-      final Module next = completePath.get(i+1);
-      final TrackingModuleDependency dependency = trackingGraph.findEdge(current,next);
-      final List<Pair<String,String>> partial = new ArrayList<>();
+      final Module next = completePath.get(i + 1);
+      final TrackingModuleDependency dependency = trackingGraph.findEdge(current, next);
+      final List<Pair<String, String>> partial = new ArrayList<>();
       dependency.getSources().forEach((apSource) ->
-        dependency.getDestinationsFromSource(apSource).forEach((apDest) -> partial.add(Pair.make(apSource.toString(),apDest.toString())))
+          dependency.getDestinationsFromSource(apSource).forEach((apDest) -> partial.add(Pair.make(apSource.toString(), apDest.toString())))
       );
       result.add(partial);
     }
@@ -143,7 +144,7 @@ public class ModuleAnalyser {
   }
 
   private List<AnalyserModel.Metrics> getMetrics(ModuleMetrics moduleMetrics, Collection<Module> modules, ModuleGraph<ModuleDependency> graph,
-      Module other) {
+                                                 Module other) {
     final List<AnalyserModel.Metrics> metrics = new ArrayList<>(modules.size());
     for (Module module : modules) {
       metrics.add(new AnalyserModel.Metrics(module.name, moduleMetrics.fanInOf(module).get() +
@@ -168,7 +169,7 @@ public class ModuleAnalyser {
     if (modules.isEmpty())
       throw new AnalyserException("No modules provided in definition");
     final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
-    final DirectedSparseGraph<Module,TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
+    final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
     final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph);
 
     runAnalysis(modules, actualModuleGraph, trackingGraph, root, other);
@@ -186,8 +187,8 @@ public class ModuleAnalyser {
   }
 
   private List<AnalyserModel.AbsentDependencyViolation> getAbsentDependencies(Collection<Module> modules,
-      ModuleGraphTransitiveClosure transitiveClosure,
-      Collection<Dependency> dependencies, Module other) {
+                                                                              ModuleGraphTransitiveClosure transitiveClosure,
+                                                                              Collection<Dependency> dependencies, Module other) {
     final List<AnalyserModel.AbsentDependencyViolation> dependencyViolations =
         new ArrayList<>();
     for (Dependency dependency : dependencies) {
@@ -202,7 +203,7 @@ public class ModuleAnalyser {
 
   private List<AnalyserModel.UndesiredDependencyViolation> getUndesiredDependecies(
       ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> noStrictDependencies, Module other,
-      DirectedGraph<Module,TrackingModuleDependency> trackingGraph) {
+      DirectedGraph<Module, TrackingModuleDependency> trackingGraph) {
     final List<AnalyserModel.UndesiredDependencyViolation> undesiredDependencyViolations =
         new ArrayList<>();
     for (NoStrictDependency noStrictDependency : noStrictDependencies) {
@@ -215,7 +216,7 @@ public class ModuleAnalyser {
                     noStrictDependency.source, noStrictDependency.dest
                 )
             ),
-            getEvidence(trackingGraph,noStrictDependency.source, transitiveClosure.minimumDistancePath(
+            getEvidence(trackingGraph, noStrictDependency.source, transitiveClosure.minimumDistancePath(
                 noStrictDependency.source, noStrictDependency.dest
             ))
         ));

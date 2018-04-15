@@ -1,11 +1,11 @@
 package com.github.fburato.highwheelmodules.utils;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.regex.Pattern;
 
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class GlobToRegexTest {
 
@@ -61,7 +61,7 @@ public class GlobToRegexTest {
     final String glob = new String("org$bar");
     assertTrue(matches(glob, "org$bar"));
   }
-  
+
   @Test
   public void shouldSupportMultipleWildcards() {
     final String glob = new String("foo*bar*car");

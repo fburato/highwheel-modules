@@ -14,15 +14,15 @@ public interface AnalyserModel {
     public final String destinationModule;
     public final List<String> specificationPath;
     public final List<String> actualPath;
-    public final List<List<Pair<String,String>>> evidences;
+    public final List<List<Pair<String, String>>> evidences;
 
     public DependencyViolation(String sourceModule, String destinationModule, List<String> specificationPath,
-        List<String> actualPath) {
-      this(sourceModule,destinationModule,specificationPath,actualPath,Collections.emptyList());
+                               List<String> actualPath) {
+      this(sourceModule, destinationModule, specificationPath, actualPath, Collections.emptyList());
     }
 
     public DependencyViolation(String sourceModule, String destinationModule, List<String> specificationPath,
-                               List<String> actualPath, List<List<Pair<String,String>>> evidences) {
+                               List<String> actualPath, List<List<Pair<String, String>>> evidences) {
       this.sourceModule = sourceModule;
       this.destinationModule = destinationModule;
       this.specificationPath = specificationPath;
@@ -163,13 +163,13 @@ public interface AnalyserModel {
     public final String sourceModule;
     public final String destinationModule;
     public final List<String> moduleEvidence;
-    public final List<List<Pair<String,String>>> evidences;
+    public final List<List<Pair<String, String>>> evidences;
 
     public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence) {
-      this(sourceModule,destinationModule,moduleEvidence, Collections.emptyList());
+      this(sourceModule, destinationModule, moduleEvidence, Collections.emptyList());
     }
 
-    public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence, List<List<Pair<String,String>>> evidences) {
+    public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence, List<List<Pair<String, String>>> evidences) {
       this.sourceModule = sourceModule;
       this.destinationModule = destinationModule;
       this.moduleEvidence = moduleEvidence;
@@ -210,7 +210,7 @@ public interface AnalyserModel {
     public final Collection<Metrics> metrics;
 
     public StrictAnalysisResult(Collection<DependencyViolation> dependencyViolations,
-        Collection<NoStrictDependencyViolation> noStrictDependencyViolations, Collection<Metrics> metrics) {
+                                Collection<NoStrictDependencyViolation> noStrictDependencyViolations, Collection<Metrics> metrics) {
       this.dependencyViolations = dependencyViolations;
       this.noStrictDependencyViolations = noStrictDependencyViolations;
       this.metrics = metrics;
@@ -223,7 +223,7 @@ public interface AnalyserModel {
     public final Collection<Metrics> metrics;
 
     public LooseAnalysisResult(Collection<AbsentDependencyViolation> absentDependencyViolations,
-        Collection<UndesiredDependencyViolation> undesiredDependencyViolations, Collection<Metrics> metrics) {
+                               Collection<UndesiredDependencyViolation> undesiredDependencyViolations, Collection<Metrics> metrics) {
       this.absentDependencyViolations = absentDependencyViolations;
       this.undesiredDependencyViolations = undesiredDependencyViolations;
       this.metrics = metrics;
