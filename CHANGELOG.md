@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2018-04-15
+Focus of the release is increasing the visibility of dependency violations. As a project grows, the module 
+specification can grow too making the regexp used to describe the modules in the specification ginormous. The end result
+could be that HWM is telling you "Hey, there's a dependency you where not aware of between A -> B" but doesn't tell you 
+where exactly which is not very helpful if there are hundreds of classes in a module. With 1.1.0, I've added an 
+additional tracking mechanism that keeps track of every access point connection and provides back that information.
+
+### Changed
+
+- The module dependency AccessVisitor has been made more generic to allow adding functionalities without rewriting the 
+core logic
+- The interface for the events in AnalyserFacade has been changed to include the access path evidence that violates the 
+module dependency. 
+
+
 ## [1.0.1] - 2018-04-13
 
 There was a typo on some artifact names (`highweel` instead of `highwheel`) that I didn't caught and that was hurting
