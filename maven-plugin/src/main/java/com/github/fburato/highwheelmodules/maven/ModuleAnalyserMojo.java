@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.maven;
 
 import com.github.fburato.highwheelmodules.core.AnalyserFacade;
+import com.github.fburato.highwheelmodules.utils.Pair;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -75,14 +76,15 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     }
 
     @Override
-    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<String> evidencePath) {
-      getLog().error(String.format("  %s -> %s. Expected path: %s, Actual module path: %s\n    Actual usage path: %s",
+    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<List<Pair<String,String>>> evidencePath) {
+      getLog().error(String.format("  %s -> %s. Expected path: %s, Actual module path: %s",
           sourceModule,
           destModule,
           printGraphPath(expectedPath),
-          printGraphPath(actualPath),
-          printGraphPath(evidencePath)
+          printGraphPath(actualPath)
       ));
+      getLog().error("    Actual evidence paths:");
+      printEvidences(actualPath,evidencePath);
     }
 
     @Override
@@ -130,13 +132,14 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     }
 
     @Override
-    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<String> evidencePath) {
-      getLog().error(String.format("  %s -/-> %s. Actual module path: %s\n    Actual evidence path: ",
+    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<List<Pair<String,String>>> evidencePath) {
+      getLog().error(String.format("  %s -/-> %s. Actual module path: %s",
           sourceModule,
           destModule,
-          printGraphPath(path),
-          printGraphPath(evidencePath)
+          printGraphPath(path)
       ));
+      getLog().error("    Actual evidence paths:");
+      printEvidences(path,evidencePath);
     }
   }
 
@@ -145,6 +148,18 @@ public class ModuleAnalyserMojo extends AbstractMojo {
       return "(empty)";
     } else {
       return join(" -> ", pathComponents);
+    }
+  }
+
+  private void printEvidences(List<String> modules, List<List<Pair<String,String>>> evidences) {
+    for(int i = 0; i < modules.size() - 1; ++i) {
+      final String current = modules.get(i);
+      final String next = modules.get(i + 1);
+      final List<Pair<String,String>> currentToNextEvidences = evidences.get(i);
+      getLog().error(String.format("      %s -> %s:",current, next));
+      for(Pair<String,String> evidence: currentToNextEvidences) {
+        getLog().error(String.format("        %s -> %s\n",evidence.first, evidence.second));
+      }
     }
   }
 

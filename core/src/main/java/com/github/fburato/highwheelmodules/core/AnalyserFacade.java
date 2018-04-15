@@ -4,6 +4,7 @@ import com.github.fburato.highwheelmodules.core.model.Definition;
 import com.github.fburato.highwheelmodules.core.specification.Compiler;
 import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
 import com.github.fburato.highwheelmodules.core.specification.parsers.DefinitionParser;
+import com.github.fburato.highwheelmodules.utils.Pair;
 import org.pitest.highwheel.bytecodeparser.ClassPathParser;
 import org.pitest.highwheel.bytecodeparser.classpath.ArchiveClassPathRoot;
 import org.pitest.highwheel.bytecodeparser.classpath.CompoundClassPathRoot;
@@ -51,7 +52,7 @@ public class AnalyserFacade {
 
       void dependencyViolationsPresent();
 
-      void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<String> evidencePath);
+      void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<List<Pair<String,String>>> evidences);
 
       void noDirectDependenciesViolationPresent();
 
@@ -70,7 +71,7 @@ public class AnalyserFacade {
 
       void undesiredDependencyViolationsPresent();
 
-      void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<String> evidencePath);
+      void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<List<Pair<String,String>>> evidences);
     }
   }
 
@@ -224,7 +225,7 @@ public class AnalyserFacade {
       strictAnalysisEventSink.dependencyViolation(violation.sourceModule, violation.destinationModule,
           appendStartIfNotEmpty(violation.specificationPath, violation.sourceModule),
           appendStartIfNotEmpty(violation.actualPath, violation.sourceModule),
-          violation.evidencePath);
+          violation.evidences);
     }
   }
 
@@ -257,7 +258,7 @@ public class AnalyserFacade {
           violation.sourceModule,
           violation.destinationModule,
           appendStartIfNotEmpty(violation.moduleEvidence, violation.sourceModule),
-          violation.evidencePath);
+          violation.evidences);
     }
   }
 

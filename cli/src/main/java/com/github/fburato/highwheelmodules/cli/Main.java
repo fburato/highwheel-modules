@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.cli;
 
 import com.github.fburato.highwheelmodules.core.AnalyserFacade;
+import com.github.fburato.highwheelmodules.utils.Pair;
 
 import java.util.List;
 
@@ -60,13 +61,13 @@ public class Main {
     }
 
     @Override
-    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<String> evidencePath) {
-      System.err.println(String.format("  %s -> %s. Expected path: %s, Actual module path: %s\n    Actual usage path: %s",
+    public void dependencyViolation(String sourceModule, String destModule, List<String> expectedPath, List<String> actualPath, List<List<Pair<String,String>>> evidencePath) {
+      System.err.println(String.format("  %s -> %s. Expected path: %s, Actual module path: %s\n    Actual usage paths:\n%s",
           sourceModule,
           destModule,
           printGraphPath(expectedPath),
           printGraphPath(actualPath),
-          printGraphPath(evidencePath)
+          printEvidences(actualPath,evidencePath)
       ));
     }
 
@@ -115,12 +116,12 @@ public class Main {
     }
 
     @Override
-    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<String> evidencePath) {
-      System.err.println(String.format("  %s -/-> %s. Actual module path: %s\n    Actual usage path: %s",
+    public void undesiredDependencyViolation(String sourceModule, String destModule, List<String> path, List<List<Pair<String,String>>> evidences) {
+      System.err.println(String.format("  %s -/-> %s. Actual module path: %s\n    Actual usage paths:\n%s",
           sourceModule,
           destModule,
           printGraphPath(path),
-          printGraphPath(evidencePath)
+          printEvidences(path,evidences)
       ));
     }
   }
@@ -131,6 +132,20 @@ public class Main {
     } else {
       return join(" -> ", pathComponents);
     }
+  }
+
+  private static String printEvidences(List<String> modules, List<List<Pair<String,String>>> evidences) {
+    final StringBuilder result = new StringBuilder("");
+    for(int i = 0; i < modules.size() - 1; ++i) {
+      final String current = modules.get(i);
+      final String next = modules.get(i + 1);
+      final List<Pair<String,String>> currentToNextEvidences = evidences.get(i);
+      result.append(String.format("      %s -> %s:\n",current, next));
+      for(Pair<String,String> evidence: currentToNextEvidences) {
+        result.append(String.format("        %s -> %s\n",evidence.first, evidence.second));
+      }
+    }
+    return result.toString();
   }
 
   public static void main(String[] argv) {

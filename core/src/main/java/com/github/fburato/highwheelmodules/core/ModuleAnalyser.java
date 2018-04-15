@@ -1,7 +1,6 @@
 package com.github.fburato.highwheelmodules.core;
 
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor;
-import com.github.fburato.highwheelmodules.core.algorithms.EvidenceFinder;
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleDependenciesGraphBuildingVisitor;
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure;
 import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
@@ -9,18 +8,16 @@ import com.github.fburato.highwheelmodules.core.externaladapters.JungTrackingMod
 import com.github.fburato.highwheelmodules.core.model.*;
 import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
+import com.github.fburato.highwheelmodules.utils.Pair;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import org.pitest.highwheel.classpath.AccessVisitor;
 import org.pitest.highwheel.classpath.ClassParser;
 import org.pitest.highwheel.classpath.ClasspathRoot;
-import org.pitest.highwheel.model.AccessPoint;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ModuleAnalyser {
 
@@ -114,12 +111,22 @@ public class ModuleAnalyser {
     return dependencyViolations;
   }
 
-  private List<String> getEvidence(DirectedGraph<Module,TrackingModuleDependency> trackingGraph, Module source, List<Module> path) {
+  private List<List<Pair<String,String>>> getEvidence(DirectedGraph<Module,TrackingModuleDependency> trackingGraph, Module source, List<Module> path) {
     final List<Module> completePath = new ArrayList<>();
     completePath.add(source);
     completePath.addAll(path);
-    final EvidenceFinder evidenceFinder = new EvidenceFinder(trackingGraph);
-    return evidenceFinder.getDependencyEvidenceBetween(completePath).stream().map(AccessPoint::toString).collect(Collectors.toList());
+    final List<List<Pair<String,String>>> result = new ArrayList<>();
+    for(int i = 0; i < completePath.size() -1; ++i) {
+      final Module current = completePath.get(i);
+      final Module next = completePath.get(i+1);
+      final TrackingModuleDependency dependency = trackingGraph.findEdge(current,next);
+      final List<Pair<String,String>> partial = new ArrayList<>();
+      dependency.getSources().forEach((apSource) ->
+        dependency.getDestinationsFromSource(apSource).forEach((apDest) -> partial.add(Pair.make(apSource.toString(),apDest.toString())))
+      );
+      result.add(partial);
+    }
+    return result;
   }
 
   private List<AnalyserModel.NoStrictDependencyViolation> getNoDirectDependecyViolations(

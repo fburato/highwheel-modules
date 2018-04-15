@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.core;
 
 import com.github.fburato.highwheelmodules.core.specification.CompilerException;
+import com.github.fburato.highwheelmodules.utils.Pair;
 import org.jparsec.error.ParserException;
 import org.junit.Before;
 import org.junit.Test;
@@ -184,7 +185,7 @@ public class AnalyserFacadeTest {
       verify(strictAnalysisEventSink).dependencyViolationsPresent();
       verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(),
           Arrays.asList("IO", "Utils"),
-          Arrays.asList("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"));
+          Arrays.asList(Arrays.asList(Pair.make("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"))));
       verify(strictAnalysisEventSink).noDirectDependenciesViolationPresent();
       verify(strictAnalysisEventSink).noDirectDependencyViolation("Facade", "CoreInternals");
     }
@@ -200,7 +201,10 @@ public class AnalyserFacadeTest {
       verify(looseAnalysisEventSink).absentDependencyViolation("IO", "CoreInternals");
       verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model",
           Arrays.asList("IO", "Model"),
-          Arrays.asList("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1:(init)"));
+          Arrays.asList(Arrays.asList(
+              Pair.make("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1:(init)"),
+              Pair.make("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1")
+          )));
     }
   }
 

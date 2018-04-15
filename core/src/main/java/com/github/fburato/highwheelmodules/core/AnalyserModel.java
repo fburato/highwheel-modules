@@ -1,11 +1,11 @@
 package com.github.fburato.highwheelmodules.core;
 
+import com.github.fburato.highwheelmodules.utils.Pair;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 
 public interface AnalyserModel {
 
@@ -14,7 +14,7 @@ public interface AnalyserModel {
     public final String destinationModule;
     public final List<String> specificationPath;
     public final List<String> actualPath;
-    public final List<String> evidencePath;
+    public final List<List<Pair<String,String>>> evidences;
 
     public DependencyViolation(String sourceModule, String destinationModule, List<String> specificationPath,
         List<String> actualPath) {
@@ -22,12 +22,12 @@ public interface AnalyserModel {
     }
 
     public DependencyViolation(String sourceModule, String destinationModule, List<String> specificationPath,
-                               List<String> actualPath, List<String> evidencePath) {
+                               List<String> actualPath, List<List<Pair<String,String>>> evidences) {
       this.sourceModule = sourceModule;
       this.destinationModule = destinationModule;
       this.specificationPath = specificationPath;
       this.actualPath = actualPath;
-      this.evidencePath = evidencePath;
+      this.evidences = evidences;
     }
 
     @Override
@@ -37,7 +37,7 @@ public interface AnalyserModel {
           ", destinationModule='" + destinationModule + '\'' +
           ", specificationPath=" + specificationPath +
           ", actualPath=" + actualPath +
-          ", evidencePath=" + evidencePath +
+          ", evidences=" + evidences +
           '}';
     }
 
@@ -50,13 +50,13 @@ public interface AnalyserModel {
           Objects.equals(destinationModule, that.destinationModule) &&
           Objects.equals(specificationPath, that.specificationPath) &&
           Objects.equals(actualPath, that.actualPath) &&
-          Objects.equals(evidencePath, that.evidencePath);
+          Objects.equals(evidences, that.evidences);
     }
 
     @Override
     public int hashCode() {
 
-      return Objects.hash(sourceModule, destinationModule, specificationPath, actualPath, evidencePath);
+      return Objects.hash(sourceModule, destinationModule, specificationPath, actualPath, evidences);
     }
   }
 
@@ -163,17 +163,17 @@ public interface AnalyserModel {
     public final String sourceModule;
     public final String destinationModule;
     public final List<String> moduleEvidence;
-    public final List<String> evidencePath;
+    public final List<List<Pair<String,String>>> evidences;
 
     public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence) {
       this(sourceModule,destinationModule,moduleEvidence, Collections.emptyList());
     }
 
-    public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence, List<String> evidencePath) {
+    public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence, List<List<Pair<String,String>>> evidences) {
       this.sourceModule = sourceModule;
       this.destinationModule = destinationModule;
       this.moduleEvidence = moduleEvidence;
-      this.evidencePath = evidencePath;
+      this.evidences = evidences;
     }
 
     @Override
@@ -182,7 +182,7 @@ public interface AnalyserModel {
           "sourceModule='" + sourceModule + '\'' +
           ", destinationModule='" + destinationModule + '\'' +
           ", moduleEvidence=" + moduleEvidence +
-          ", evidencePath=" + evidencePath +
+          ", evidences=" + evidences +
           '}';
     }
 
@@ -194,13 +194,13 @@ public interface AnalyserModel {
       return Objects.equals(sourceModule, that.sourceModule) &&
           Objects.equals(destinationModule, that.destinationModule) &&
           Objects.equals(moduleEvidence, that.moduleEvidence) &&
-          Objects.equals(evidencePath, that.evidencePath);
+          Objects.equals(evidences, that.evidences);
     }
 
     @Override
     public int hashCode() {
 
-      return Objects.hash(sourceModule, destinationModule, moduleEvidence, evidencePath);
+      return Objects.hash(sourceModule, destinationModule, moduleEvidence, evidences);
     }
   }
 
