@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2018-04-15
+Semantics change on the evidence provider: instead of following a path, it returns all access points that make hwm 
+determine that two modules are dependent. This should provide a better alignment between the module output and the 
+evidences
+
+### Changed
+- The interface for the events in AnalyserFacade has been changed to host all recorded dependencies that violate the
+specification
+
+### Deleted
+- The EvidenceFinder class. Probably the thing that took me the longest to develop to produce 1.1.0 is gone. It will be
+missed (*not by me*).
+
 ## [1.1.0] - 2018-04-15
 Focus of the release is increasing the visibility of dependency violations. As a project grows, the module 
 specification can grow too making the regexp used to describe the modules in the specification ginormous. The end result
