@@ -157,8 +157,12 @@ public class ModuleAnalyserMojo extends AbstractMojo {
       final String next = modules.get(i + 1);
       final List<Pair<String, String>> currentToNextEvidences = evidences.get(i);
       getLog().error(String.format("      %s -> %s:", current, next));
-      for (Pair<String, String> evidence : currentToNextEvidences) {
-        getLog().error(String.format("        %s -> %s\n", evidence.first, evidence.second));
+      final int subListLimit = evidenceLimit < currentToNextEvidences.size() ? evidenceLimit : currentToNextEvidences.size();
+      for (Pair<String, String> evidence : currentToNextEvidences.subList(0, subListLimit)) {
+        getLog().error(String.format("        %s -> %s", evidence.first, evidence.second));
+      }
+      if(subListLimit < currentToNextEvidences.size()) {
+        getLog().error(String.format("        (%d connections skipped)",(currentToNextEvidences.size() - subListLimit)));
       }
     }
   }
@@ -178,6 +182,9 @@ public class ModuleAnalyserMojo extends AbstractMojo {
   @Parameter(property = "hwmAnalysisMode", defaultValue = "strict")
   private String analysisMode;
 
+  @Parameter(property = "hwmEvidenceLimit", defaultValue = "5")
+  private int evidenceLimit;
+
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException {
     final String packaging = project.getModel().getPackaging();
@@ -195,6 +202,9 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     if (attemptSpecFileInBuild.exists() && attemptSpecFileInBuild.canRead()) {
       specFile = attemptSpecFileInBuild.getAbsolutePath();
       getLog().info("Using specification file: " + specFile);
+    }
+    if(evidenceLimit < 0) {
+      evidenceLimit = Integer.MAX_VALUE;
     }
     final List<String> roots = getRootsForProject(packaging);
     final AnalyserFacade.ExecutionMode executionMode = getExecutionMode(analysisMode);
