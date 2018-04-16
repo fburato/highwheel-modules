@@ -164,6 +164,8 @@ It is possible to change the behaviour of the plugin as follows:
 relative, otherwise use the path as is if the path is absolute.
 * `-DhwmChildOnly=true`: in a multi-module build, run the analysis only on the child modules.
 * `-DhwmParentOnly=true`: in a multi-module build, run the analysis only on the parent.
-* `-DhwmAnalysisMode=(strict|loose)`: run strict or loose analysis
+* `-DhwmAnalysisMode=(strict|loose)`: run strict or loose analysis.
+* `-DhwmEvidenceLimit=<integer>`: limit the pieces of evidence that are displayed when the analysis fails (i.e. code
+dependencies between the modules that make the dependency hold or not hold). 
 
 In a multi-module build, the plugin will use all the child output directories as elements of the analysis.
