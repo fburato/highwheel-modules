@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2018-04-16
+
+Sometimes less is more, sometimes more is less. Sometimes 1000 pieces of evidence that show that yes, indeed module B depends module A are a little too much considering one piece of evidence is sufficient to disprove a universal quantifier.
+
+Because of this, it's probably better to leave the choice to the user and show just 5 pieces of evidence by default with the configuration in the maven plugin `hwmEvidenceLimit`.
+
+### Added
+- `hwmEvidenceLimit` in the maven plugin configuration allows to limit the number of evidence shown in case of violation. Putting it to 0 will silence the evidences entirely. Mom's the word. Sshhhhhh.
+
 ## [1.1.1] - 2018-04-15
 Semantics change on the evidence provider: instead of following a path, it returns all access points that make hwm 
 determine that two modules are dependent. This should provide a better alignment between the module output and the 
