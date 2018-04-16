@@ -83,8 +83,11 @@ public class ModuleAnalyserMojo extends AbstractMojo {
           printGraphPath(expectedPath),
           printGraphPath(actualPath)
       ));
-      getLog().error("    Actual evidence paths:");
-      printEvidences(actualPath, evidencePath);
+
+      if(evidenceLimit > 0) {
+        getLog().error("    Actual evidence paths:");
+        printEvidences(actualPath, evidencePath);
+      }
     }
 
     @Override
@@ -138,8 +141,10 @@ public class ModuleAnalyserMojo extends AbstractMojo {
           destModule,
           printGraphPath(path)
       ));
-      getLog().error("    Actual evidence paths:");
-      printEvidences(path, evidencePath);
+      if(evidenceLimit > 0) {
+        getLog().error("    Actual evidence paths:");
+        printEvidences(path, evidencePath);
+      }
     }
   }
 
