@@ -148,7 +148,6 @@ In order to run the plugin on a project execute:
 ```
 mvn com.github.fburato:highwheel-modules-maven-plugin:analyse
 ```
-
 The plugin will:
 
 * Read a module specification file named `spec.hwm` in the project base-directory and compile it, reporting any 
@@ -169,3 +168,16 @@ relative, otherwise use the path as is if the path is absolute.
 dependencies between the modules that make the dependency hold or not hold). 
 
 In a multi-module build, the plugin will use all the child output directories as elements of the analysis.
+
+### Add the plugin to your build
+Add the following dependency to your build/plugins section:
+
+```xml
+<dependency>
+    <groupId>com.github.fburato</groupId>
+    <artifactId>highwheel-modules-maven-plugin</artifactId>
+    <version>1.2.0</version>
+</dependency>
+```
+
+And configure it to run the appropriate phase.
