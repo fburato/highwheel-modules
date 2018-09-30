@@ -7,7 +7,6 @@ import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 
 import java.util.*;
-import java.util.function.BiFunction;
 
 public class JungTrackingModuleGraph implements ModuleGraph<EvidenceModuleDependency> {
 

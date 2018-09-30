@@ -8,7 +8,7 @@ import org.junit.Test;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DefinitionParserTest {
 

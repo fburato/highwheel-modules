@@ -85,7 +85,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
           printGraphPath(actualPath)
       ));
 
-      if(evidenceLimit > 0) {
+      if (evidenceLimit > 0) {
         getLog().error("    Actual evidence paths:");
         printEvidences(actualPath, evidencePath);
       }
@@ -142,7 +142,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
           destModule,
           printGraphPath(path)
       ));
-      if(evidenceLimit > 0) {
+      if (evidenceLimit > 0) {
         getLog().error("    Actual evidence paths:");
         printEvidences(path, evidencePath);
       }
@@ -167,8 +167,8 @@ public class ModuleAnalyserMojo extends AbstractMojo {
       for (Pair<String, String> evidence : currentToNextEvidences.subList(0, subListLimit)) {
         getLog().error(String.format("        %s -> %s", evidence.first, evidence.second));
       }
-      if(subListLimit < currentToNextEvidences.size()) {
-        getLog().error(String.format("        (%d connections skipped)",(currentToNextEvidences.size() - subListLimit)));
+      if (subListLimit < currentToNextEvidences.size()) {
+        getLog().error(String.format("        (%d connections skipped)", (currentToNextEvidences.size() - subListLimit)));
       }
     }
   }
@@ -209,7 +209,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
       specFile = attemptSpecFileInBuild.getAbsolutePath();
       getLog().info("Using specification file: " + specFile);
     }
-    if(evidenceLimit < 0) {
+    if (evidenceLimit < 0) {
       evidenceLimit = Integer.MAX_VALUE;
     }
     final List<String> roots = getRootsForProject(packaging);

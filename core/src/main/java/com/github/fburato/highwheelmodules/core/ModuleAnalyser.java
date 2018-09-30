@@ -37,7 +37,7 @@ public class ModuleAnalyser {
     final JungModuleGraph specModuleGraph = initialiseSpecificationGraph(modules, definition.dependencies);
     final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
     final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
-    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph,evidenceLimit);
+    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph, evidenceLimit);
 
     runAnalysis(modules, actualModuleGraph, trackingGraph, root, other);
 
@@ -171,7 +171,7 @@ public class ModuleAnalyser {
       throw new AnalyserException("No modules provided in definition");
     final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
     final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
-    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph,evidenceLimit);
+    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph, evidenceLimit);
 
     runAnalysis(modules, actualModuleGraph, trackingGraph, root, other);
 

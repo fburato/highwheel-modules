@@ -3,8 +3,7 @@ package com.github.fburato.highwheelmodules.core.model;
 import org.junit.Test;
 import org.pitest.highwheel.model.ElementName;
 
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModuleTest {
   public static final String MODULE_NAME = "module name";

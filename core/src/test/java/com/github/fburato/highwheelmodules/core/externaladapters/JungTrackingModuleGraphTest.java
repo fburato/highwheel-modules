@@ -12,13 +12,12 @@ import org.pitest.highwheel.model.ElementName;
 
 import java.util.Optional;
 
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class JungTrackingModuleGraphTest {
 
   private final DirectedGraph<Module, TrackingModuleDependency> graph = new DirectedSparseGraph<>();
-  private final JungTrackingModuleGraph testee = new JungTrackingModuleGraph(graph,Optional.empty());
+  private final JungTrackingModuleGraph testee = new JungTrackingModuleGraph(graph, Optional.empty());
 
   private final Module m1 = Module.make("module a", "A").get();
   private final Module m2 = Module.make("module b", "B").get();
@@ -57,28 +56,28 @@ public class JungTrackingModuleGraphTest {
 
   @Test
   public void addDependencyShouldBuildTrackingDependencyWithNoEvidenceLimitIfGraphIsInitialisedWithoutLimit() {
-    final JungTrackingModuleGraph otherTestee = new JungTrackingModuleGraph(graph,Optional.empty());
+    final JungTrackingModuleGraph otherTestee = new JungTrackingModuleGraph(graph, Optional.empty());
     otherTestee.addModule(m1);
     otherTestee.addModule(m2);
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap3));
 
-    final TrackingModuleDependency dependency = graph.findEdge(m1,m2);
+    final TrackingModuleDependency dependency = graph.findEdge(m1, m2);
 
     assertThat(dependency.source).isEqualTo(m1);
     assertThat(dependency.dest).isEqualTo(m2);
-    assertThat(dependency.getDestinations()).containsExactlyInAnyOrder(ap2,ap3);
+    assertThat(dependency.getDestinations()).containsExactlyInAnyOrder(ap2, ap3);
   }
-  
+
   @Test
   public void addDependencyShouldBuildTrackingDependencyWithEvidenceLimitIfGraphIsInitialisedWithLimit() {
-    final JungTrackingModuleGraph otherTestee = new JungTrackingModuleGraph(graph,Optional.of(1));
+    final JungTrackingModuleGraph otherTestee = new JungTrackingModuleGraph(graph, Optional.of(1));
     otherTestee.addModule(m1);
     otherTestee.addModule(m2);
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap3));
 
-    final TrackingModuleDependency dependency = graph.findEdge(m1,m2);
+    final TrackingModuleDependency dependency = graph.findEdge(m1, m2);
 
     assertThat(dependency.source).isEqualTo(m1);
     assertThat(dependency.dest).isEqualTo(m2);

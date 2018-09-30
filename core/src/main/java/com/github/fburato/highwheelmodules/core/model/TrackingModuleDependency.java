@@ -20,7 +20,7 @@ public final class TrackingModuleDependency {
   }
 
   public void addEvidence(AccessPoint source, AccessPoint dest) {
-    if(!evidenceLimit.isPresent() || evidenceCounter < evidenceLimit.get()) {
+    if (!evidenceLimit.isPresent() || evidenceCounter < evidenceLimit.get()) {
       final Set<AccessPoint> newDestinations = evidences.getOrDefault(source, new HashSet<>());
       newDestinations.add(dest);
       evidences.put(source, newDestinations);

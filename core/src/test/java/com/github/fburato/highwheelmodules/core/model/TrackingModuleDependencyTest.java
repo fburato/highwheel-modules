@@ -6,7 +6,7 @@ import org.pitest.highwheel.model.ElementName;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TrackingModuleDependencyTest {
 
@@ -16,7 +16,7 @@ public class TrackingModuleDependencyTest {
   private final AccessPoint exampleSource1 = AccessPoint.create(ElementName.fromString("A1"));
   private final AccessPoint exampleDest = AccessPoint.create(ElementName.fromString("B"));
   private final AccessPoint exampleDest1 = AccessPoint.create(ElementName.fromString("A1"));
-  private final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB,Optional.empty());
+  private final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB, Optional.empty());
 
   @Test
   public void evidencesShouldBeEmptyOnEmptyTrackingDependency() {
@@ -53,24 +53,24 @@ public class TrackingModuleDependencyTest {
 
   @Test
   public void shouldSaveAllEvidenceFromSameSource() {
-    final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB,Optional.empty());
+    final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB, Optional.empty());
     testee.addEvidence(exampleSource, exampleDest);
     testee.addEvidence(exampleSource, exampleDest1);
 
     assertThat(testee.getSources()).containsExactlyInAnyOrder(exampleSource);
-    assertThat(testee.getDestinations()).containsExactlyInAnyOrder(exampleDest,exampleDest1);
+    assertThat(testee.getDestinations()).containsExactlyInAnyOrder(exampleDest, exampleDest1);
   }
 
   @Test
   public void shouldSaveAllEvidenceDifferentSources() {
-    final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB,Optional.empty());
+    final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB, Optional.empty());
     testee.addEvidence(exampleSource, exampleDest);
     testee.addEvidence(exampleSource, exampleDest1);
-    testee.addEvidence(exampleSource1,exampleDest);
-    testee.addEvidence(exampleSource1,exampleDest1);
+    testee.addEvidence(exampleSource1, exampleDest);
+    testee.addEvidence(exampleSource1, exampleDest1);
 
-    assertThat(testee.getSources()).containsExactlyInAnyOrder(exampleSource,exampleSource1);
-    assertThat(testee.getDestinations()).containsExactlyInAnyOrder(exampleDest,exampleDest1);
+    assertThat(testee.getSources()).containsExactlyInAnyOrder(exampleSource, exampleSource1);
+    assertThat(testee.getDestinations()).containsExactlyInAnyOrder(exampleDest, exampleDest1);
   }
 
   @Test
@@ -88,8 +88,8 @@ public class TrackingModuleDependencyTest {
     final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB, Optional.of(1));
     testee.addEvidence(exampleSource, exampleDest);
     testee.addEvidence(exampleSource, exampleDest1);
-    testee.addEvidence(exampleSource1,exampleDest);
-    testee.addEvidence(exampleSource1,exampleDest1);
+    testee.addEvidence(exampleSource1, exampleDest);
+    testee.addEvidence(exampleSource1, exampleDest1);
 
     assertThat(testee.getSources()).containsExactly(exampleSource);
     assertThat(testee.getDestinations()).containsExactly(exampleDest);

@@ -54,13 +54,13 @@ public class CmdParser {
     }
     String limit = cmd.getOptionValue("evidenceLimit");
     try {
-      if(limit == null) {
+      if (limit == null) {
         evidenceLimit = Optional.empty();
       } else {
         evidenceLimit = Optional.of(Integer.parseInt(limit));
       }
     } catch (NumberFormatException nfe) {
-      throw new CliException(String.format("'%s' is not an integer",limit));
+      throw new CliException(String.format("'%s' is not an integer", limit));
     }
     specificationFile = specificationPath;
     argList = cmd.getArgList();

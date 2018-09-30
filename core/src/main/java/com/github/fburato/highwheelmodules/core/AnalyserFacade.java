@@ -108,7 +108,7 @@ public class AnalyserFacade {
     final ClassParser classParser = new ClassPathParser(includeAll);
     final ModuleAnalyser analyser = new ModuleAnalyser(classParser);
     if (executionMode == ExecutionMode.STRICT) {
-      strictAnalysis(analyser, definition, classpathRoot,evidenceLimit);
+      strictAnalysis(analyser, definition, classpathRoot, evidenceLimit);
     } else {
       looseAnalysis(analyser, definition, classpathRoot, evidenceLimit);
     }
