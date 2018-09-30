@@ -53,7 +53,7 @@ modules:
     ExternalAdapters = "com.github.fburato.highwheelmodules.core.externaladapters.*"
     Model = "com.github.fburato.highwheelmodules.core.model.*"
     Specification = "com.github.fburato.highwheelmodules.core.specification.*"
-    ModuleAnalyser = "com.github.fburato.highwheelmodules.core.ModuleAnalyser", "com.github.fburato.highwheelmodules.core.AnalyserException", "com.github.fburato.highwheelmodules.core.AnalyserModel"
+    ModuleAnalyser = "com.github.fburato.highwheelmodules.core.analysis.ModuleAnalyser", "com.github.fburato.highwheelmodules.core.analysis.AnalyserException", "com.github.fburato.highwheelmodules.core.analysis.AnalyserModel"
     Facade = "com.github.fburato.highwheelmodules.core.AnalyserFacade"
 
 rules:

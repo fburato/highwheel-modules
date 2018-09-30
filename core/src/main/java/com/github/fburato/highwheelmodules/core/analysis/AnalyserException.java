@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.core;
+package com.github.fburato.highwheelmodules.core.analysis;
 
 public class AnalyserException extends RuntimeException {
   public AnalyserException(String msg) {

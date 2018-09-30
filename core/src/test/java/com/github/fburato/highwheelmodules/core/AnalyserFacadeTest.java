@@ -1,5 +1,6 @@
 package com.github.fburato.highwheelmodules.core;
 
+import com.github.fburato.highwheelmodules.core.analysis.AnalyserException;
 import com.github.fburato.highwheelmodules.core.specification.CompilerException;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import org.jparsec.error.ParserException;

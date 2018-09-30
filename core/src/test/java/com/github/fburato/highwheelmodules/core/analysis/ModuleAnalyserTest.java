@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.core;
+package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.model.Definition;
 import com.github.fburato.highwheelmodules.core.model.Module;
@@ -35,8 +35,6 @@ public class ModuleAnalyserTest {
 
   private final ClassParser classParser = new ClassPathParser(matchOnlyExampleDotOrg);
 
-  private final ModuleAnalyser testee = new ModuleAnalyser(classParser);
-
   private final Module MAIN = Module.make("Main", "org.example.Main").get();
   private final Module CONTROLLER = Module.make("Controllers", "org.example.controller.*").get();
   private final Module FACADE = Module.make("Facade", "org.example.core.CoreFacade").get();
@@ -46,6 +44,9 @@ public class ModuleAnalyserTest {
   private final Module IO = Module.make("IO", "org.example.io.*").get();
   private final Module UTILS = Module.make("Commons", "org.example.commons.*").get();
 
+  private ModuleAnalyser testee(ClasspathRoot root, Optional<Integer> evidenceLimit) {
+    return new ModuleAnalyser(classParser,root,evidenceLimit);
+  }
   @Test
   public void analyseStrictShouldAnalyseIfSpecificationIncludesOnlyOneModuleAndNoRules() {
     final Definition definition = new Definition(
@@ -54,7 +55,7 @@ public class ModuleAnalyserTest {
         Collections.<NoStrictDependency>emptyList()
     );
 
-    final AnalyserModel.StrictAnalysisResult actual = testee.analyseStrict(orgExamples, definition, Optional.empty());
+    final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(definition);
 
     assertThat(actual.dependencyViolations.isEmpty()).isTrue();
     assertThat(actual.noStrictDependencyViolations.isEmpty()).isTrue();
@@ -66,7 +67,7 @@ public class ModuleAnalyserTest {
     final Definition definition = new Definition(Collections.<Module>emptyList(), Collections.<Dependency>emptyList(),
         Collections.<NoStrictDependency>emptyList());
 
-    testee.analyseStrict(orgExamples, definition, Optional.empty());
+    testee(orgExamples,Optional.empty()).analyseStrict(definition);
   }
 
   @Test
@@ -76,7 +77,7 @@ public class ModuleAnalyserTest {
         Arrays.asList(dep(MAIN, CONTROLLER)),
         Arrays.asList(noSD(CONTROLLER, MAIN))
     );
-    final AnalyserModel.StrictAnalysisResult actual = testee.analyseStrict(orgExamples, definition, Optional.empty());
+    final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseStrict(definition);
 
     assertThat(actual.dependencyViolations.isEmpty()).isTrue();
     assertThat(actual.noStrictDependencyViolations.isEmpty()).isTrue();
@@ -94,7 +95,7 @@ public class ModuleAnalyserTest {
         Arrays.asList(noSD(MAIN, FACADE))
     );
 
-    final AnalyserModel.StrictAnalysisResult actual = testee.analyseStrict(orgExamples, definition, Optional.empty());
+    final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseStrict(definition);
 
     assertThat(actual.dependencyViolations).containsAll(Arrays.asList(
         depV("Main", "Main", Arrays.asList("Controllers", "Main"), Collections.<String>emptyList()),
@@ -118,7 +119,7 @@ public class ModuleAnalyserTest {
         Collections.emptyList()
     );
 
-    final AnalyserModel.StrictAnalysisResult actual = testee.analyseStrict(orgExamples, definition, Optional.empty());
+    final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseStrict(definition);
 
     assertThat(actual.dependencyViolations).containsAll(Arrays.asList(
         depV("Main", "Controllers", Collections.emptyList(), Arrays.asList("Controllers"), Arrays.asList(Arrays.asList(
@@ -146,7 +147,7 @@ public class ModuleAnalyserTest {
         Collections.emptyList()
     );
 
-    final AnalyserModel.StrictAnalysisResult actual = testee.analyseStrict(orgExamples, definition, Optional.of(1));
+    final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples,Optional.of(1)).analyseStrict(definition);
     final AnalyserModel.DependencyViolation mainControllers = actual.dependencyViolations
         .stream()
         .filter(v -> v.sourceModule.equals("Main") && v.destinationModule.equals("Controllers"))
@@ -178,7 +179,6 @@ public class ModuleAnalyserTest {
         Pair.make("org.example.controller.Controller1", "org.example.core.CoreFacade"),
         Pair.make("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade")
     )).containsAll(controllersFacade.evidences.get(0));
-    System.out.println(controllersFacade.evidences);
     assertThat(controllersFacade.evidences.get(0).size()).isEqualTo(1);
   }
 
@@ -200,7 +200,7 @@ public class ModuleAnalyserTest {
         )
     );
 
-    final AnalyserModel.StrictAnalysisResult actual = testee.analyseStrict(orgExamples, definition, Optional.empty());
+    final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseStrict(definition);
     assertThat(actual.dependencyViolations.isEmpty()).isTrue();
     assertThat(actual.noStrictDependencyViolations.isEmpty()).isTrue();
     assertThat(actual.metrics).containsAll(Arrays.asList(
@@ -250,7 +250,7 @@ public class ModuleAnalyserTest {
         Collections.<NoStrictDependency>emptyList()
     );
 
-    final AnalyserModel.LooseAnalysisResult actual = testee.analyseLoose(orgExamples, definition, Optional.empty());
+    final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseLoose(definition);
 
     assertThat(actual.absentDependencyViolations.isEmpty()).isTrue();
     assertThat(actual.undesiredDependencyViolations.isEmpty()).isTrue();
@@ -262,7 +262,7 @@ public class ModuleAnalyserTest {
     final Definition definition = new Definition(Collections.<Module>emptyList(), Collections.<Dependency>emptyList(),
         Collections.<NoStrictDependency>emptyList());
 
-    testee.analyseStrict(orgExamples, definition, Optional.empty());
+    testee(orgExamples,Optional.empty()).analyseStrict(definition);
   }
 
   @Test
@@ -272,7 +272,7 @@ public class ModuleAnalyserTest {
         Arrays.asList(dep(MAIN, CONTROLLER)),
         Arrays.asList(noSD(CONTROLLER, MAIN))
     );
-    final AnalyserModel.LooseAnalysisResult actual = testee.analyseLoose(orgExamples, definition, Optional.empty());
+    final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseLoose(definition);
 
     assertThat(actual.absentDependencyViolations.isEmpty()).isTrue();
     assertThat(actual.undesiredDependencyViolations.isEmpty()).isTrue();
@@ -290,7 +290,7 @@ public class ModuleAnalyserTest {
         Arrays.asList(noSD(MAIN, FACADE))
     );
 
-    final AnalyserModel.LooseAnalysisResult actual = testee.analyseLoose(orgExamples, definition, Optional.empty());
+    final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseLoose(definition);
 
     assertThat(actual.absentDependencyViolations).containsAll(Arrays.asList(
         aDep("Controllers", "Main")
@@ -316,7 +316,7 @@ public class ModuleAnalyserTest {
         Arrays.asList(noSD(MAIN, CONTROLLER))
     );
 
-    final AnalyserModel.LooseAnalysisResult actual = testee.analyseLoose(orgExamples, definition, Optional.empty());
+    final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseLoose(definition);
 
     assertThat(actual.undesiredDependencyViolations).contains(
         unDep("Main", "Controllers", Arrays.asList("Controllers"), Arrays.asList(Arrays.asList(
@@ -335,7 +335,7 @@ public class ModuleAnalyserTest {
         Arrays.asList(noSD(MAIN, CONTROLLER))
     );
 
-    final AnalyserModel.LooseAnalysisResult actual = testee.analyseLoose(orgExamples, definition, Optional.of(1));
+    final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples,Optional.of(1)).analyseLoose(definition);
 
     final AnalyserModel.UndesiredDependencyViolation mainController = actual.undesiredDependencyViolations.stream()
         .filter(v -> v.sourceModule.equals("Main") && v.destinationModule.equals("Controllers"))
@@ -374,7 +374,7 @@ public class ModuleAnalyserTest {
         )
     );
 
-    final AnalyserModel.LooseAnalysisResult actual = testee.analyseLoose(orgExamples, definition, Optional.empty());
+    final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples,Optional.empty()).analyseLoose(definition);
     assertThat(actual.absentDependencyViolations.isEmpty()).isTrue();
     assertThat(actual.undesiredDependencyViolations.isEmpty()).isTrue();
     assertThat(actual.metrics).containsAll(Arrays.asList(

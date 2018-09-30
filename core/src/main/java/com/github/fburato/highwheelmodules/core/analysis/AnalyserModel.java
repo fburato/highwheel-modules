@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.core;
+package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.utils.Pair;
 

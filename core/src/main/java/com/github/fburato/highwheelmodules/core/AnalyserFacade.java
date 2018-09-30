@@ -1,5 +1,8 @@
 package com.github.fburato.highwheelmodules.core;
 
+import com.github.fburato.highwheelmodules.core.analysis.AnalyserException;
+import com.github.fburato.highwheelmodules.core.analysis.AnalyserModel;
+import com.github.fburato.highwheelmodules.core.analysis.ModuleAnalyser;
 import com.github.fburato.highwheelmodules.core.model.Definition;
 import com.github.fburato.highwheelmodules.core.specification.Compiler;
 import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
@@ -106,11 +109,11 @@ public class AnalyserFacade {
     final Definition definition = compileDefinition(syntaxDefinition);
     printer.info("Done!");
     final ClassParser classParser = new ClassPathParser(includeAll);
-    final ModuleAnalyser analyser = new ModuleAnalyser(classParser);
+    final ModuleAnalyser analyser = new ModuleAnalyser(classParser,classpathRoot, evidenceLimit);
     if (executionMode == ExecutionMode.STRICT) {
-      strictAnalysis(analyser, definition, classpathRoot, evidenceLimit);
+      strictAnalysis(analyser, definition);
     } else {
-      looseAnalysis(analyser, definition, classpathRoot, evidenceLimit);
+      looseAnalysis(analyser, definition);
     }
 
   }
@@ -170,8 +173,8 @@ public class AnalyserFacade {
     return compiler.compile(definition);
   }
 
-  private void strictAnalysis(ModuleAnalyser analyser, Definition definition, ClasspathRoot classpathRoot, Optional<Integer> evidenceLimit) {
-    AnalyserModel.StrictAnalysisResult analysisResult = analyser.analyseStrict(classpathRoot, definition, evidenceLimit);
+  private void strictAnalysis(ModuleAnalyser analyser, Definition definition) {
+    AnalyserModel.StrictAnalysisResult analysisResult = analyser.analyseStrict(definition);
     printer.info("Analysis complete");
     printMetrics(analysisResult.metrics);
     boolean error = !analysisResult.dependencyViolations.isEmpty() || !analysisResult.noStrictDependencyViolations.isEmpty();
@@ -192,8 +195,8 @@ public class AnalyserFacade {
     }
   }
 
-  private void looseAnalysis(ModuleAnalyser analyser, Definition definition, ClasspathRoot classpathRoot, Optional<Integer> evidenceLimit) {
-    AnalyserModel.LooseAnalysisResult analysisResult = analyser.analyseLoose(classpathRoot, definition, evidenceLimit);
+  private void looseAnalysis(ModuleAnalyser analyser, Definition definition) {
+    AnalyserModel.LooseAnalysisResult analysisResult = analyser.analyseLoose(definition);
     printer.info("Analysis complete");
     printMetrics(analysisResult.metrics);
     boolean error =
