@@ -5,12 +5,19 @@ import org.pitest.highwheel.model.AccessPoint;
 import org.pitest.highwheel.model.AccessType;
 import org.pitest.highwheel.model.ElementName;
 
+import java.util.Arrays;
+import java.util.List;
+
 
 public class CompoundAccessVisitor implements AccessVisitor {
 
-  private final AccessVisitor[] accessVisitors;
+  private final List<AccessVisitor> accessVisitors;
 
   public CompoundAccessVisitor(AccessVisitor... accessVisitors) {
+    this.accessVisitors = Arrays.asList(accessVisitors);
+  }
+
+  public CompoundAccessVisitor(List<AccessVisitor> accessVisitors) {
     this.accessVisitors = accessVisitors;
   }
 

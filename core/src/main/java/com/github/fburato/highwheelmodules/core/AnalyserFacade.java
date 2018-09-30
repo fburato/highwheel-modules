@@ -19,10 +19,7 @@ import org.pitest.highwheel.cycles.Filter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class AnalyserFacade {
 
@@ -174,7 +171,7 @@ public class AnalyserFacade {
   }
 
   private void strictAnalysis(ModuleAnalyser analyser, Definition definition) {
-    AnalyserModel.StrictAnalysisResult analysisResult = analyser.analyseStrict(definition);
+    AnalyserModel.StrictAnalysisResult analysisResult = analyser.analyseStrict(Collections.singletonList(definition)).get(0).second;
     printer.info("Analysis complete");
     printMetrics(analysisResult.metrics);
     boolean error = !analysisResult.dependencyViolations.isEmpty() || !analysisResult.noStrictDependencyViolations.isEmpty();
@@ -196,7 +193,7 @@ public class AnalyserFacade {
   }
 
   private void looseAnalysis(ModuleAnalyser analyser, Definition definition) {
-    AnalyserModel.LooseAnalysisResult analysisResult = analyser.analyseLoose(definition);
+    AnalyserModel.LooseAnalysisResult analysisResult = analyser.analyseLoose(Collections.singletonList(definition)).get(0).second;
     printer.info("Analysis complete");
     printMetrics(analysisResult.metrics);
     boolean error =
