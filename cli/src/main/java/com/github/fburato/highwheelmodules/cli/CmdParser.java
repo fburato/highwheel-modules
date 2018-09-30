@@ -46,7 +46,7 @@ public class CmdParser {
     }
     String[] specOptions = cmd.getOptionValues("specification");
     List<String> specificationPath;
-    if(specOptions == null) {
+    if (specOptions == null) {
       specificationPath = Collections.singletonList("spec.hwm");
     } else {
       specificationPath = Arrays.asList(specOptions);

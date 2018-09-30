@@ -3,7 +3,6 @@ package com.github.fburato.highwheelmodules.cli;
 import com.github.fburato.highwheelmodules.core.AnalyserFacade;
 import com.github.fburato.highwheelmodules.utils.Pair;
 
-import java.util.Collections;
 import java.util.List;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
