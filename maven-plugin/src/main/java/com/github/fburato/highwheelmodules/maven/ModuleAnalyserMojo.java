@@ -13,6 +13,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 
@@ -255,7 +256,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
       final AnalyserFacade.Printer printer = new MavenPrinter();
       final AnalyserFacade facade = new AnalyserFacade(printer, new MavenPathEventSink(),
           new MavenMeasureSink(), new MavenStrictAnalysisSink(), new MavenLooseAnalysisEventSink());
-      facade.runAnalysis(roots, specFilePath, executionMode);
+      facade.runAnalysis(roots, specFilePath, executionMode, Optional.of(evidenceLimit));
     } catch (Exception e) {
       throw new MojoFailureException("Error during analysis: " + e.getMessage());
     }
