@@ -7,14 +7,20 @@ import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 public class JungTrackingModuleGraph implements ModuleGraph<EvidenceModuleDependency> {
 
   private final DirectedGraph<Module, TrackingModuleDependency> graph;
 
-  public JungTrackingModuleGraph(DirectedGraph<Module, TrackingModuleDependency> graph) {
+  private final Optional<Integer> evidenceLimit;
+
+
+  public JungTrackingModuleGraph(DirectedGraph<Module, TrackingModuleDependency> graph, Optional<Integer> evidenceLimit) {
     this.graph = graph;
+    this.evidenceLimit = evidenceLimit;
   }
+
 
   @Override
   public Optional<EvidenceModuleDependency> findDependency(Module vertex1, Module vertex2) {
@@ -28,7 +34,7 @@ public class JungTrackingModuleGraph implements ModuleGraph<EvidenceModuleDepend
     if (graph.getVertices().containsAll(Arrays.asList(dependency.destModule, dependency.sourceModule))) {
       final Optional<TrackingModuleDependency> dependencyOptional = Optional.ofNullable(graph.findEdge(dependency.sourceModule, dependency.destModule));
       final TrackingModuleDependency dep = dependencyOptional.orElseGet(() -> {
-        final TrackingModuleDependency newDep = new TrackingModuleDependency(dependency.sourceModule, dependency.destModule);
+        TrackingModuleDependency newDep = new TrackingModuleDependency(dependency.sourceModule, dependency.destModule, evidenceLimit);
         graph.addEdge(newDep, dependency.sourceModule, dependency.destModule);
         return newDep;
       });

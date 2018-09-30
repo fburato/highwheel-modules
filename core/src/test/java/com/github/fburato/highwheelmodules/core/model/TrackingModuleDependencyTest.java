@@ -13,8 +13,10 @@ public class TrackingModuleDependencyTest {
   private final Module moduleA = Module.make("module A", "module A").get();
   private final Module moduleB = Module.make("module B", "module B").get();
   private final AccessPoint exampleSource = AccessPoint.create(ElementName.fromString("A"));
+  private final AccessPoint exampleSource1 = AccessPoint.create(ElementName.fromString("A1"));
   private final AccessPoint exampleDest = AccessPoint.create(ElementName.fromString("B"));
-  private final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB);
+  private final AccessPoint exampleDest1 = AccessPoint.create(ElementName.fromString("A1"));
+  private final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB,Optional.empty());
 
   @Test
   public void evidencesShouldBeEmptyOnEmptyTrackingDependency() {
@@ -50,10 +52,44 @@ public class TrackingModuleDependencyTest {
   }
 
   @Test
-  public void shouldNotSaveMoreThanEvidenceLimit() {
+  public void shouldSaveAllEvidenceFromSameSource() {
+    final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB,Optional.empty());
+    testee.addEvidence(exampleSource, exampleDest);
+    testee.addEvidence(exampleSource, exampleDest1);
+
+    assertThat(testee.getSources()).containsExactlyInAnyOrder(exampleSource);
+    assertThat(testee.getDestinations()).containsExactlyInAnyOrder(exampleDest,exampleDest1);
+  }
+
+  @Test
+  public void shouldSaveAllEvidenceDifferentSources() {
+    final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB,Optional.empty());
+    testee.addEvidence(exampleSource, exampleDest);
+    testee.addEvidence(exampleSource, exampleDest1);
+    testee.addEvidence(exampleSource1,exampleDest);
+    testee.addEvidence(exampleSource1,exampleDest1);
+
+    assertThat(testee.getSources()).containsExactlyInAnyOrder(exampleSource,exampleSource1);
+    assertThat(testee.getDestinations()).containsExactlyInAnyOrder(exampleDest,exampleDest1);
+  }
+
+  @Test
+  public void shouldNotSaveMoreThanEvidenceLimitFromSameSource() {
     final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB, Optional.of(1));
     testee.addEvidence(exampleSource, exampleDest);
-    testee.addEvidence(exampleSource, AccessPoint.create(ElementName.fromString("B1")));
+    testee.addEvidence(exampleSource, exampleDest1);
+
+    assertThat(testee.getSources()).containsExactly(exampleSource);
+    assertThat(testee.getDestinations()).containsExactly(exampleDest);
+  }
+
+  @Test
+  public void shouldNotSaveMoreThanEvidenceLimitFromDifferentSources() {
+    final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB, Optional.of(1));
+    testee.addEvidence(exampleSource, exampleDest);
+    testee.addEvidence(exampleSource, exampleDest1);
+    testee.addEvidence(exampleSource1,exampleDest);
+    testee.addEvidence(exampleSource1,exampleDest1);
 
     assertThat(testee.getSources()).containsExactly(exampleSource);
     assertThat(testee.getDestinations()).containsExactly(exampleDest);

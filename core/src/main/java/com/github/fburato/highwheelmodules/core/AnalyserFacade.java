@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class AnalyserFacade {
 
@@ -94,7 +95,7 @@ public class AnalyserFacade {
   }
 
   public void runAnalysis(final List<String> classPathRoots, final String specificationPath,
-                          final ExecutionMode executionMode) {
+                          final ExecutionMode executionMode, Optional<Integer> evidenceLimit) {
     final ClasspathRoot classpathRoot = getAnalysisScope(classPathRoots);
     final File specificationFile = new File(specificationPath);
     if (!specificationFile.exists() || specificationFile.isDirectory() || !specificationFile.canRead()) {
@@ -107,15 +108,15 @@ public class AnalyserFacade {
     final ClassParser classParser = new ClassPathParser(includeAll);
     final ModuleAnalyser analyser = new ModuleAnalyser(classParser);
     if (executionMode == ExecutionMode.STRICT) {
-      strictAnalysis(analyser, definition, classpathRoot);
+      strictAnalysis(analyser, definition, classpathRoot,evidenceLimit);
     } else {
-      looseAnalysis(analyser, definition, classpathRoot);
+      looseAnalysis(analyser, definition, classpathRoot, evidenceLimit);
     }
 
   }
 
-  public void runAnalysis(final List<String> classPathRoots, final String specificationPath) {
-    runAnalysis(classPathRoots, specificationPath, ExecutionMode.STRICT);
+  public void runAnalysis(final List<String> classPathRoots, final String specificationPath, Optional<Integer> evidenceLimit) {
+    runAnalysis(classPathRoots, specificationPath, ExecutionMode.STRICT, evidenceLimit);
   }
 
   private ClasspathRoot getAnalysisScope(List<String> paths) {
@@ -169,8 +170,8 @@ public class AnalyserFacade {
     return compiler.compile(definition);
   }
 
-  private void strictAnalysis(ModuleAnalyser analyser, Definition definition, ClasspathRoot classpathRoot) {
-    AnalyserModel.StrictAnalysisResult analysisResult = analyser.analyseStrict(classpathRoot, definition);
+  private void strictAnalysis(ModuleAnalyser analyser, Definition definition, ClasspathRoot classpathRoot, Optional<Integer> evidenceLimit) {
+    AnalyserModel.StrictAnalysisResult analysisResult = analyser.analyseStrict(classpathRoot, definition, evidenceLimit);
     printer.info("Analysis complete");
     printMetrics(analysisResult.metrics);
     boolean error = !analysisResult.dependencyViolations.isEmpty() || !analysisResult.noStrictDependencyViolations.isEmpty();
@@ -191,8 +192,8 @@ public class AnalyserFacade {
     }
   }
 
-  private void looseAnalysis(ModuleAnalyser analyser, Definition definition, ClasspathRoot classpathRoot) {
-    AnalyserModel.LooseAnalysisResult analysisResult = analyser.analyseLoose(classpathRoot, definition);
+  private void looseAnalysis(ModuleAnalyser analyser, Definition definition, ClasspathRoot classpathRoot, Optional<Integer> evidenceLimit) {
+    AnalyserModel.LooseAnalysisResult analysisResult = analyser.analyseLoose(classpathRoot, definition, evidenceLimit);
     printer.info("Analysis complete");
     printMetrics(analysisResult.metrics);
     boolean error =

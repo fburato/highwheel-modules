@@ -29,7 +29,7 @@ public class ModuleAnalyser {
     this.classParser = classParser;
   }
 
-  public AnalyserModel.StrictAnalysisResult analyseStrict(final ClasspathRoot root, final Definition definition) {
+  public AnalyserModel.StrictAnalysisResult analyseStrict(final ClasspathRoot root, final Definition definition, Optional<Integer> evidenceLimit) {
     final Module other = Module.make("(other)", "").get();
     final Collection<Module> modules = definition.modules;
     if (modules.isEmpty())
@@ -37,9 +37,9 @@ public class ModuleAnalyser {
     final JungModuleGraph specModuleGraph = initialiseSpecificationGraph(modules, definition.dependencies);
     final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
     final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
-    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph);
+    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph,evidenceLimit);
 
-    runAnalysis(modules, actualModuleGraph, trackingGraph, root, other, Optional.empty());
+    runAnalysis(modules, actualModuleGraph, trackingGraph, root, other);
 
     final ModuleGraphTransitiveClosure specTransitiveClosure =
         new ModuleGraphTransitiveClosure(specModuleGraph, append(modules, other));
@@ -53,12 +53,6 @@ public class ModuleAnalyser {
     final List<AnalyserModel.Metrics> metrics = getMetrics(actualModuleGraph, modules, actualModuleGraph, other);
 
     return new AnalyserModel.StrictAnalysisResult(dependencyViolations, noStrictDependencyViolations, metrics);
-  }
-
-  public AnalyserModel.StrictAnalysisResult analyseStrict(final ClasspathRoot root,
-                                                          final Definition definition,
-                                                          int evidenceLimit) {
-    throw new RuntimeException("Not implemented");
   }
 
   private Collection<Module> append(Collection<Module> modules, Module module) {
@@ -88,7 +82,7 @@ public class ModuleAnalyser {
 
   private void runAnalysis(Collection<Module> modules, ModuleGraph<ModuleDependency> moduleGraph,
                            ModuleGraph<EvidenceModuleDependency> evidenceModuleDependencyModuleGraph,
-                           ClasspathRoot root, Module other, Optional<Integer> evidenceLimit) {
+                           ClasspathRoot root, Module other) {
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> moduleGraphBuilder =
         (sourceModule, destModule, sourceAP, destAP, type) -> new ModuleDependency(sourceModule, destModule);
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<EvidenceModuleDependency> evidenceGraphBuilder =
@@ -170,16 +164,16 @@ public class ModuleAnalyser {
     return result;
   }
 
-  public AnalyserModel.LooseAnalysisResult analyseLoose(final ClasspathRoot root, final Definition definition) {
+  public AnalyserModel.LooseAnalysisResult analyseLoose(final ClasspathRoot root, final Definition definition, Optional<Integer> evidenceLimit) {
     final Collection<Module> modules = definition.modules;
     final Module other = Module.make("(other)", "").get();
     if (modules.isEmpty())
       throw new AnalyserException("No modules provided in definition");
     final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
     final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
-    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph);
+    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph,evidenceLimit);
 
-    runAnalysis(modules, actualModuleGraph, trackingGraph, root, other, Optional.empty());
+    runAnalysis(modules, actualModuleGraph, trackingGraph, root, other);
 
     final ModuleGraphTransitiveClosure actualTransitiveClosure =
         new ModuleGraphTransitiveClosure(actualModuleGraph, append(modules, other));

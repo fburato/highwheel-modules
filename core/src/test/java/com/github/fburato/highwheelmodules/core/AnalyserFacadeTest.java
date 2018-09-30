@@ -9,10 +9,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 import static org.mockito.Mockito.*;
@@ -77,7 +74,7 @@ public class AnalyserFacadeTest {
   @Test(expected = AnalyserException.class)
   public void shouldPrintAsInfoJarsThatArePassedAsArgument() {
     try {
-      testee.runAnalysis(Arrays.asList(jarPath), defaultSpec);
+      testee.runAnalysis(Arrays.asList(jarPath), defaultSpec, Optional.empty());
     } finally {
       verify(pathEventSink).jars(argThat(anyMatches(".*highwheel-model\\.jar.*")));
     }
@@ -85,14 +82,14 @@ public class AnalyserFacadeTest {
 
   @Test
   public void shouldPrintAsInfoDirectoriesThatPassedAsArgument() {
-    testee.runAnalysis(Arrays.asList(orgExamplePath), defaultSpec);
+    testee.runAnalysis(Arrays.asList(orgExamplePath), defaultSpec, Optional.empty());
     verify(pathEventSink).directories(argThat(anyMatches(".*test-classes.*org.*")));
   }
 
   @Test(expected = AnalyserException.class)
   public void shouldPrintAsIgnoredFileThatDoNotExist() {
     try {
-      testee.runAnalysis(Arrays.asList("foobar"), defaultSpec);
+      testee.runAnalysis(Arrays.asList("foobar"), defaultSpec, Optional.empty());
     } finally {
       verify(pathEventSink).ignoredPaths(argThat(anyMatches(".*foobar.*")));
     }
@@ -100,7 +97,7 @@ public class AnalyserFacadeTest {
 
   @Test
   public void shouldPrintAsInfoJarsDiresAndIgnored() {
-    testee.runAnalysis(Arrays.asList(jarPath, orgExamplePath, "foobar"), defaultSpec);
+    testee.runAnalysis(Arrays.asList(jarPath, orgExamplePath, "foobar"), defaultSpec, Optional.empty());
     verify(pathEventSink).jars(argThat(anyMatches(".*highwheel-model\\.jar.*")));
     verify(pathEventSink).directories(argThat(anyMatches(".*test-classes.*org.*")));
     verify(pathEventSink).ignoredPaths(argThat(anyMatches(".*foobar.*")));
@@ -108,13 +105,13 @@ public class AnalyserFacadeTest {
 
   @Test(expected = AnalyserException.class)
   public void shoulFailIfSpecificationFileDoesNotExist() {
-    testee.runAnalysis(Arrays.asList(orgExamplePath), "foobar");
+    testee.runAnalysis(Arrays.asList(orgExamplePath), "foobar", Optional.empty());
   }
 
   @Test(expected = ParserException.class)
   public void shouldFailIfParsingFails() {
     try {
-      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongSpec);
+      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongSpec, Optional.empty());
     } finally {
       verify(printer).info(matches(".*Compiling specification.*"));
     }
@@ -123,7 +120,7 @@ public class AnalyserFacadeTest {
   @Test(expected = CompilerException.class)
   public void shouldFailIfCompilationFails() {
     try {
-      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongSemanticsSpec);
+      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongSemanticsSpec, Optional.empty());
     } finally {
       verify(printer).info(matches(".*Compiling specification.*"));
     }
@@ -131,21 +128,21 @@ public class AnalyserFacadeTest {
 
   @Test
   public void strictAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
-    testee.runAnalysis(Arrays.asList(orgExamplePath), defaultSpec);
+    testee.runAnalysis(Arrays.asList(orgExamplePath), defaultSpec, Optional.empty());
     verify(strictAnalysisEventSink).dependenciesCorrect();
     verify(strictAnalysisEventSink).directDependenciesCorrect();
   }
 
   @Test
   public void looseAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
-    testee.runAnalysis(Arrays.asList(orgExamplePath), looseSpec, AnalyserFacade.ExecutionMode.LOOSE);
+    testee.runAnalysis(Arrays.asList(orgExamplePath), looseSpec, AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
     verify(looseAnalysisEventSink).allDependenciesPresent();
     verify(looseAnalysisEventSink).noUndesiredDependencies();
   }
 
   @Test
   public void strictAnalysisShouldProduceMetrics() {
-    testee.runAnalysis(Arrays.asList(orgExamplePath), defaultSpec);
+    testee.runAnalysis(Arrays.asList(orgExamplePath), defaultSpec, Optional.empty());
     verifyStrictMetrics();
   }
 
@@ -162,7 +159,7 @@ public class AnalyserFacadeTest {
 
   @Test
   public void looseAnalysisShouldProduceMetrics() {
-    testee.runAnalysis(Arrays.asList(orgExamplePath), looseSpec, AnalyserFacade.ExecutionMode.LOOSE);
+    testee.runAnalysis(Arrays.asList(orgExamplePath), looseSpec, AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
     verifyLooseMetrics();
   }
 
@@ -180,12 +177,32 @@ public class AnalyserFacadeTest {
   @Test(expected = AnalyserException.class)
   public void strictAnalysisShouldFailAndPrintTheViolations() {
     try {
-      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongStrictDefinitionSpec);
+      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongStrictDefinitionSpec, Optional.empty());
     } finally {
       verify(strictAnalysisEventSink).dependencyViolationsPresent();
       verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(),
           Arrays.asList("IO", "Utils"),
-          Arrays.asList(Arrays.asList(Pair.make("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"))));
+          Arrays.asList(Arrays.asList(
+              Pair.make("org.example.io.IOImplementaion:something", "org.example.commons.Utility:util"),
+              Pair.make("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"),
+              Pair.make("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util1")
+          )));
+      verify(strictAnalysisEventSink).noDirectDependenciesViolationPresent();
+      verify(strictAnalysisEventSink).noDirectDependencyViolation("Facade", "CoreInternals");
+    }
+  }
+
+  @Test(expected = AnalyserException.class)
+  public void strictAnalysisShouldFailAndPrintLimitedViolations() {
+    try {
+      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongStrictDefinitionSpec, Optional.of(1));
+    } finally {
+      verify(strictAnalysisEventSink).dependencyViolationsPresent();
+      verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(),
+          Arrays.asList("IO", "Utils"),
+          Arrays.asList(Arrays.asList(
+              Pair.make("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util")
+          )));
       verify(strictAnalysisEventSink).noDirectDependenciesViolationPresent();
       verify(strictAnalysisEventSink).noDirectDependencyViolation("Facade", "CoreInternals");
     }
@@ -194,7 +211,7 @@ public class AnalyserFacadeTest {
   @Test(expected = AnalyserException.class)
   public void looseAnalysisShouldFailAndPrintTheViolations() {
     try {
-      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongLooseDefinitionSpec, AnalyserFacade.ExecutionMode.LOOSE);
+      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongLooseDefinitionSpec, AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
     } finally {
       verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
       verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent();
@@ -208,4 +225,19 @@ public class AnalyserFacadeTest {
     }
   }
 
+  @Test(expected = AnalyserException.class)
+  public void looseAnalysisShouldFailAndPrintLimitedViolations() {
+    try {
+      testee.runAnalysis(Arrays.asList(orgExamplePath), wrongLooseDefinitionSpec, AnalyserFacade.ExecutionMode.LOOSE, Optional.of(1));
+    } finally {
+      verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
+      verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent();
+      verify(looseAnalysisEventSink).absentDependencyViolation("IO", "CoreInternals");
+      verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model",
+          Arrays.asList("IO", "Model"),
+          Arrays.asList(Arrays.asList(
+              Pair.make("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1")
+          )));
+    }
+  }
 }

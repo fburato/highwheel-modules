@@ -9,23 +9,23 @@ public final class TrackingModuleDependency {
   public final Module source;
   public final Module dest;
   private final Map<AccessPoint, Set<AccessPoint>> evidences;
-
-  public TrackingModuleDependency(final Module source, final Module dest) {
-    this.source = source;
-    this.dest = dest;
-    this.evidences = new HashMap<>();
-  }
+  private final Optional<Integer> evidenceLimit;
+  private int evidenceCounter = 0;
 
   public TrackingModuleDependency(final Module source, final Module dest, final Optional<Integer> evidenceLimit) {
     this.source = source;
     this.dest = dest;
     this.evidences = new HashMap<>();
+    this.evidenceLimit = evidenceLimit;
   }
 
   public void addEvidence(AccessPoint source, AccessPoint dest) {
-    final Set<AccessPoint> newDestinations = evidences.getOrDefault(source, new HashSet<>());
-    newDestinations.add(dest);
-    evidences.put(source, newDestinations);
+    if(!evidenceLimit.isPresent() || evidenceCounter < evidenceLimit.get()) {
+      final Set<AccessPoint> newDestinations = evidences.getOrDefault(source, new HashSet<>());
+      newDestinations.add(dest);
+      evidences.put(source, newDestinations);
+      evidenceCounter++;
+    }
   }
 
   public Set<AccessPoint> getSources() {

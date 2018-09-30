@@ -8,6 +8,11 @@ public class IOImplementaion implements IOInterface {
   @Override
   public Entity1 reader() {
     Utility.util();
+    Utility.util1();
     return new Entity1();
+  }
+
+  private void something() {
+    Utility.util();
   }
 }
