@@ -179,7 +179,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
   @Parameter(property = "hwmChildOnly", defaultValue = "false")
   private boolean childOnly;
 
-  @Parameter(property = "hwmSpecFile", defaultValue = "spec.hwm")
+  @Parameter(property = "hwmSpecFiles", defaultValue = "spec.hwm")
   private String specFile;
 
   @Parameter(property = "hwmAnalysisMode", defaultValue = "strict")
@@ -253,7 +253,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
       final AnalyserFacade.Printer printer = new MavenPrinter();
       final AnalyserFacade facade = new AnalyserFacade(printer, new MavenPathEventSink(),
           new MavenMeasureSink(), new MavenStrictAnalysisSink(), new MavenLooseAnalysisEventSink());
-      facade.runAnalysis(roots, Collections.singletonList(specFilePath), executionMode, Optional.of(evidenceLimit));
+      facade.runAnalysis(roots, Arrays.asList(specFilePath.split(",")), executionMode, Optional.of(evidenceLimit));
     } catch (Exception e) {
       throw new MojoFailureException("Error during analysis: " + e.getMessage());
     }

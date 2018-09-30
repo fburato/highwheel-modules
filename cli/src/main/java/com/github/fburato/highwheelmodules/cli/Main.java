@@ -156,9 +156,10 @@ public class Main {
       final AnalyserFacade facade =
           new AnalyserFacade(printer, new SystemPathEventSink(), new SystemMeasureSink(), new SystemStrictAnalysisSink(),
               new SystemLooseAnalysisEventSink());
-      facade.runAnalysis(cmdParser.argList, Collections.singletonList(cmdParser.specificationFile), cmdParser.mode, cmdParser.evidenceLimit);
+      facade.runAnalysis(cmdParser.argList, cmdParser.specificationFiles, cmdParser.mode, cmdParser.evidenceLimit);
     } catch (Exception e) {
       System.err.println(e.getMessage());
+      e.printStackTrace();
       System.exit(1);
     }
   }
