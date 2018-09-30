@@ -4,6 +4,7 @@ import com.github.fburato.highwheelmodules.core.AnalyserFacade;
 import org.apache.commons.cli.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CmdParser {
   private static String STRICT = "strict";
@@ -20,13 +21,19 @@ public class CmdParser {
       .optionalArg(false)
       .hasArg(true)
       .desc("Mode of analysis. Can be 'strict' or 'loose'").build();
+  private final Option limitOpt = Option.builder("l")
+      .longOpt("evidenceLimit")
+      .optionalArg(true)
+      .hasArg(true)
+      .desc("Limit to the amount of evidence collected. Must be an integer").build();
 
   public final AnalyserFacade.ExecutionMode mode;
   public final String specificationFile;
+  public final Optional<Integer> evidenceLimit;
   public final List<String> argList;
 
   public CmdParser(String[] argv) {
-    options.addOption(spec).addOption(modeOpt);
+    options.addOption(spec).addOption(modeOpt).addOption(limitOpt);
 
     final CommandLineParser parser = new DefaultParser();
     CommandLine cmd = null;
@@ -40,11 +47,20 @@ public class CmdParser {
     if (!operationMode.equals(STRICT) && !operationMode.equals(LOOSE)) {
       throw new CliException("Unrecognised value for modeOpt: " + operationMode + ". Select 'strict' or 'loose'");
     }
-
     if (operationMode.equals(STRICT)) {
       this.mode = AnalyserFacade.ExecutionMode.STRICT;
     } else {
       this.mode = AnalyserFacade.ExecutionMode.LOOSE;
+    }
+    String limit = cmd.getOptionValue("evidenceLimit");
+    try {
+      if(limit == null) {
+        evidenceLimit = Optional.empty();
+      } else {
+        evidenceLimit = Optional.of(Integer.parseInt(limit));
+      }
+    } catch (NumberFormatException nfe) {
+      throw new CliException(String.format("'%s' is not an integer",limit));
     }
     specificationFile = specificationPath;
     argList = cmd.getArgList();

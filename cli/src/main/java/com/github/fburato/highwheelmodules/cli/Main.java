@@ -155,7 +155,7 @@ public class Main {
       final AnalyserFacade facade =
           new AnalyserFacade(printer, new SystemPathEventSink(), new SystemMeasureSink(), new SystemStrictAnalysisSink(),
               new SystemLooseAnalysisEventSink());
-      facade.runAnalysis(cmdParser.argList, cmdParser.specificationFile, cmdParser.mode);
+      facade.runAnalysis(cmdParser.argList, cmdParser.specificationFile, cmdParser.mode, cmdParser.evidenceLimit);
     } catch (Exception e) {
       System.err.println(e.getMessage());
       System.exit(1);
