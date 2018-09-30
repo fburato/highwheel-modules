@@ -3,6 +3,7 @@ package com.github.fburato.highwheelmodules.cli;
 import com.github.fburato.highwheelmodules.core.AnalyserFacade;
 import com.github.fburato.highwheelmodules.utils.Pair;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
@@ -155,7 +156,7 @@ public class Main {
       final AnalyserFacade facade =
           new AnalyserFacade(printer, new SystemPathEventSink(), new SystemMeasureSink(), new SystemStrictAnalysisSink(),
               new SystemLooseAnalysisEventSink());
-      facade.runAnalysis(cmdParser.argList, cmdParser.specificationFile, cmdParser.mode, cmdParser.evidenceLimit);
+      facade.runAnalysis(cmdParser.argList, Collections.singletonList(cmdParser.specificationFile), cmdParser.mode, cmdParser.evidenceLimit);
     } catch (Exception e) {
       System.err.println(e.getMessage());
       System.exit(1);

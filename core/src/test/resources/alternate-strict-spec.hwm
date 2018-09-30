@@ -1,0 +1,5 @@
+modules:
+    Internals = "org.example.commons.*", "org.example.controller.*", "org.example.core.*", "org.example.io.*"
+    Main = "org.example.Main"
+rules:
+    Main -> Internals

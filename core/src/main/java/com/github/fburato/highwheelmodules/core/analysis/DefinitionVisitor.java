@@ -39,7 +39,7 @@ public class DefinitionVisitor {
     final ModuleDependenciesGraphBuildingVisitor<EvidenceModuleDependency> evidenceGraphVisitor =
         new ModuleDependenciesGraphBuildingVisitor<>(modules, trackingGraph, other, evidenceGraphBuilder);
     final AccessVisitor accessVisitor = new CompoundAccessVisitor(moduleGraphVisitor, evidenceGraphVisitor);
-    return new AnalysisState(specModuleGraph,actualModuleGraph,trackingBareGraph,accessVisitor,other);
+    return new AnalysisState(specModuleGraph, actualModuleGraph, trackingBareGraph, accessVisitor, other);
   }
 
   private JungModuleGraph initialiseSpecificationGraph(Collection<Module> modules, Collection<Dependency> dependencies) {

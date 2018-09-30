@@ -8,11 +8,11 @@ import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 
-import static com.github.fburato.highwheelmodules.core.analysis.AnalysisUtils.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static com.github.fburato.highwheelmodules.core.analysis.AnalysisUtils.*;
 
 public class LooseAnalyser {
 
@@ -30,7 +30,7 @@ public class LooseAnalyser {
   }
 
   private static List<AnalyserModel.AbsentDependencyViolation> getAbsentDependencies(ModuleGraphTransitiveClosure transitiveClosure,
-                                                                              Collection<Dependency> dependencies, Module other) {
+                                                                                     Collection<Dependency> dependencies, Module other) {
     final List<AnalyserModel.AbsentDependencyViolation> dependencyViolations =
         new ArrayList<>();
     for (Dependency dependency : dependencies) {

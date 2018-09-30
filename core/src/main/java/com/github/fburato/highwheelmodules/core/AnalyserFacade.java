@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 public class AnalyserFacade {
 
@@ -94,29 +96,47 @@ public class AnalyserFacade {
     this.looseAnalysisEventSink = looseAnalysisEventSink;
   }
 
-  public void runAnalysis(final List<String> classPathRoots, final String specificationPath,
+  public void runAnalysis(final List<String> classPathRoots, final List<String> specificationPath,
                           final ExecutionMode executionMode, Optional<Integer> evidenceLimit) {
     final ClasspathRoot classpathRoot = getAnalysisScope(classPathRoots);
+    final List<Pair<String, Definition>> definitions = specificationPath.stream().map(p -> Pair.make(p, compileSpecification(p))).collect(Collectors.toList());
+    final ClassParser classParser = new ClassPathParser(includeAll);
+    final ModuleAnalyser analyser = new ModuleAnalyser(classParser, classpathRoot, evidenceLimit);
+    if (executionMode == ExecutionMode.STRICT) {
+      executeGenericAnalysis(definitions, analyser, this::strictAnalysis, "strict");
+    } else {
+      executeGenericAnalysis(definitions, analyser, this::looseAnalysis, "loose");
+    }
+  }
+
+  private void executeGenericAnalysis(List<Pair<String, Definition>> definitions, ModuleAnalyser analyser,
+                                      BiConsumer<ModuleAnalyser, Definition> analysisMethod, String analysisName) {
+    boolean error = false;
+    for (Pair<String, Definition> pathDefinition : definitions) {
+      try {
+        printer.info(String.format("Starting %s analysis on '%s'", analysisName, pathDefinition.first));
+        analysisMethod.accept(analyser, pathDefinition.second);
+        printer.info(String.format("Analysis on '%s' complete", pathDefinition.first));
+      } catch (AnalyserException e) {
+        printer.info(e.getMessage());
+        error = true;
+      }
+    }
+    if (error) {
+      throw new AnalyserException("One or more analysis failed. Check the previous messages for more information.");
+    }
+  }
+
+  private Definition compileSpecification(final String specificationPath) {
     final File specificationFile = new File(specificationPath);
     if (!specificationFile.exists() || specificationFile.isDirectory() || !specificationFile.canRead()) {
       throw new AnalyserException(String.format("Cannot read from specification file '%s'.", specificationPath));
     }
-    printer.info("Compiling specification...");
+    printer.info(String.format("Compiling specification '%s'", specificationPath));
     final SyntaxTree.Definition syntaxDefinition = getDefinition(specificationFile);
     final Definition definition = compileDefinition(syntaxDefinition);
     printer.info("Done!");
-    final ClassParser classParser = new ClassPathParser(includeAll);
-    final ModuleAnalyser analyser = new ModuleAnalyser(classParser,classpathRoot, evidenceLimit);
-    if (executionMode == ExecutionMode.STRICT) {
-      strictAnalysis(analyser, definition);
-    } else {
-      looseAnalysis(analyser, definition);
-    }
-
-  }
-
-  public void runAnalysis(final List<String> classPathRoots, final String specificationPath, Optional<Integer> evidenceLimit) {
-    runAnalysis(classPathRoots, specificationPath, ExecutionMode.STRICT, evidenceLimit);
+    return definition;
   }
 
   private ClasspathRoot getAnalysisScope(List<String> paths) {

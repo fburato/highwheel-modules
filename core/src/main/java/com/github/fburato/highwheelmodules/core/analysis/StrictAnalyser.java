@@ -10,6 +10,7 @@ import edu.uci.ics.jung.graph.DirectedGraph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import static com.github.fburato.highwheelmodules.core.analysis.AnalysisUtils.*;
 
 public class StrictAnalyser {

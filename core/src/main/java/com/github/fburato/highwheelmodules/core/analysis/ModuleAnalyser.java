@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor;
-import com.github.fburato.highwheelmodules.core.model.*;
+import com.github.fburato.highwheelmodules.core.model.Definition;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import org.pitest.highwheel.classpath.AccessVisitor;
 import org.pitest.highwheel.classpath.ClassParser;
@@ -26,18 +26,18 @@ public class ModuleAnalyser {
     this.evidenceLimit = evidenceLimit;
   }
 
-  public List<Pair<Definition,AnalyserModel.StrictAnalysisResult>> analyseStrict(final List<Definition> definitions) {
-    if(definitions.isEmpty()) {
+  public List<Pair<Definition, AnalyserModel.StrictAnalysisResult>> analyseStrict(final List<Definition> definitions) {
+    if (definitions.isEmpty()) {
       return new ArrayList<>();
-    } else if(definitions.size() == 1) {
-      return Collections.singletonList(Pair.make(definitions.get(0),internalAnalyseStrict(definitions.get(0))));
+    } else if (definitions.size() == 1) {
+      return Collections.singletonList(Pair.make(definitions.get(0), internalAnalyseStrict(definitions.get(0))));
     } else {
       return internalAnalyseStrict(definitions);
     }
   }
 
-  private List<Pair<Definition,AnalyserModel.StrictAnalysisResult>> internalAnalyseStrict(final List<Definition> definitions) {
-    final List<Pair<Definition,AnalysisState>> defVisitors = getAnalysisStates(definitions);
+  private List<Pair<Definition, AnalyserModel.StrictAnalysisResult>> internalAnalyseStrict(final List<Definition> definitions) {
+    final List<Pair<Definition, AnalysisState>> defVisitors = getAnalysisStates(definitions);
     final AccessVisitor visitor = new CompoundAccessVisitor(collectVisitors(defVisitors));
     try {
       classParser.parse(root, visitor);
@@ -46,18 +46,18 @@ public class ModuleAnalyser {
     }
 
     return defVisitors.stream()
-        .map( p -> Pair.make(p.first,StrictAnalyser.analyseStrict(p.first,p.second)))
+        .map(p -> Pair.make(p.first, StrictAnalyser.analyseStrict(p.first, p.second)))
         .collect(Collectors.toList());
   }
 
-  private List<Pair<Definition,AnalysisState>> getAnalysisStates(List<Definition> definitions) {
+  private List<Pair<Definition, AnalysisState>> getAnalysisStates(List<Definition> definitions) {
     final DefinitionVisitor definitionVisitor = new DefinitionVisitor(evidenceLimit);
     return definitions.stream().map(
-        def -> Pair.make(def,definitionVisitor.getAnalysisState(def))
+        def -> Pair.make(def, definitionVisitor.getAnalysisState(def))
     ).collect(Collectors.toList());
   }
 
-  private List<AccessVisitor> collectVisitors(List<Pair<Definition,AnalysisState>> states) {
+  private List<AccessVisitor> collectVisitors(List<Pair<Definition, AnalysisState>> states) {
     return states.stream()
         .map(p -> p.second.visitor)
         .collect(Collectors.toList());
@@ -73,21 +73,21 @@ public class ModuleAnalyser {
       throw new AnalyserException(e);
     }
 
-    return StrictAnalyser.analyseStrict(definition,analysisState);
+    return StrictAnalyser.analyseStrict(definition, analysisState);
   }
 
-  public List<Pair<Definition,AnalyserModel.LooseAnalysisResult>> analyseLoose(final List<Definition> definitions) {
-    if(definitions.isEmpty()) {
+  public List<Pair<Definition, AnalyserModel.LooseAnalysisResult>> analyseLoose(final List<Definition> definitions) {
+    if (definitions.isEmpty()) {
       return new ArrayList<>();
-    } else if(definitions.size() == 1) {
-      return Collections.singletonList(Pair.make(definitions.get(0),internalAnalyseLoose(definitions.get(0))));
+    } else if (definitions.size() == 1) {
+      return Collections.singletonList(Pair.make(definitions.get(0), internalAnalyseLoose(definitions.get(0))));
     } else {
       return internalAnalyseLoose(definitions);
     }
   }
 
   private List<Pair<Definition, AnalyserModel.LooseAnalysisResult>> internalAnalyseLoose(final List<Definition> definitions) {
-    final List<Pair<Definition,AnalysisState>> defVisitors = getAnalysisStates(definitions);
+    final List<Pair<Definition, AnalysisState>> defVisitors = getAnalysisStates(definitions);
     final AccessVisitor visitor = new CompoundAccessVisitor(collectVisitors(defVisitors));
 
     try {
@@ -97,7 +97,7 @@ public class ModuleAnalyser {
     }
 
     return defVisitors.stream()
-        .map( p -> Pair.make(p.first,LooseAnalyser.analyseLoose(p.first,p.second)))
+        .map(p -> Pair.make(p.first, LooseAnalyser.analyseLoose(p.first, p.second)))
         .collect(Collectors.toList());
   }
 
@@ -111,6 +111,6 @@ public class ModuleAnalyser {
       throw new AnalyserException(e);
     }
 
-    return LooseAnalyser.analyseLoose(definition,analysisState);
+    return LooseAnalyser.analyseLoose(definition, analysisState);
   }
 }

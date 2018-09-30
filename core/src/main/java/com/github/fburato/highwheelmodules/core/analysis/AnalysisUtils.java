@@ -43,7 +43,7 @@ public class AnalysisUtils {
   }
 
   public static List<AnalyserModel.Metrics> getMetrics(ModuleMetrics moduleMetrics, Collection<Module> modules, ModuleGraph<ModuleDependency> graph,
-                                                 Module other) {
+                                                       Module other) {
     final List<AnalyserModel.Metrics> metrics = new ArrayList<>(modules.size());
     for (Module module : modules) {
       metrics.add(new AnalyserModel.Metrics(module.name, moduleMetrics.fanInOf(module).get() +
