@@ -7,15 +7,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+
+import static org.assertj.core.api.Assertions.*;
+
 
 public class StreamUtilTest {
 
   @Test
   public void shouldReadToString() throws IOException {
     final InputStream is = new ByteArrayInputStream("foo".getBytes("UTF-8"));
-    assertEquals("foo", StreamUtil.toString(is, "UTF-8"));
+    assertThat("foo").isEqualTo(StreamUtil.toString(is, "UTF-8"));
   }
 
   @Test
@@ -23,7 +24,7 @@ public class StreamUtilTest {
     final byte[] expected = createByteArray();
     final ByteArrayInputStream bis = new ByteArrayInputStream(expected);
     final byte[] actual = StreamUtil.streamToByteArray(bis);
-    assertArrayEquals(expected, actual);
+    assertThat(expected).isEqualTo(actual);
   }
 
   @Test
@@ -32,7 +33,7 @@ public class StreamUtilTest {
     Arrays.fill(expected, (byte) 2);
     final ByteArrayInputStream bis = new ByteArrayInputStream(expected);
     final byte[] actual = StreamUtil.streamToByteArray(bis);
-    assertArrayEquals(expected, actual);
+    assertThat(expected).isEqualTo(actual);
   }
 
 
@@ -42,7 +43,7 @@ public class StreamUtilTest {
     final InputStream actualStream = StreamUtil
         .copyStream(new ByteArrayInputStream(createByteArray()));
     final byte[] actualContents = StreamUtil.streamToByteArray(actualStream);
-    assertArrayEquals(expected, actualContents);
+    assertThat(expected).isEqualTo(actualContents);
   }
 
   private byte[] createByteArray() {

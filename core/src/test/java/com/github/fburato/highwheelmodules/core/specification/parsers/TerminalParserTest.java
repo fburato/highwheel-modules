@@ -4,7 +4,7 @@ import org.jparsec.Parser;
 import org.jparsec.Parsers;
 import org.junit.Test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class TerminalParserTest {
 

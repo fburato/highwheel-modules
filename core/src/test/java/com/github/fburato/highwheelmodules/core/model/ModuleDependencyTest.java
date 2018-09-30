@@ -2,7 +2,8 @@ package com.github.fburato.highwheelmodules.core.model;
 
 import org.junit.Test;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class ModuleDependencyTest {
 

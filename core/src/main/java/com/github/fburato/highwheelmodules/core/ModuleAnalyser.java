@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 public class ModuleAnalyser {
 
@@ -38,7 +39,7 @@ public class ModuleAnalyser {
     final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
     final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph);
 
-    runAnalysis(modules, actualModuleGraph, trackingGraph, root, other);
+    runAnalysis(modules, actualModuleGraph, trackingGraph, root, other, Optional.empty());
 
     final ModuleGraphTransitiveClosure specTransitiveClosure =
         new ModuleGraphTransitiveClosure(specModuleGraph, append(modules, other));
@@ -52,6 +53,12 @@ public class ModuleAnalyser {
     final List<AnalyserModel.Metrics> metrics = getMetrics(actualModuleGraph, modules, actualModuleGraph, other);
 
     return new AnalyserModel.StrictAnalysisResult(dependencyViolations, noStrictDependencyViolations, metrics);
+  }
+
+  public AnalyserModel.StrictAnalysisResult analyseStrict(final ClasspathRoot root,
+                                                          final Definition definition,
+                                                          int evidenceLimit) {
+    throw new RuntimeException("Not implemented");
   }
 
   private Collection<Module> append(Collection<Module> modules, Module module) {
@@ -81,7 +88,7 @@ public class ModuleAnalyser {
 
   private void runAnalysis(Collection<Module> modules, ModuleGraph<ModuleDependency> moduleGraph,
                            ModuleGraph<EvidenceModuleDependency> evidenceModuleDependencyModuleGraph,
-                           ClasspathRoot root, Module other) {
+                           ClasspathRoot root, Module other, Optional<Integer> evidenceLimit) {
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> moduleGraphBuilder =
         (sourceModule, destModule, sourceAP, destAP, type) -> new ModuleDependency(sourceModule, destModule);
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<EvidenceModuleDependency> evidenceGraphBuilder =
@@ -172,7 +179,7 @@ public class ModuleAnalyser {
     final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
     final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph);
 
-    runAnalysis(modules, actualModuleGraph, trackingGraph, root, other);
+    runAnalysis(modules, actualModuleGraph, trackingGraph, root, other, Optional.empty());
 
     final ModuleGraphTransitiveClosure actualTransitiveClosure =
         new ModuleGraphTransitiveClosure(actualModuleGraph, append(modules, other));

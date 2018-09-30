@@ -4,76 +4,76 @@ import org.junit.Test;
 
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class GlobToRegexTest {
 
   @Test
   public void shouldFindExactMatches() {
     final String value = "org.foo.foo";
-    assertTrue(matches(value, value));
+    assertThat(matches(value, value)).isTrue();
   }
 
   @Test
   public void shouldNotMatchNonMatchingStringWhenNoWildcardsPresent() {
     final String value = "org.foo.foo";
     final String glob = "org.foo";
-    assertFalse(matches(glob, value));
+    assertThat(matches(glob, value)).isFalse();
   }
 
   @Test
   public void shouldMatchEverythingAfterAStar() {
     final String glob = "org.foo.*";
-    assertTrue(matches(glob, "org.foo.foo"));
-    assertTrue(matches(glob, "org.foo."));
-    assertTrue(matches(glob, "org.foo.bar"));
+    assertThat(matches(glob, "org.foo.foo")).isTrue();
+    assertThat(matches(glob, "org.foo.")).isTrue();
+    assertThat(matches(glob, "org.foo.bar")).isTrue();
   }
 
   @Test
   public void shouldNotMatchIfContentDiffersBeforeAStar() {
     final String glob = new String("org.foo.*");
-    assertFalse(matches(glob, "org.fo"));
+    assertThat(matches(glob, "org.fo")).isFalse();
   }
 
   @Test
   public void shouldEscapeDotsInGeneratedRegex() {
     final String glob = new String("org.foo.bar");
-    assertFalse(matches(glob, "orgafooabar"));
+    assertThat(matches(glob, "orgafooabar")).isFalse();
   }
 
   @Test
   public void shouldSupportQuestionMarkWildCard() {
     final String glob = new String("org?foo?bar");
-    assertTrue(matches(glob, "org.foo.bar"));
-    assertTrue(matches(glob, "orgafooabar"));
+    assertThat(matches(glob, "org.foo.bar")).isTrue();
+    assertThat(matches(glob, "orgafooabar")).isTrue();
   }
 
   @Test
   public void shouldEscapeEscapesInGeneratedRegex() {
     final String glob = new String("org.\\bar");
-    assertTrue(matches(glob, "org.\\bar"));
-    assertFalse(matches(glob, "org.bar"));
+    assertThat(matches(glob, "org.\\bar")).isTrue();
+    assertThat(matches(glob, "org.bar")).isFalse();
   }
 
   @Test
   public void shouldEscapeDollarSign() {
     final String glob = new String("org$bar");
-    assertTrue(matches(glob, "org$bar"));
+    assertThat(matches(glob, "org$bar")).isTrue();
   }
 
   @Test
   public void shouldSupportMultipleWildcards() {
     final String glob = new String("foo*bar*car");
-    assertTrue(matches(glob, "foo!!!bar!!!car"));
-    assertFalse(matches(glob, "foo!!!!!car"));
+    assertThat(matches(glob, "foo!!!bar!!!car")).isTrue();
+    assertThat(matches(glob, "foo!!!!!car")).isFalse();
   }
 
   @Test
   public void shouldBeCaseSensitice() {
     final String glob = new String("foo*bar*car");
-    assertTrue(matches(glob, "foo!!!bar!!!car"));
-    assertFalse(matches(glob, "foo!!!Bar!!!car"));
+    assertThat(matches(glob, "foo!!!bar!!!car")).isTrue();
+    assertThat(matches(glob, "foo!!!Bar!!!car")).isFalse();
   }
 
   private boolean matches(final String String, final String value) {

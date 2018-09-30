@@ -8,7 +8,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class JungModuleGraphTest {
 

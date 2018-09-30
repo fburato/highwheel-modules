@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModuleAnalyserTest {
 
@@ -135,6 +135,49 @@ public class ModuleAnalyserTest {
             Pair.make("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade")
         )))
     ));
+  }
+
+  @Test
+  public void analyseStrictShouldProvideLimitedDependenciesIfEvidenceLimitConfigured() {
+    final Definition definition = new Definition(
+        Arrays.asList(MAIN, CONTROLLER, FACADE),
+        Collections.emptyList(),
+        Collections.emptyList()
+    );
+
+    final AnalyserModel.StrictAnalysisResult actual = testee.analyseStrict(orgExamples, definition, 1);
+    final AnalyserModel.DependencyViolation mainControllers = actual.dependencyViolations
+        .stream()
+        .filter(v -> v.sourceModule.equals("Main") && v.destinationModule.equals("Controllers"))
+        .findFirst().get();
+
+    assertThat(Arrays.asList(Arrays.asList(
+        Pair.make("org.example.Main:main", "org.example.controller.Controller1:access"),
+        Pair.make("org.example.Main:main", "org.example.controller.Controller1"),
+        Pair.make("org.example.Main:main", "org.example.controller.Controller1:(init)")
+    ))).containsAll(mainControllers.evidences);
+    assertThat(mainControllers.evidences.size()).isEqualTo(1);
+
+    final AnalyserModel.DependencyViolation mainFacade = actual.dependencyViolations
+        .stream()
+        .filter(v -> v.sourceModule.equals("Main") && v.destinationModule.equals("Facade"))
+        .findFirst().get();
+    assertThat(Arrays.asList(Arrays.asList(
+        Pair.make("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
+        Pair.make("org.example.Main:main", "org.example.core.CoreFacade")
+    ))).containsAll(mainFacade.evidences);
+    assertThat(mainFacade.evidences.size()).isEqualTo(1);
+
+    final AnalyserModel.DependencyViolation controllersFacade = actual.dependencyViolations
+        .stream()
+        .filter(v -> v.sourceModule.equals("Controllers") && v.destinationModule.equals("Facade"))
+        .findFirst().get();
+    assertThat(Arrays.asList(Arrays.asList(
+        Pair.make("org.example.controller.Controller1:access", "org.example.core.CoreFacade:facadeMethod1"),
+        Pair.make("org.example.controller.Controller1", "org.example.core.CoreFacade"),
+        Pair.make("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade")
+    ))).containsAll(controllersFacade.evidences);
+    assertThat(controllersFacade.evidences.size()).isEqualTo(1);
   }
 
   @Test

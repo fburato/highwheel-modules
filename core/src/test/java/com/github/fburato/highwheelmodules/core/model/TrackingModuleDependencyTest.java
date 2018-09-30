@@ -4,7 +4,9 @@ import org.junit.Test;
 import org.pitest.highwheel.model.AccessPoint;
 import org.pitest.highwheel.model.ElementName;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class TrackingModuleDependencyTest {
 
@@ -24,8 +26,8 @@ public class TrackingModuleDependencyTest {
   public void sourcesShouldReturnAddedEvidences() {
     testee.addEvidence(exampleSource, exampleDest);
 
-    assertThat(testee.getSources()).contains(exampleSource);
-    assertThat(testee.getDestinations()).contains(exampleDest);
+    assertThat(testee.getSources()).containsExactly(exampleSource);
+    assertThat(testee.getDestinations()).containsExactly(exampleDest);
   }
 
   @Test
@@ -44,6 +46,16 @@ public class TrackingModuleDependencyTest {
   public void getDestinationShouldReturnExpectedEvidences() {
     testee.addEvidence(exampleSource, exampleDest);
 
-    assertThat(testee.getDestinationsFromSource(exampleSource)).contains(exampleDest);
+    assertThat(testee.getDestinationsFromSource(exampleSource)).containsExactly(exampleDest);
+  }
+
+  @Test
+  public void shouldNotSaveMoreThanEvidenceLimit() {
+    final TrackingModuleDependency testee = new TrackingModuleDependency(moduleA, moduleB, Optional.of(1));
+    testee.addEvidence(exampleSource, exampleDest);
+    testee.addEvidence(exampleSource, AccessPoint.create(ElementName.fromString("B1")));
+
+    assertThat(testee.getSources()).containsExactly(exampleSource);
+    assertThat(testee.getDestinations()).containsExactly(exampleDest);
   }
 }

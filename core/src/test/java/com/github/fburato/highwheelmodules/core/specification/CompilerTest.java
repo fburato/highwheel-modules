@@ -4,12 +4,13 @@ import com.github.fburato.highwheelmodules.core.model.Definition;
 import com.github.fburato.highwheelmodules.core.model.Module;
 import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
-import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+
+
+import static org.assertj.core.api.Assertions.*;
 
 public class CompilerTest {
 
@@ -72,7 +73,7 @@ public class CompilerTest {
         ),
         Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("main", "core", "commons")));
     Definition actual = testee.compile(definition);
-    Assertions.assertThat(actual.dependencies)
+    assertThat(actual.dependencies)
         .containsAll(Arrays.asList(new Dependency(MAIN, CORE), new Dependency(CORE, COMMONS)));
   }
 

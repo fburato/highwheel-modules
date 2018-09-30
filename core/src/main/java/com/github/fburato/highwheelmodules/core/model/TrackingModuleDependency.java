@@ -16,6 +16,12 @@ public final class TrackingModuleDependency {
     this.evidences = new HashMap<>();
   }
 
+  public TrackingModuleDependency(final Module source, final Module dest, final Optional<Integer> evidenceLimit) {
+    this.source = source;
+    this.dest = dest;
+    this.evidences = new HashMap<>();
+  }
+
   public void addEvidence(AccessPoint source, AccessPoint dest) {
     final Set<AccessPoint> newDestinations = evidences.getOrDefault(source, new HashSet<>());
     newDestinations.add(dest);

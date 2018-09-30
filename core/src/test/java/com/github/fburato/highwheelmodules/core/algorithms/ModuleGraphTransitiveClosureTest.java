@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class ModuleGraphTransitiveClosureTest {
   private final Module CORE = Module.make("Core", "org.example.core.*").get();

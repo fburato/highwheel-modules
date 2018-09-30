@@ -10,7 +10,7 @@ import org.pitest.highwheel.model.ElementName;
 
 import java.util.*;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class ModuleDependenciesGraphBuildingVisitorTest {
 

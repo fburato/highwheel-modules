@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class StringUtilTest {
 
