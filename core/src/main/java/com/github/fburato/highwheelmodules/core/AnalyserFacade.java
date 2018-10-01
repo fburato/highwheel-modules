@@ -4,6 +4,7 @@ import com.github.fburato.highwheelmodules.core.analysis.AnalyserException;
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserModel;
 import com.github.fburato.highwheelmodules.core.analysis.ModuleAnalyser;
 import com.github.fburato.highwheelmodules.core.model.Definition;
+import com.github.fburato.highwheelmodules.core.model.Module;
 import com.github.fburato.highwheelmodules.core.specification.Compiler;
 import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
 import com.github.fburato.highwheelmodules.core.specification.parsers.DefinitionParser;
@@ -20,8 +21,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class AnalyserFacade {
 
@@ -103,28 +107,25 @@ public class AnalyserFacade {
     final ClassParser classParser = new ClassPathParser(includeAll);
     final ModuleAnalyser analyser = new ModuleAnalyser(classParser, classpathRoot, evidenceLimit);
     if (executionMode == ExecutionMode.STRICT) {
-      executeGenericAnalysis(definitions, analyser, this::strictAnalysis, "strict");
+      executeGenericAnalysis(definitions,analyser::analyseStrict,this::strictAnalysis);
     } else {
-      executeGenericAnalysis(definitions, analyser, this::looseAnalysis, "loose");
+      executeGenericAnalysis(definitions,analyser::analyseLoose,this::looseAnalysis);
     }
   }
 
-  private void executeGenericAnalysis(List<Pair<String, Definition>> definitions, ModuleAnalyser analyser,
-                                      BiConsumer<ModuleAnalyser, Definition> analysisMethod, String analysisName) {
-    boolean error = false;
-    for (Pair<String, Definition> pathDefinition : definitions) {
-      try {
-        printer.info(String.format("Starting %s analysis on '%s'", analysisName, pathDefinition.first));
-        analysisMethod.accept(analyser, pathDefinition.second);
-        printer.info(String.format("Analysis on '%s' complete", pathDefinition.first));
-      } catch (AnalyserException e) {
-        printer.info(e.getMessage());
-        error = true;
+  private <T> void executeGenericAnalysis(List<Pair<String, Definition>> definitions,
+          Function<List<Definition>,List<Pair<Definition, T>>> analyser,
+          Function<Pair<String,T>,Boolean> analysis) {
+      final List<Pair<Definition,T>> analysisResults =
+              analyser.apply(definitions.stream().map(p -> p.second).collect(Collectors.toList()));
+      final AtomicBoolean errorCollector = new AtomicBoolean(false);
+      IntStream.range(0,analysisResults.size())
+              .mapToObj( i -> Pair.make(definitions.get(i).first,analysisResults.get(i).second))
+              .map(analysis)
+              .forEach( p -> errorCollector.set(p || errorCollector.get()));
+      if(errorCollector.get()) {
+          throw new AnalyserException("Analysis failed");
       }
-    }
-    if (error) {
-      throw new AnalyserException("One or more analysis failed. Check the previous messages for more information.");
-    }
   }
 
   private Definition compileSpecification(final String specificationPath) {
@@ -190,50 +191,56 @@ public class AnalyserFacade {
     return compiler.compile(definition);
   }
 
-  private void strictAnalysis(ModuleAnalyser analyser, Definition definition) {
-    AnalyserModel.StrictAnalysisResult analysisResult = analyser.analyseStrict(Collections.singletonList(definition)).get(0).second;
-    printer.info("Analysis complete");
-    printMetrics(analysisResult.metrics);
-    boolean error = !analysisResult.dependencyViolations.isEmpty() || !analysisResult.noStrictDependencyViolations.isEmpty();
-    if (analysisResult.dependencyViolations.isEmpty()) {
-      strictAnalysisEventSink.dependenciesCorrect();
-    } else {
-      strictAnalysisEventSink.dependencyViolationsPresent();
-      printDependencyViolations(analysisResult.dependencyViolations);
-    }
-    if (analysisResult.noStrictDependencyViolations.isEmpty()) {
-      strictAnalysisEventSink.directDependenciesCorrect();
-    } else {
-      strictAnalysisEventSink.noDirectDependenciesViolationPresent();
-      printNoDirectDependecyViolation(analysisResult.noStrictDependencyViolations);
-    }
-    if (error) {
-      throw new AnalyserException("Analysis failed");
-    }
+  private boolean strictAnalysis(Pair<String,AnalyserModel.StrictAnalysisResult> pathResult) {
+      printer.info(String.format("Starting strict analysis on '%s'",pathResult.first));
+      final AnalyserModel.StrictAnalysisResult analysisResult = pathResult.second;
+      boolean error = !analysisResult.dependencyViolations.isEmpty() || !analysisResult.noStrictDependencyViolations.isEmpty();
+      printMetrics(analysisResult.metrics);
+      if (analysisResult.dependencyViolations.isEmpty()) {
+          strictAnalysisEventSink.dependenciesCorrect();
+      } else {
+          strictAnalysisEventSink.dependencyViolationsPresent();
+          printDependencyViolations(analysisResult.dependencyViolations);
+      }
+      if (analysisResult.noStrictDependencyViolations.isEmpty()) {
+          strictAnalysisEventSink.directDependenciesCorrect();
+      } else {
+          strictAnalysisEventSink.noDirectDependenciesViolationPresent();
+          printNoDirectDependecyViolation(analysisResult.noStrictDependencyViolations);
+      }
+      if(error) {
+          printer.info(String.format("Analysis on '%s' failed", pathResult.first));
+      } else {
+          printer.info(String.format("Analysis on '%s' complete", pathResult.first));
+      }
+      return error;
   }
 
-  private void looseAnalysis(ModuleAnalyser analyser, Definition definition) {
-    AnalyserModel.LooseAnalysisResult analysisResult = analyser.analyseLoose(Collections.singletonList(definition)).get(0).second;
-    printer.info("Analysis complete");
-    printMetrics(analysisResult.metrics);
-    boolean error =
-        !analysisResult.absentDependencyViolations.isEmpty() || !analysisResult.undesiredDependencyViolations.isEmpty();
-    if (analysisResult.absentDependencyViolations.isEmpty()) {
-      looseAnalysisEventSink.allDependenciesPresent();
-    } else {
-      looseAnalysisEventSink.absentDependencyViolationsPresent();
-      printAbsentDependencies(analysisResult.absentDependencyViolations);
+    private boolean looseAnalysis(Pair<String,AnalyserModel.LooseAnalysisResult> pathResult) {
+        printer.info(String.format("Starting loose analysis on '%s'",pathResult.first));
+        final AnalyserModel.LooseAnalysisResult analysisResult = pathResult.second;
+        printMetrics(analysisResult.metrics);
+        boolean error =
+                !analysisResult.absentDependencyViolations.isEmpty() || !analysisResult.undesiredDependencyViolations.isEmpty();
+        if (analysisResult.absentDependencyViolations.isEmpty()) {
+            looseAnalysisEventSink.allDependenciesPresent();
+        } else {
+            looseAnalysisEventSink.absentDependencyViolationsPresent();
+            printAbsentDependencies(analysisResult.absentDependencyViolations);
+        }
+        if (analysisResult.undesiredDependencyViolations.isEmpty()) {
+            looseAnalysisEventSink.noUndesiredDependencies();
+        } else {
+            looseAnalysisEventSink.undesiredDependencyViolationsPresent();
+            printUndesiredDependencies(analysisResult.undesiredDependencyViolations);
+        }
+        if(error) {
+            printer.info(String.format("Analysis on '%s' failed", pathResult.first));
+        } else {
+            printer.info(String.format("Analysis on '%s' complete", pathResult.first));
+        }
+        return error;
     }
-    if (analysisResult.undesiredDependencyViolations.isEmpty()) {
-      looseAnalysisEventSink.noUndesiredDependencies();
-    } else {
-      looseAnalysisEventSink.undesiredDependencyViolationsPresent();
-      printUndesiredDependencies(analysisResult.undesiredDependencyViolations);
-    }
-    if (error) {
-      throw new AnalyserException("Analysis failed");
-    }
-  }
 
   private void printMetrics(Collection<AnalyserModel.Metrics> metrics) {
     for (AnalyserModel.Metrics m : metrics) {
