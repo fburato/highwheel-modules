@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2018-10-01
+
+Highwheel-modules used to be terrible at multi-tasking: you could perform multiple analysis using the same 
+classpath and different specifications, but the scanner had to parse the bytecode in the classpath for every single one 
+of them. Thanks to a complex incantation consisting in a few clever ideas (limit evidence collection and associated
+definitions to dependency graphs) and some hat-tricks, now highwheel-modules can accept any number of specification,
+compile them, run all the analysis while scanning the classpath and reporting all results at the end. The 
+analysis could even be parallelised, but as Spock once said: premature optimisation evil is Harry, now on the 
+Millenium Falcon embark you must.
+
+### Changed
+
+- The Analyser Facade now accepts a list of files for specification and an explicit evidence limit (optional).
+An empty evidence limit will leave the analyser to collect all evidence (high memory footprint).
+- The `hwmSpecFile` option in the maven plugin has been renamed to `hwmSpecFiles` and its value needs to be a comma
+separated list of paths.
+- The command line interface now accepts multiple `-s` option to pass multiple specification files.
+
+
 ## [1.2.0] - 2018-04-16
 
 Sometimes less is more, sometimes more is less. Sometimes 1000 pieces of evidence that show that yes, indeed module B depends module A are a little too much considering one piece of evidence is sufficient to disprove a universal quantifier.

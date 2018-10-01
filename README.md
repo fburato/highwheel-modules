@@ -129,7 +129,8 @@ errors.
 
 It is possible to change both the specification file and the mode with the following options:
 
-* `--spec | -s`: path to the specification file to use.
+* `--spec | -s`: path to the specification file to use. Add multiple of these options to include more specification
+in the analysis.
 * `--mode | -m (strict | loose)`: run strict or loose analysis.
 
 ## Highwheel modules maven plugin
@@ -159,7 +160,7 @@ errors.
 
 It is possible to change the behaviour of the plugin as follows:
 
-* `-DhwmSpecFile=<path to spec file>`: use the path provided instead of `spec.hwm` from the base dir if the path is 
+* `-DhwmSpecFiles=<comma separated list of paths to spec files>`: use the paths provided instead of `spec.hwm` from the base dir if the path is 
 relative, otherwise use the path as is if the path is absolute.
 * `-DhwmChildOnly=true`: in a multi-module build, run the analysis only on the child modules.
 * `-DhwmParentOnly=true`: in a multi-module build, run the analysis only on the parent.
@@ -176,7 +177,7 @@ Add the following dependency to your build/plugins section:
 <dependency>
     <groupId>com.github.fburato</groupId>
     <artifactId>highwheel-modules-maven-plugin</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
