@@ -2,13 +2,14 @@ package com.github.fburato.highwheelmodules.core.specification.parsers;
 
 import org.jparsec.*;
 
+
 final class TerminalParser {
   private final String[] operators = {
       "=", "\n", ":", "->", "-/->", ","
   };
 
   private final Terminals terminals =
-      Terminals.operators(operators).words(Scanners.IDENTIFIER).keywords("modules", "rules").build();
+      Terminals.operators(operators).words(Scanners.IDENTIFIER).keywords("modules", "rules", "prefix").build();
 
   private final Parser<?> tokeniser = Parsers.<Object>or(terminals.tokenizer(), Terminals.StringLiteral.DOUBLE_QUOTE_TOKENIZER);
 
@@ -52,6 +53,12 @@ final class TerminalParser {
     return this.newLine;
   }
 
+  private final Parser<Token> prefixPreamble = term("prefix");
+
+  public Parser<Token> prefixPreamble() {
+    return this.prefixPreamble;
+  }
+
   private final Parser<Token> modulesPreamble = term("modules");
 
   public Parser<Token> modulesPreamble() {
@@ -72,7 +79,7 @@ final class TerminalParser {
 
   private final Parser<String> moduleRegex = Terminals.StringLiteral.PARSER;
 
-  public Parser<String> moduleRegex() {
+  public Parser<String> stringLiteral() {
     return this.moduleRegex;
   }
 

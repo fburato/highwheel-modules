@@ -1,9 +1,6 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public interface SyntaxTree {
 
@@ -25,7 +22,7 @@ public interface SyntaxTree {
     public String toString() {
       return "ModuleDefinition{" +
           "moduleName='" + moduleName + '\'' +
-          ", moduleRegex='" + moduleRegex + '\'' +
+          ", stringLiteral='" + moduleRegex + '\'' +
           '}';
     }
 
@@ -109,32 +106,33 @@ public interface SyntaxTree {
   }
 
   class Definition {
+    public final Optional<String> prefix;
     public final List<ModuleDefinition> moduleDefinitions;
     public final List<Rule> rules;
 
     public Definition(List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
+      this(Optional.empty(),moduleDefinitions,rules);
+    }
+
+    public Definition(Optional<String> prefix, List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
+      this.prefix = prefix;
       this.moduleDefinitions = moduleDefinitions;
       this.rules = rules;
     }
 
     @Override
     public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-
+      if (this == o) return true;
+      if (!(o instanceof Definition)) return false;
       Definition that = (Definition) o;
-
-      return Objects.equals(this.moduleDefinitions, that.moduleDefinitions) &&
-          Objects.equals(this.rules, that.rules);
+      return Objects.equals(prefix, that.prefix) &&
+          Objects.equals(moduleDefinitions, that.moduleDefinitions) &&
+          Objects.equals(rules, that.rules);
     }
 
     @Override
     public int hashCode() {
-      int result = moduleDefinitions.hashCode();
-      result = 31 * result + rules.hashCode();
-      return result;
+      return Objects.hash(prefix, moduleDefinitions, rules);
     }
   }
 }

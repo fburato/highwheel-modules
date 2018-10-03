@@ -90,6 +90,11 @@ public class TerminalParserTest {
   }
 
   @Test
+  public void prefixPreambleShouldParsePrefixKeyword() {
+    assertParse(testee.prefixPreamble(), "prefix");
+  }
+
+  @Test
   public void newLineShouldParseNewLine() {
     assertParse(testee.newLine(), "\n");
   }
@@ -101,12 +106,12 @@ public class TerminalParserTest {
 
   @Test
   public void moduleRegexShouldParseDoubleQuotedStringLiteral() {
-    assertParse(testee.moduleRegex(), "\"asdfasdf121123  sdfwe{{\"");
+    assertParse(testee.stringLiteral(), "\"asdfasdf121123  sdfwe{{\"");
   }
 
   @Test(expected = RuntimeException.class)
   public void moduleRegexShouldFailOnNotTerminatedDoubleQuotedStringLiteral() {
-    assertParse(testee.moduleRegex(), "\"asdfasdf121123  sdfwe{{");
+    assertParse(testee.stringLiteral(), "\"asdfasdf121123  sdfwe{{");
   }
 
   public void assertParse(Parser<?> p, String source) {

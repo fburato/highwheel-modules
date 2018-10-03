@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -65,9 +66,9 @@ public class DefinitionParserTest {
     assertParse(testee.chainDependencyRuleParser, "id1-/->id2\n", null);
   }
 
-  @Test(expected = RuntimeException.class)
-  public void chainDependencyParserShouldFailMissingNewLine() {
-    assertParse(testee.chainDependencyRuleParser, "id1->id2", null);
+  @Test
+  public void chainDependencyRuleParserShouldParseWithJustRulesAndNoNewLine() {
+    assertParse(testee.chainDependencyRuleParser, "id1->id2", new SyntaxTree.ChainDependencyRule(Arrays.asList("id1", "id2")));
   }
 
   @Test
@@ -140,6 +141,11 @@ public class DefinitionParserTest {
   }
 
   @Test
+  public void prefixPreambleShouldParsePrefixColumnNewLineAndParseAdditionalNewLines () {
+    assertParse(testee.prefixPreamble, "prefix:\n\n\n", null);
+  }
+
+  @Test
   public void modulesPreambleShouldParseModulesColumnNewLineAndParseAdditionalNewLines() {
     assertParse(testee.modulesPreamble, "modules:\n\n\n", null);
   }
@@ -147,6 +153,11 @@ public class DefinitionParserTest {
   @Test
   public void rulesPreambleShouldParseRulesColumnNewLineAndParseAdditionalNewLines() {
     assertParse(testee.rulesPreamble, "rules:\n\n\n\n", null);
+  }
+
+  @Test
+  public void prefixSectionShouldParsePreambleAndStringLiteralRegex() {
+    assertParse(testee.prefixSection, "prefix:\n\n\n\n\"a regex\"\n\n\n\n",Optional.of("a regex"));
   }
 
   @Test
@@ -167,7 +178,14 @@ public class DefinitionParserTest {
   }
 
   @Test
-  public void grammarShouldParseModuleAndRulesAndReturnTheDefinition() {
+  public void rulesSectionShouldParsePreambleAndRuleWithEndOfFile() {
+    assertParse(testee.rulesSection, "rules:\n\n\nida->idb", Arrays.asList(
+        new SyntaxTree.ChainDependencyRule("ida", "idb")
+    ));
+  }
+
+  @Test
+  public void grammarShouldParseModuleAndRulesAndReturnTheDefinitionWithoutPrefix() {
     assertParse(testee.grammar, "modules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid1->id2->id3\nid6-/->id7\nid8->id9\n",
         new SyntaxTree.Definition(
             Arrays.asList(
@@ -182,7 +200,23 @@ public class DefinitionParserTest {
   }
 
   @Test
-  public void parserShouldReadReadableIgnoringSpacesAndJavaCommentsAndReturnDefinition() {
+  public void grammarShouldParsePrefixModuleAndRulesAndReturnTheDefinition() {
+    assertParse(testee.grammar, "prefix:\"the prefix\"modules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid1->id2->id3\nid6-/->id7\nid8->id9\n",
+        new SyntaxTree.Definition(
+            Optional.of("the prefix"),
+            Arrays.asList(
+                new SyntaxTree.ModuleDefinition("m1", "regex1.*"),
+                new SyntaxTree.ModuleDefinition("m2", "regex2+")
+            ), Arrays.asList(
+            new SyntaxTree.ChainDependencyRule("id1", "id2", "id3"),
+            new SyntaxTree.NoDependentRule("id6", "id7"),
+            new SyntaxTree.ChainDependencyRule("id8", "id9")
+        )
+        ));
+  }
+
+  @Test
+  public void parserShouldReadReadableIgnoringSpacesAndJavaCommentsAndReturnDefinitionWithoutPrefix() {
     final InputStreamReader reader =
         new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("./example-def.txt"));
     assertThat(testee.parse(reader)).isEqualTo(new SyntaxTree.Definition(
@@ -192,6 +226,26 @@ public class DefinitionParserTest {
             new SyntaxTree.ModuleDefinition("Utils", "com.pitest.highwheel.utils.*"),
             new SyntaxTree.ModuleDefinition("Modules", "com.pitest.highwheel.modules.*"),
             new SyntaxTree.ModuleDefinition("Parser", "com.pitest.highwheel.parser.*")
+        ), Arrays.asList(
+        new SyntaxTree.ChainDependencyRule("Parser", "Core", "Utils"),
+        new SyntaxTree.NoDependentRule("Utils", "Core"),
+        new SyntaxTree.NoDependentRule("Utils", "Parser"),
+        new SyntaxTree.ChainDependencyRule("Modules", "Core"),
+        new SyntaxTree.ChainDependencyRule("Modules", "Utils")
+    )));
+  }
+
+  @Test
+  public void parserShouldReadReadableIgnoringSpacesAndJavaCommentsAndReturnDefinitionWithPrefix() {
+    final InputStreamReader reader =
+        new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("./example-def-with-prefix.txt"));
+    assertThat(testee.parse(reader)).isEqualTo(new SyntaxTree.Definition(
+        Optional.of("com.pitest.highwheel."),
+        Arrays.asList(
+            new SyntaxTree.ModuleDefinition("Core", Arrays.asList("core.*", "core2.*")),
+            new SyntaxTree.ModuleDefinition("Utils", "utils.*"),
+            new SyntaxTree.ModuleDefinition("Modules", "modules.*"),
+            new SyntaxTree.ModuleDefinition("Parser", "parser.*")
         ), Arrays.asList(
         new SyntaxTree.ChainDependencyRule("Parser", "Core", "Utils"),
         new SyntaxTree.NoDependentRule("Utils", "Core"),
