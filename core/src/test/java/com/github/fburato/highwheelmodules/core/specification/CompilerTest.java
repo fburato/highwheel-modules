@@ -69,7 +69,7 @@ public class CompilerTest {
     final SyntaxTree.Definition definition = new SyntaxTree.Definition(
         Optional.of("org.example."),
         Arrays.asList(
-            new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*","foobar.*")),
+            new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*", "foobar.*")),
             new SyntaxTree.ModuleDefinition("Bar", "bar.*")
         ),
         Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("Foo", "Bar"))
@@ -77,8 +77,8 @@ public class CompilerTest {
 
     final Definition actual = testee.compile(definition);
     assertThat(actual.modules).containsExactlyInAnyOrder(
-        Module.make("Foo","org.example.foo.*","org.example.foobar.*").get(),
-        Module.make("Bar","org.example.bar.*").get()
+        Module.make("Foo", "org.example.foo.*", "org.example.foobar.*").get(),
+        Module.make("Bar", "org.example.bar.*").get()
     );
   }
 

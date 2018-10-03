@@ -28,7 +28,7 @@ public class Compiler {
 
   public Definition compile(SyntaxTree.Definition definition) {
     final String prefix = definition.prefix.orElse("");
-    final Map<String, Module> modules = compileModules(definition.moduleDefinitions,prefix);
+    final Map<String, Module> modules = compileModules(definition.moduleDefinitions, prefix);
     final Pair<List<Dependency>, List<NoStrictDependency>> rules = compileRules(definition.rules, modules);
 
     return new Definition(modules.values(), rules.first, rules.second);
@@ -40,7 +40,7 @@ public class Compiler {
     for (SyntaxTree.ModuleDefinition moduleDefinition : definitions) {
       final Optional<Module> optionalModule = Module.make(moduleDefinition.moduleName, moduleDefinition.moduleRegex
           .stream()
-          .map( regex -> prefix + regex)
+          .map(regex -> prefix + regex)
           .collect(Collectors.toList())
       );
       if (!optionalModule.isPresent()) {

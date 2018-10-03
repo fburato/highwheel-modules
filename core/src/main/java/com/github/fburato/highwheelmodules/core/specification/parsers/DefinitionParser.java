@@ -28,7 +28,7 @@ public final class DefinitionParser {
 
   final Parser<SyntaxTree.ChainDependencyRule> chainDependencyRuleParser =
       Parsers.sequence(tp.moduleName(), Parsers.sequence(tp.arrow(), tp.moduleName(), (Token t, String s) -> s).many1(),
-          Parsers.or(tp.newLine(),Parsers.EOF),
+          Parsers.or(tp.newLine(), Parsers.EOF),
           (String s, List<String> strings, Object t) -> {
             final List<String> result = new ArrayList<>(strings.size() + 1);
             result.add(s);
@@ -51,7 +51,7 @@ public final class DefinitionParser {
 
   final Parser<Void> prefixPreamble = Parsers.sequence(tp.prefixPreamble(), tp.definedAs(), tp.newLine().many(),
       (Token t1, Token t2, List<Token> nl) -> null
-      );
+  );
 
   final Parser<Void> modulesPreamble = Parsers.sequence(tp.modulesPreamble(), tp.definedAs(), tp.newLine().many(),
       (Token token, Token token2, List<Token> d) -> null);

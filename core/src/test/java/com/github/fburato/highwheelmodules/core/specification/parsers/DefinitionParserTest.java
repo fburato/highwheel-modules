@@ -141,7 +141,7 @@ public class DefinitionParserTest {
   }
 
   @Test
-  public void prefixPreambleShouldParsePrefixColumnNewLineAndParseAdditionalNewLines () {
+  public void prefixPreambleShouldParsePrefixColumnNewLineAndParseAdditionalNewLines() {
     assertParse(testee.prefixPreamble, "prefix:\n\n\n", null);
   }
 
@@ -157,7 +157,7 @@ public class DefinitionParserTest {
 
   @Test
   public void prefixSectionShouldParsePreambleAndStringLiteralRegex() {
-    assertParse(testee.prefixSection, "prefix:\n\n\n\n\"a regex\"\n\n\n\n",Optional.of("a regex"));
+    assertParse(testee.prefixSection, "prefix:\n\n\n\n\"a regex\"\n\n\n\n", Optional.of("a regex"));
   }
 
   @Test

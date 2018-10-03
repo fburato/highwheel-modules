@@ -111,7 +111,7 @@ public interface SyntaxTree {
     public final List<Rule> rules;
 
     public Definition(List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
-      this(Optional.empty(),moduleDefinitions,rules);
+      this(Optional.empty(), moduleDefinitions, rules);
     }
 
     public Definition(Optional<String> prefix, List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
