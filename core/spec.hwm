@@ -1,12 +1,12 @@
-prefix: "com.github.fburato.highwheelmodules."
+prefix: "com.github.fburato.highwheelmodules.core."
 
 modules:
-    Algorithms = "core.algorithms.*"
-    ExternalAdapters = "core.externaladapters.*"
-    Model = "core.model.*"
-    Specification = "core.specification.*"
-    ModuleAnalyser = "core.analysis.*"
-    Facade = "core.AnalyserFacade"
+    Algorithms = "algorithms.*"
+    ExternalAdapters = "externaladapters.*"
+    Model = "model.*"
+    Specification = "specification.*"
+    ModuleAnalyser = "analysis.*"
+    Facade = "AnalyserFacade"
 
 rules:
     Algorithms -> Model

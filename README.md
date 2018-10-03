@@ -20,16 +20,17 @@ storage devices and external services etc. Highwheel modules offers:
 Highwheel-module specification language can be described by the following grammar in EBNF form:
 
 ```
-Modules ::= "modules:" "\n"
+Modules ::= ["prefix: RegexLiteral]
+            "modules:" "\n"
               { ModuleDefinition }
             "rules:" "\n"
               { RuleDefinition } 
 
-ModuleDefinition ::= ModuleIdentifier = ModuleRegex{ , ModuleRegex } "\n"
+ModuleDefinition ::= ModuleIdentifier = ModuleRegex{ , RegexLiteral } "\n"
 
 ModuleIdentifier ::= <java identifier>
 
-ModuleRegex ::= "<glob regex>"
+RegexLiteral ::= "<glob regex>"
 
 RuleDefinition ::= DependencyRule | NoDependencyRule
 
@@ -49,12 +50,59 @@ like this:
 
 ```
 modules:
+    Utils = "com.github.fburato.highwheelmodules.utils.*"
+    Core = "com.github.fburato.highwheelmodules.core.*"
+    Cli = "com.github.fburato.highwheelmodules.cli.*"
+    MavenPlugin = "com.github.fburato.highwheelmodules.maven.*"
+rules:
+    MavenPlugin -> Core
+    Cli -> Core
+    Core -> Utils
+    MavenPlugin -> Utils
+    Cli -> Utils
+```
+
+An equivalent way of providing the specification is to use the `prefix` preamble, which allows to automatically
+add to all module specification a prefix to compact the definition.
+
+With the usage of prefix, the following definition:
+
+```
+prefix: "com.github.fburato.highwheelmodules."
+
+modules:
     Algorithms = "com.github.fburato.highwheelmodules.core.algorithms.*"
     ExternalAdapters = "com.github.fburato.highwheelmodules.core.externaladapters.*"
     Model = "com.github.fburato.highwheelmodules.core.model.*"
     Specification = "com.github.fburato.highwheelmodules.core.specification.*"
-    ModuleAnalyser = "com.github.fburato.highwheelmodules.core.analysis.ModuleAnalyser", "com.github.fburato.highwheelmodules.core.analysis.AnalyserException", "com.github.fburato.highwheelmodules.core.analysis.AnalyserModel"
+    ModuleAnalyser = "com.github.fburato.highwheelmodules.core.analysis.*"
     Facade = "com.github.fburato.highwheelmodules.core.AnalyserFacade"
+
+rules:
+    Algorithms -> Model
+    ExternalAdapters -> Model
+    Specification -> Model
+    ModuleAnalyser -> Algorithms
+    ModuleAnalyser -> Model
+    ModuleAnalyser -> ExternalAdapters
+    Facade -> ModuleAnalyser
+    Facade -> Model
+    Facade -/-> Algorithms
+    Facade -> Specification
+```
+
+is equivalent to
+
+```
+prefix: "com.github.fburato.highwheelmodules.core."
+
+modules:
+    Algorithms = "algorithms.*"
+    ExternalAdapters = "externaladapters.*"
+    Model = "model.*"
+    Specification = "specification.*"
+    ModuleAnalyser = "analysis.*"
+    Facade = "AnalyserFacade"
 
 rules:
     Algorithms -> Model
@@ -177,7 +225,7 @@ Add the following dependency to your build/plugins section:
 <dependency>
     <groupId>com.github.fburato</groupId>
     <artifactId>highwheel-modules-maven-plugin</artifactId>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2018-10-03
+
+Aren't you tired of having to specify the complete package name for all module regex even if they all begin with the
+same kilometric prefix? Me too! Now the specification file can contain a `prefix` preamble that automatically adds
+a given prefix to all regex in the module specification. Saving precious bytes in the disk and making everything more
+readable.
+
 ## [1.3.0] - 2018-10-01
 
 Highwheel-modules used to be terrible at multi-tasking: you could perform multiple analysis using the same 
