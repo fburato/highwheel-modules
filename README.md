@@ -20,7 +20,7 @@ storage devices and external services etc. Highwheel modules offers:
 Highwheel-module specification language can be described by the following grammar in EBNF form:
 
 ```
-Modules ::= ["prefix: RegexLiteral]
+Modules ::= ["prefix:" RegexLiteral "\n"]
             "modules:" "\n"
               { ModuleDefinition }
             "rules:" "\n"
