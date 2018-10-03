@@ -1,12 +1,13 @@
+prefix: "org.example."
 modules:
-    Main = "org.example.Main"
-    Controller = "org.example.controller.*"
-    Facade = "org.example.core.CoreFacade"
-    CoreInternals = "org.example.core.internals.*"
-    CoreApi = "org.example.core.api.*", "org.example.core.otherapi.*"
-    Model = "org.example.core.model.*"
-    IO = "org.example.io.*"
-    Utils = "org.example.commons.*"
+    Main = "Main"
+    Controller = "controller.*"
+    Facade = "core.CoreFacade"
+    CoreInternals = "core.internals.*"
+    CoreApi = "core.api.*", "core.otherapi.*"
+    Model = "core.model.*"
+    IO = "io.*"
+    Utils = "commons.*"
 rules:
     Main -> Controller -> Facade
     Main -/-> CoreInternals

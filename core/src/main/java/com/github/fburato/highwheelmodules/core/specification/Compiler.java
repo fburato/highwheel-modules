@@ -6,6 +6,7 @@ import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 
@@ -26,17 +27,22 @@ public class Compiler {
   }
 
   public Definition compile(SyntaxTree.Definition definition) {
-    final Map<String, Module> modules = compileModules(definition.moduleDefinitions);
+    final String prefix = definition.prefix.orElse("");
+    final Map<String, Module> modules = compileModules(definition.moduleDefinitions,prefix);
     final Pair<List<Dependency>, List<NoStrictDependency>> rules = compileRules(definition.rules, modules);
 
     return new Definition(modules.values(), rules.first, rules.second);
   }
 
-  private Map<String, Module> compileModules(List<SyntaxTree.ModuleDefinition> definitions) {
+  private Map<String, Module> compileModules(List<SyntaxTree.ModuleDefinition> definitions, String prefix) {
     final Map<String, Module> modules = new HashMap<>(definitions.size());
 
     for (SyntaxTree.ModuleDefinition moduleDefinition : definitions) {
-      final Optional<Module> optionalModule = Module.make(moduleDefinition.moduleName, moduleDefinition.moduleRegex);
+      final Optional<Module> optionalModule = Module.make(moduleDefinition.moduleName, moduleDefinition.moduleRegex
+          .stream()
+          .map( regex -> prefix + regex)
+          .collect(Collectors.toList())
+      );
       if (!optionalModule.isPresent()) {
         throw new CompilerException(
             String.format(MODULE_REGEX_NOT_WELL_DEFINED, moduleDefinition.moduleRegex, moduleDefinition.moduleName));

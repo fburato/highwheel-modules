@@ -7,6 +7,8 @@ import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,6 +41,48 @@ public class CompilerTest {
   }
 
   @Test(expected = CompilerException.class)
+  public void shouldFailIfPrefixIsNotAValidRegex() {
+    final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+        Optional.of("invalidRegex["),
+        Arrays.asList(
+            new SyntaxTree.ModuleDefinition("name", "name")
+        ),
+        Collections.emptyList()
+    );
+    testee.compile(definition);
+  }
+
+  @Test(expected = CompilerException.class)
+  public void shouldFailIfPrefixAvailableAndModuleRegexIsNotAValidRegex() {
+    final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+        Optional.of("prefix"),
+        Arrays.asList(
+            new SyntaxTree.ModuleDefinition("name", "invalidRegex[")
+        ),
+        Collections.emptyList()
+    );
+    testee.compile(definition);
+  }
+
+  @Test
+  public void shouldPrefixAllModulesRegexWithPrefix() {
+    final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+        Optional.of("org.example."),
+        Arrays.asList(
+            new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*","foobar.*")),
+            new SyntaxTree.ModuleDefinition("Bar", "bar.*")
+        ),
+        Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("Foo", "Bar"))
+    );
+
+    final Definition actual = testee.compile(definition);
+    assertThat(actual.modules).containsExactlyInAnyOrder(
+        Module.make("Foo","org.example.foo.*","org.example.foobar.*").get(),
+        Module.make("Bar","org.example.bar.*").get()
+    );
+  }
+
+  @Test(expected = CompilerException.class)
   public void shouldFailIfRuleReferToNotDefinedModules() {
     final SyntaxTree.Definition definition = new SyntaxTree.Definition(
         Arrays.asList(new SyntaxTree.ModuleDefinition("name", "regex")),
@@ -57,7 +101,7 @@ public class CompilerTest {
         ),
         Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("core", "commons")));
     Definition actual = testee.compile(definition);
-    assertThat(actual.modules).containsAll(Arrays.asList(CORE, COMMONS, IO, MAIN));
+    assertThat(actual.modules).containsExactlyInAnyOrder(CORE, COMMONS, IO, MAIN);
   }
 
   @Test
@@ -72,7 +116,7 @@ public class CompilerTest {
         Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("main", "core", "commons")));
     Definition actual = testee.compile(definition);
     assertThat(actual.dependencies)
-        .containsAll(Arrays.asList(new Dependency(MAIN, CORE), new Dependency(CORE, COMMONS)));
+        .containsExactlyInAnyOrder(new Dependency(MAIN, CORE), new Dependency(CORE, COMMONS));
   }
 
   @Test
@@ -86,6 +130,6 @@ public class CompilerTest {
         ),
         Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.NoDependentRule("core", "io")));
     Definition actual = testee.compile(definition);
-    assertThat(actual.noStrictDependencies).containsAll(Arrays.asList(new NoStrictDependency(CORE, IO)));
+    assertThat(actual.noStrictDependencies).containsExactlyInAnyOrder(new NoStrictDependency(CORE, IO));
   }
 }
