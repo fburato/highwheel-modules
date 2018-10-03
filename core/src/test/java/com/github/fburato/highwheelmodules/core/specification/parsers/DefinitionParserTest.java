@@ -83,9 +83,9 @@ public class DefinitionParserTest {
         new SyntaxTree.ChainDependencyRule(Arrays.asList("id1", "id2", "id3", "id4")));
   }
 
-  @Test(expected = RuntimeException.class)
-  public void noDependencyParserShouldFailOnAbsentNewLine() {
-    assertParse(testee.noDependecyRuleParser, "id-/->id2", null);
+  @Test
+  public void noDependencyParserShouldParseWithJustRulesAndNoNewLine() {
+    assertParse(testee.noDependecyRuleParser, "id1-/->id2", new SyntaxTree.NoDependentRule("id1", "id2"));
   }
 
   @Test(expected = RuntimeException.class)
@@ -181,6 +181,14 @@ public class DefinitionParserTest {
   public void rulesSectionShouldParsePreambleAndRuleWithEndOfFile() {
     assertParse(testee.rulesSection, "rules:\n\n\nida->idb", Arrays.asList(
         new SyntaxTree.ChainDependencyRule("ida", "idb")
+    ));
+  }
+
+  @Test
+  public void rulesSectionShouldParsePreambleAndNoDependecyRuleWithEndOfFile() {
+    assertParse(testee.rulesSection, "rules:\n\n\nida->idb\nid2-/->id44", Arrays.asList(
+        new SyntaxTree.ChainDependencyRule("ida", "idb"),
+        new SyntaxTree.NoDependentRule("id2","id44")
     ));
   }
 

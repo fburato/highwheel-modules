@@ -37,8 +37,8 @@ public final class DefinitionParser {
           });
 
   final Parser<SyntaxTree.NoDependentRule> noDependecyRuleParser =
-      Parsers.sequence(tp.moduleName(), tp.notArrow(), tp.moduleName(), tp.newLine(),
-          (String s, Token token, String s2, Token token2) -> new SyntaxTree.NoDependentRule(s, s2));
+      Parsers.sequence(tp.moduleName(), tp.notArrow(), tp.moduleName(), Parsers.or(tp.newLine(), Parsers.EOF),
+          (String s, Token token, String s2, Object token2) -> new SyntaxTree.NoDependentRule(s, s2));
 
   private final Parser<SyntaxTree.Rule> anyRuleParser = Parsers.or(chainDependencyRuleParser, noDependecyRuleParser);
 
