@@ -59,21 +59,6 @@
       <artifactId>commons-io</artifactId>
       <version>2.4</version>
     </dependency>
-
-    <!-- test dependencies -->
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>1.1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-verifier</artifactId>
-      <version>1.6</version>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <build>
