@@ -1,0 +1,7 @@
+modules:
+  A = "a.*"
+  B = "b.*"
+  C = "c.*"
+rules:
+  C -> A
+  C -> B
