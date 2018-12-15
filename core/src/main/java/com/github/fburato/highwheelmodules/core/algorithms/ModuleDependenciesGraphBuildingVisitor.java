@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
 import org.pitest.highwheel.classpath.AccessVisitor;
 import org.pitest.highwheel.model.AccessPoint;
@@ -12,29 +12,29 @@ import java.util.*;
 public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor {
 
   public interface DependencyBuilder<G> {
-    G build(Module m1, Module m2, AccessPoint source, AccessPoint dest, AccessType type);
+    G build(HWModule m1, HWModule m2, AccessPoint source, AccessPoint dest, AccessType type);
   }
 
   private static class NoOpWarningsCollector implements WarningsCollector {
     @Override
-    public void constructionWarning(Module m) {
+    public void constructionWarning(HWModule m) {
     }
 
     @Override
-    public void accessPointWarning(ElementName elementName, Collection<Module> message) {
+    public void accessPointWarning(ElementName elementName, Collection<HWModule> message) {
     }
   }
 
-  private final Collection<Module> modules;
+  private final Collection<HWModule> modules;
   private final ModuleGraph<T> graph;
   private final WarningsCollector warningsCollector;
-  private final Module other;
+  private final HWModule other;
   private final DependencyBuilder<T> dependencyBuilder;
 
   public ModuleDependenciesGraphBuildingVisitor(
-      final Collection<Module> modules,
+      final Collection<HWModule> modules,
       final ModuleGraph<T> graph,
-      final Module other,
+      final HWModule other,
       final DependencyBuilder<T> dependencyBuilder,
       final WarningsCollector warningsCollector) {
     this.modules = modules;
@@ -48,7 +48,7 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
   private void addModulesToGraph() {
     graph.addModule(other);
     final Set<String> processedModuleNames = new HashSet<String>(modules.size());
-    for (Module module : modules) {
+    for (HWModule module : modules) {
       graph.addModule(module);
       if (processedModuleNames.contains(module.name)) {
         warningsCollector.constructionWarning(module);
@@ -57,38 +57,38 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
     }
   }
 
-  public ModuleDependenciesGraphBuildingVisitor(final Collection<Module> modules, final ModuleGraph<T> graph, final Module other, final DependencyBuilder<T> dependencyBuilder) {
+  public ModuleDependenciesGraphBuildingVisitor(final Collection<HWModule> modules, final ModuleGraph<T> graph, final HWModule other, final DependencyBuilder<T> dependencyBuilder) {
     this(modules, graph, other, dependencyBuilder, new NoOpWarningsCollector());
   }
 
   @Override
   public void apply(AccessPoint source, AccessPoint dest, AccessType type) {
-    final List<Module> modulesMatchingSource = getMatchingModules(source.getElementName());
-    final List<Module> moduleMatchingDest = getMatchingModules(dest.getElementName());
+    final List<HWModule> modulesMatchingSource = getMatchingModules(source.getElementName());
+    final List<HWModule> moduleMatchingDest = getMatchingModules(dest.getElementName());
 
-    for (Module sourceModule : modulesMatchingSource) {
-      for (Module destModule : moduleMatchingDest) {
+    for (HWModule sourceModule : modulesMatchingSource) {
+      for (HWModule destModule : moduleMatchingDest) {
         if (!sourceModule.equals(destModule))
           graph.addDependency(dependencyBuilder.build(sourceModule, destModule, source, dest, type));
       }
     }
 
     if (modulesMatchingSource.isEmpty() && !moduleMatchingDest.isEmpty()) {
-      for (Module destModule : moduleMatchingDest) {
+      for (HWModule destModule : moduleMatchingDest) {
         graph.addDependency(dependencyBuilder.build(other, destModule, source, dest, type));
       }
     }
 
     if (!modulesMatchingSource.isEmpty() && moduleMatchingDest.isEmpty()) {
-      for (Module sourceModule : modulesMatchingSource) {
+      for (HWModule sourceModule : modulesMatchingSource) {
         graph.addDependency(dependencyBuilder.build(sourceModule, other, source, dest, type));
       }
     }
   }
 
-  private List<Module> getMatchingModules(ElementName name) {
-    final List<Module> modulesMatchingName = new ArrayList<Module>(modules.size());
-    for (Module module : modules) {
+  private List<HWModule> getMatchingModules(ElementName name) {
+    final List<HWModule> modulesMatchingName = new ArrayList<HWModule>(modules.size());
+    for (HWModule module : modules) {
       if (module.contains(name)) {
         modulesMatchingName.add(module);
       }

@@ -2,7 +2,7 @@ package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure;
 import com.github.fburato.highwheelmodules.core.model.Definition;
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
@@ -30,7 +30,7 @@ public class StrictAnalyser {
   }
 
   private static List<AnalyserModel.DependencyViolation> getDependencyViolations(
-      List<ModuleGraphTransitiveClosure.PathDifference> differences, Module other, DirectedGraph<Module, TrackingModuleDependency> trackingGraph) {
+      List<ModuleGraphTransitiveClosure.PathDifference> differences, HWModule other, DirectedGraph<HWModule, TrackingModuleDependency> trackingGraph) {
     final List<AnalyserModel.DependencyViolation> dependencyViolations =
         new ArrayList<>(differences.size());
     for (ModuleGraphTransitiveClosure.PathDifference difference : differences) {
@@ -44,7 +44,7 @@ public class StrictAnalyser {
   }
 
   private static List<AnalyserModel.NoStrictDependencyViolation> getNoDirectDependecyViolations(
-      ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> rules, Module other) {
+      ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> rules, HWModule other) {
     final List<AnalyserModel.NoStrictDependencyViolation> noStrictDependencyViolations =
         new ArrayList<>();
     for (NoStrictDependency rule : rules) {

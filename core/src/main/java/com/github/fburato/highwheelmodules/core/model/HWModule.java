@@ -12,25 +12,25 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class Module {
+public final class HWModule {
 
   public final String name;
   public final List<String> patternLiterals;
   private final List<Pattern> patterns;
 
-  private Module(String name, Stream<String> patternLiteral) {
+  private HWModule(String name, Stream<String> patternLiteral) {
     this.name = name;
     this.patternLiterals = patternLiteral.collect(Collectors.toList());
     this.patterns = patternLiterals.stream().map(Pattern::compile).collect(Collectors.toList());
   }
 
-  public static Optional<Module> make(String moduleName, String... globs) {
+  public static Optional<HWModule> make(String moduleName, String... globs) {
     return make(moduleName, Arrays.asList(globs));
   }
 
-  public static Optional<Module> make(String moduleName, List<String> globs) {
+  public static Optional<HWModule> make(String moduleName, List<String> globs) {
     try {
-      return Optional.of(new Module(moduleName, globs.stream().map(GlobToRegex::convertGlobToRegex)));
+      return Optional.of(new HWModule(moduleName, globs.stream().map(GlobToRegex::convertGlobToRegex)));
     } catch (PatternSyntaxException e) {
       return Optional.empty();
     }
@@ -42,7 +42,7 @@ public final class Module {
 
   @Override
   public String toString() {
-    return "Module{" +
+    return "HWModule{" +
         "name='" + name + '\'' +
         ", patternLiteral='" + patternLiterals + '\'' +
         '}';
@@ -55,7 +55,7 @@ public final class Module {
     if (o == null || getClass() != o.getClass())
       return false;
 
-    Module module = (Module) o;
+    HWModule module = (HWModule) o;
 
     return Objects.equals(this.name, module.name) &&
         Objects.equals(this.patternLiterals, module.patternLiterals);

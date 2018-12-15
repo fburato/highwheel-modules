@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import org.pitest.highwheel.classpath.AccessVisitor;
@@ -11,15 +11,15 @@ import java.util.Objects;
 public class AnalysisState {
   public final JungModuleGraph specGraph;
   public final JungModuleGraph actualGraph;
-  public final DirectedSparseGraph<Module, TrackingModuleDependency> actualTrackingGraph;
+  public final DirectedSparseGraph<HWModule, TrackingModuleDependency> actualTrackingGraph;
   public final AccessVisitor visitor;
-  public final Module other;
+  public final HWModule other;
 
   public AnalysisState(JungModuleGraph specGraph,
                        JungModuleGraph actualGraph,
-                       DirectedSparseGraph<Module, TrackingModuleDependency> actualTrackingGraph,
+                       DirectedSparseGraph<HWModule, TrackingModuleDependency> actualTrackingGraph,
                        AccessVisitor visitor,
-                       Module other) {
+                       HWModule other) {
     this.specGraph = specGraph;
     this.actualGraph = actualGraph;
     this.actualTrackingGraph = actualTrackingGraph;

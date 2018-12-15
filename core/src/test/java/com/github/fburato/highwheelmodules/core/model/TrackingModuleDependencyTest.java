@@ -10,8 +10,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TrackingModuleDependencyTest {
 
-  private final Module moduleA = Module.make("module A", "module A").get();
-  private final Module moduleB = Module.make("module B", "module B").get();
+  private final HWModule moduleA = HWModule.make("module A", "module A").get();
+  private final HWModule moduleB = HWModule.make("module B", "module B").get();
   private final AccessPoint exampleSource = AccessPoint.create(ElementName.fromString("A"));
   private final AccessPoint exampleSource1 = AccessPoint.create(ElementName.fromString("A1"));
   private final AccessPoint exampleDest = AccessPoint.create(ElementName.fromString("B"));

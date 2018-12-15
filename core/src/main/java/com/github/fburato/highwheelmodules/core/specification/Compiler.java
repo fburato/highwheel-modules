@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
 import com.github.fburato.highwheelmodules.core.model.Definition;
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 
@@ -13,8 +13,8 @@ import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 public class Compiler {
 
   public static final String MODULE_REGEX_NOT_WELL_DEFINED = "Regular expression '%s' of module '%s' is not well defined";
-  public static final String MODULE_ALREADY_DEFINED = "Module '%s' has already been defined";
-  public static final String MODULE_HAS_NOT_BEEN_DEFINED = "Module '%s' referenced in rule '%s' has not been defined";
+  public static final String MODULE_ALREADY_DEFINED = "HWModule '%s' has already been defined";
+  public static final String MODULE_HAS_NOT_BEEN_DEFINED = "HWModule '%s' referenced in rule '%s' has not been defined";
 
   private static class Pair<A, B> {
     public final A first;
@@ -28,17 +28,17 @@ public class Compiler {
 
   public Definition compile(SyntaxTree.Definition definition) {
     final String prefix = definition.prefix.orElse("");
-    final Map<String, Module> modules = compileModules(definition.moduleDefinitions, prefix);
+    final Map<String, HWModule> modules = compileModules(definition.moduleDefinitions, prefix);
     final Pair<List<Dependency>, List<NoStrictDependency>> rules = compileRules(definition.rules, modules);
 
     return new Definition(modules.values(), rules.first, rules.second);
   }
 
-  private Map<String, Module> compileModules(List<SyntaxTree.ModuleDefinition> definitions, String prefix) {
-    final Map<String, Module> modules = new HashMap<>(definitions.size());
+  private Map<String, HWModule> compileModules(List<SyntaxTree.ModuleDefinition> definitions, String prefix) {
+    final Map<String, HWModule> modules = new HashMap<>(definitions.size());
 
     for (SyntaxTree.ModuleDefinition moduleDefinition : definitions) {
-      final Optional<Module> optionalModule = Module.make(moduleDefinition.moduleName, moduleDefinition.moduleRegex
+      final Optional<HWModule> optionalModule = HWModule.make(moduleDefinition.moduleName, moduleDefinition.moduleRegex
           .stream()
           .map(regex -> prefix + regex)
           .collect(Collectors.toList())
@@ -57,7 +57,7 @@ public class Compiler {
   }
 
   private Pair<List<Dependency>, List<NoStrictDependency>> compileRules(List<SyntaxTree.Rule> rulesDefinition,
-                                                                        Map<String, Module> modules) {
+                                                                        Map<String, HWModule> modules) {
     final List<Dependency> dependencies = new ArrayList<Dependency>();
     final List<NoStrictDependency> noDirectDependencies = new ArrayList<NoStrictDependency>();
     for (SyntaxTree.Rule ruleDefinition : rulesDefinition) {
@@ -72,7 +72,7 @@ public class Compiler {
     return new Pair<>(dependencies, noDirectDependencies);
   }
 
-  private List<Dependency> compileChainDependencies(List<String> chainDependencies, Map<String, Module> modules) {
+  private List<Dependency> compileChainDependencies(List<String> chainDependencies, Map<String, HWModule> modules) {
     final List<Dependency> result = new ArrayList<Dependency>(chainDependencies.size() - 1);
     for (int i = 0; i < chainDependencies.size() - 1; ++i) {
       final String current = chainDependencies.get(i);
@@ -88,7 +88,7 @@ public class Compiler {
     return result;
   }
 
-  private NoStrictDependency compileNoDependency(SyntaxTree.NoDependentRule noDependentRule, Map<String, Module> modules) {
+  private NoStrictDependency compileNoDependency(SyntaxTree.NoDependentRule noDependentRule, Map<String, HWModule> modules) {
     if (modules.get(noDependentRule.left) == null) {
       throw new CompilerException(String.format(MODULE_HAS_NOT_BEEN_DEFINED, noDependentRule.left,
           join(" -/-> ", Arrays.asList(noDependentRule.left, noDependentRule.right))));

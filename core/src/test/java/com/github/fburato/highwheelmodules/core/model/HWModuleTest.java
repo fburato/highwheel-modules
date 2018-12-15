@@ -5,19 +5,19 @@ import org.pitest.highwheel.model.ElementName;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModuleTest {
+public class HWModuleTest {
   public static final String MODULE_NAME = "module name";
   public static final String GLOB = "org.pitest.foo*";
-  private final Module testee = Module.make(MODULE_NAME, GLOB).get();
+  private final HWModule testee = HWModule.make(MODULE_NAME, GLOB).get();
 
   @Test
   public void makeShouldFailIfRegexPassedIsInvalid() {
-    assertThat(Module.make("a module", "[asdf").isPresent()).isFalse();
+    assertThat(HWModule.make("a module", "[asdf").isPresent()).isFalse();
   }
 
   @Test
   public void makeShouldNotFailIfRegexPassedIsValid() {
-    assertThat(Module.make("another module", ".*").isPresent()).isTrue();
+    assertThat(HWModule.make("another module", ".*").isPresent()).isTrue();
   }
 
   @Test
@@ -27,14 +27,14 @@ public class ModuleTest {
 
   @Test
   public void containsShouldBeTrueOnMultiPatternModule() {
-    Module testee = Module.make("a module with two patterns", "a*", "b*").get();
+    HWModule testee = HWModule.make("a module with two patterns", "a*", "b*").get();
     assertThat(testee.contains(new ElementName("afoo"))).isTrue();
     assertThat(testee.contains(new ElementName("bfoo"))).isTrue();
   }
 
   @Test
   public void containsShouldFailIfAnyPatternFails() {
-    assertThat(Module.make("a module", "valid", "[invalid").isPresent()).isFalse();
+    assertThat(HWModule.make("a module", "valid", "[invalid").isPresent()).isFalse();
   }
 
   @Test
@@ -44,6 +44,6 @@ public class ModuleTest {
 
   @Test
   public void equalsShouldWorkOnModuleNameAndGlob() {
-    assertThat(testee).isEqualTo(Module.make(MODULE_NAME, GLOB).get());
+    assertThat(testee).isEqualTo(HWModule.make(MODULE_NAME, GLOB).get());
   }
 }

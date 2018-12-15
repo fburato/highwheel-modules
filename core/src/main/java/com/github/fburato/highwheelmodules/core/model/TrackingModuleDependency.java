@@ -6,13 +6,13 @@ import java.util.*;
 
 public final class TrackingModuleDependency {
 
-  public final Module source;
-  public final Module dest;
+  public final HWModule source;
+  public final HWModule dest;
   private final Map<AccessPoint, Set<AccessPoint>> evidences;
   private final Optional<Integer> evidenceLimit;
   private int evidenceCounter = 0;
 
-  public TrackingModuleDependency(final Module source, final Module dest, final Optional<Integer> evidenceLimit) {
+  public TrackingModuleDependency(final HWModule source, final HWModule dest, final Optional<Integer> evidenceLimit) {
     this.source = source;
     this.dest = dest;
     this.evidences = new HashMap<>();

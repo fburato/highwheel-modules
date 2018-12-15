@@ -9,21 +9,21 @@ import java.util.Collection;
 import java.util.List;
 
 public class AnalysisUtils {
-  public static Collection<Module> append(Collection<Module> modules, Module module) {
-    final List<Module> result = new ArrayList<>(modules);
+  public static Collection<HWModule> append(Collection<HWModule> modules, HWModule module) {
+    final List<HWModule> result = new ArrayList<>(modules);
     result.add(module);
     return result;
   }
 
 
-  public static List<List<Pair<String, String>>> getEvidence(DirectedGraph<Module, TrackingModuleDependency> trackingGraph, Module source, List<Module> path) {
-    final List<Module> completePath = new ArrayList<>();
+  public static List<List<Pair<String, String>>> getEvidence(DirectedGraph<HWModule, TrackingModuleDependency> trackingGraph, HWModule source, List<HWModule> path) {
+    final List<HWModule> completePath = new ArrayList<>();
     completePath.add(source);
     completePath.addAll(path);
     final List<List<Pair<String, String>>> result = new ArrayList<>();
     for (int i = 0; i < completePath.size() - 1; ++i) {
-      final Module current = completePath.get(i);
-      final Module next = completePath.get(i + 1);
+      final HWModule current = completePath.get(i);
+      final HWModule next = completePath.get(i + 1);
       final TrackingModuleDependency dependency = trackingGraph.findEdge(current, next);
       final List<Pair<String, String>> partial = new ArrayList<>();
       dependency.getSources().forEach((apSource) ->
@@ -34,18 +34,18 @@ public class AnalysisUtils {
     return result;
   }
 
-  public static List<String> getNames(Collection<Module> modules) {
+  public static List<String> getNames(Collection<HWModule> modules) {
     final List<String> result = new ArrayList<>(modules.size());
-    for (Module module : modules) {
+    for (HWModule module : modules) {
       result.add(module.name);
     }
     return result;
   }
 
-  public static List<AnalyserModel.Metrics> getMetrics(ModuleMetrics moduleMetrics, Collection<Module> modules, ModuleGraph<ModuleDependency> graph,
-                                                       Module other) {
+  public static List<AnalyserModel.Metrics> getMetrics(ModuleMetrics moduleMetrics, Collection<HWModule> modules, ModuleGraph<ModuleDependency> graph,
+                                                       HWModule other) {
     final List<AnalyserModel.Metrics> metrics = new ArrayList<>(modules.size());
-    for (Module module : modules) {
+    for (HWModule module : modules) {
       metrics.add(new AnalyserModel.Metrics(module.name, moduleMetrics.fanInOf(module).get() +
           (graph.findDependency(other, module).isPresent() ? -1 : 0),
           moduleMetrics.fanOutOf(module).get() + (

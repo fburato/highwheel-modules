@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.model.Definition;
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 import com.github.fburato.highwheelmodules.utils.Pair;
@@ -38,14 +38,14 @@ public class ModuleAnalyserTest {
   private final ClassParser realClassParser = new ClassPathParser(matchOnlyExampleDotOrg);
   private final ClassParser classParser = spy(realClassParser);
 
-  private final Module MAIN = Module.make("Main", "org.example.Main").get();
-  private final Module CONTROLLER = Module.make("Controllers", "org.example.controller.*").get();
-  private final Module FACADE = Module.make("Facade", "org.example.core.CoreFacade").get();
-  private final Module COREINTERNALS = Module.make("CoreInternals", "org.example.core.internals.*").get();
-  private final Module COREAPI = Module.make("CoreApi", "org.example.core.api.*").get();
-  private final Module MODEL = Module.make("Model", "org.example.core.model.*").get();
-  private final Module IO = Module.make("IO", "org.example.io.*").get();
-  private final Module UTILS = Module.make("Commons", "org.example.commons.*").get();
+  private final HWModule MAIN = HWModule.make("Main", "org.example.Main").get();
+  private final HWModule CONTROLLER = HWModule.make("Controllers", "org.example.controller.*").get();
+  private final HWModule FACADE = HWModule.make("Facade", "org.example.core.CoreFacade").get();
+  private final HWModule COREINTERNALS = HWModule.make("CoreInternals", "org.example.core.internals.*").get();
+  private final HWModule COREAPI = HWModule.make("CoreApi", "org.example.core.api.*").get();
+  private final HWModule MODEL = HWModule.make("Model", "org.example.core.model.*").get();
+  private final HWModule IO = HWModule.make("IO", "org.example.io.*").get();
+  private final HWModule UTILS = HWModule.make("Commons", "org.example.commons.*").get();
 
   private ModuleAnalyser testee(ClasspathRoot root, Optional<Integer> evidenceLimit) {
     return new ModuleAnalyser(classParser, root, evidenceLimit);
@@ -68,7 +68,7 @@ public class ModuleAnalyserTest {
 
   @Test(expected = AnalyserException.class)
   public void analyseStrictShouldFailIfNoModuleIsProvided() {
-    final Definition definition = new Definition(Collections.<Module>emptyList(), Collections.<Dependency>emptyList(),
+    final Definition definition = new Definition(Collections.<HWModule>emptyList(), Collections.<Dependency>emptyList(),
         Collections.<NoStrictDependency>emptyList());
 
     testee(orgExamples, Optional.empty()).analyseStrict(one(definition));
@@ -282,11 +282,11 @@ public class ModuleAnalyserTest {
     ));
   }
 
-  private static Dependency dep(Module source, Module dest) {
+  private static Dependency dep(HWModule source, HWModule dest) {
     return new Dependency(source, dest);
   }
 
-  private static NoStrictDependency noSD(Module source, Module dest) {
+  private static NoStrictDependency noSD(HWModule source, HWModule dest) {
     return new NoStrictDependency(source, dest);
   }
 
@@ -326,7 +326,7 @@ public class ModuleAnalyserTest {
 
   @Test(expected = AnalyserException.class)
   public void analyseLooseShouldFailIfNoModuleIsProvided() {
-    final Definition definition = new Definition(Collections.<Module>emptyList(), Collections.<Dependency>emptyList(),
+    final Definition definition = new Definition(Collections.<HWModule>emptyList(), Collections.<Dependency>emptyList(),
         Collections.<NoStrictDependency>emptyList());
 
     testee(orgExamples, Optional.empty()).analyseStrict(one(definition));

@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.externaladapters;
 
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
@@ -12,12 +12,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JungModuleGraphTest {
 
-  private final DirectedGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<>();
+  private final DirectedGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
   private final JungModuleGraph testee = new JungModuleGraph(graph);
 
-  private final Module m1 = Module.make("module a", "A").get();
-  private final Module m2 = Module.make("module b", "B").get();
-  private final Module m3 = Module.make("module c", "C").get();
+  private final HWModule m1 = HWModule.make("module a", "A").get();
+  private final HWModule m2 = HWModule.make("module b", "B").get();
+  private final HWModule m3 = HWModule.make("module c", "C").get();
   private final ModuleDependency dep = new ModuleDependency(m1, m2);
 
   @Test

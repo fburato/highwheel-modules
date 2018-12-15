@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
 import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import org.junit.Test;
@@ -14,15 +14,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModuleDependenciesGraphBuildingVisitorTest {
 
-  private final Module SUPER_MODULE = Module.make("SuperModule", "org.example.*").get();
-  private final Module CORE = Module.make("Core", "org.example.core.*").get();
-  private final Module IO = Module.make("IO", "org.example.io.*").get();
-  private final Module COMMONS = Module.make("Commons", "org.example.commons.*").get();
-  private final Module ENDPOINTS = Module.make("Endpoints", "org.example.endpoints.*").get();
-  private final Module MAIN = Module.make("Main", "org.example.Main").get();
-  private final Module OTHER = Module.make("Other", "").get();
+  private final HWModule SUPER_MODULE = HWModule.make("SuperModule", "org.example.*").get();
+  private final HWModule CORE = HWModule.make("Core", "org.example.core.*").get();
+  private final HWModule IO = HWModule.make("IO", "org.example.io.*").get();
+  private final HWModule COMMONS = HWModule.make("Commons", "org.example.commons.*").get();
+  private final HWModule ENDPOINTS = HWModule.make("Endpoints", "org.example.endpoints.*").get();
+  private final HWModule MAIN = HWModule.make("Main", "org.example.Main").get();
+  private final HWModule OTHER = HWModule.make("Other", "").get();
 
-  private final List<Module> modules = Arrays.asList(CORE, IO, COMMONS, ENDPOINTS, MAIN);
+  private final List<HWModule> modules = Arrays.asList(CORE, IO, COMMONS, ENDPOINTS, MAIN);
 
   private static class Pair<T1, T2> {
     public final T1 first;
@@ -38,24 +38,24 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     return new Pair<T1, T2>(first, second);
   }
 
-  private final List<Module> constructionWarnings = new ArrayList<Module>(5);
-  private final List<Pair<ElementName, Collection<Module>>> visitWarnings =
-      new ArrayList<Pair<ElementName, Collection<Module>>>(5);
+  private final List<HWModule> constructionWarnings = new ArrayList<HWModule>(5);
+  private final List<Pair<ElementName, Collection<HWModule>>> visitWarnings =
+      new ArrayList<Pair<ElementName, Collection<HWModule>>>(5);
 
   private class AddToListWarnings implements WarningsCollector {
 
     @Override
-    public void constructionWarning(final Module m) {
+    public void constructionWarning(final HWModule m) {
       constructionWarnings.add(m);
     }
 
     @Override
-    public void accessPointWarning(ElementName ap, Collection<Module> matchingModules) {
+    public void accessPointWarning(ElementName ap, Collection<HWModule> matchingModules) {
       visitWarnings.add(makePair(ap, matchingModules));
     }
   }
 
-  private final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
+  private final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
   private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
   private final WarningsCollector warningsCollector = new AddToListWarnings();
   private final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> builder = (m1, m2, source, dest, type) -> new ModuleDependency(m1, m2);
@@ -64,7 +64,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
 
   @Test
   public void constructorShouldAddAllModulesToTheModuleGraph() {
-    final List<Module> allModules = new ArrayList<>(modules.size() + 1);
+    final List<HWModule> allModules = new ArrayList<>(modules.size() + 1);
     allModules.addAll(modules);
     allModules.add(OTHER);
     assertThat(graph.getVertices().containsAll(allModules)).isTrue();
@@ -73,11 +73,11 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
 
   @Test
   public void constructorShouldRemarkRepeatedModules() {
-    final List<Module> repeatedModules = Arrays.asList(
-        Module.make("Core", "org.example.core.*").get(),
-        Module.make("Core", "org.example.io.*").get()
+    final List<HWModule> repeatedModules = Arrays.asList(
+        HWModule.make("Core", "org.example.core.*").get(),
+        HWModule.make("Core", "org.example.io.*").get()
     );
-    final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
+    final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final WarningsCollector warningsCollector = new AddToListWarnings();
     new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
@@ -151,12 +151,12 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
 
   @Test
   public void applyShouldAddSourceAndDestToMoreModulesIfMoreModuleGlobRegexMatch() {
-    final List<Module> repeatedModules = Arrays.asList(
+    final List<HWModule> repeatedModules = Arrays.asList(
         CORE,
         SUPER_MODULE,
         IO
     );
-    final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
+    final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final ModuleDependenciesGraphBuildingVisitor testee =
         new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder);
@@ -177,12 +177,12 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
 
   @Test
   public void applyShouldAddWarningsIfMoreModuleGlobRegexMatch() {
-    final List<Module> repeatedModules = Arrays.asList(
+    final List<HWModule> repeatedModules = Arrays.asList(
         CORE,
         SUPER_MODULE,
         IO
     );
-    final DirectedSparseGraph<Module, ModuleDependency> graph = new DirectedSparseGraph<Module, ModuleDependency>();
+    final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final ModuleDependenciesGraphBuildingVisitor testee =
         new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
@@ -196,11 +196,11 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     assertThat(visitWarningsContainPairMatching(dest.getElementName(), IO, SUPER_MODULE)).isTrue();
   }
 
-  private boolean visitWarningsContainPairMatching(ElementName ap, Module... modules) {
+  private boolean visitWarningsContainPairMatching(ElementName ap, HWModule... modules) {
     boolean match = false;
     for (int i = 0; !match && i < visitWarnings.size(); ++i) {
-      final Pair<ElementName, Collection<Module>> pair = visitWarnings.get(i);
-      final List<Module> expected = Arrays.asList(modules);
+      final Pair<ElementName, Collection<HWModule>> pair = visitWarnings.get(i);
+      final List<HWModule> expected = Arrays.asList(modules);
       match = pair.first.equals(ap) && pair.second.containsAll(expected) && expected.containsAll(pair.second);
     }
     return match;

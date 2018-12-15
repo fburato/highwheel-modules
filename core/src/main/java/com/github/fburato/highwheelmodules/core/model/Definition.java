@@ -6,11 +6,11 @@ import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 import java.util.Collection;
 
 public class Definition {
-  public final Collection<Module> modules;
+  public final Collection<HWModule> modules;
   public final Collection<Dependency> dependencies;
   public final Collection<NoStrictDependency> noStrictDependencies;
 
-  public Definition(Collection<Module> modules, Collection<Dependency> dependencies,
+  public Definition(Collection<HWModule> modules, Collection<Dependency> dependencies,
                     Collection<NoStrictDependency> noStrictDependencies) {
     this.modules = modules;
     this.dependencies = dependencies;

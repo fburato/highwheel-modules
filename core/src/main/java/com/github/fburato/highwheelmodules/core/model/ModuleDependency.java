@@ -4,11 +4,11 @@ import java.util.Objects;
 
 public final class ModuleDependency {
 
-  public final Module source;
-  public final Module dest;
+  public final HWModule source;
+  public final HWModule dest;
   private int count;
 
-  public ModuleDependency(Module source, Module dest) {
+  public ModuleDependency(HWModule source, HWModule dest) {
     this.source = source;
     this.dest = dest;
     this.count = 0;

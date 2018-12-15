@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.externaladapters;
 
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
 import com.github.fburato.highwheelmodules.core.model.ModuleMetrics;
@@ -13,14 +13,14 @@ import java.util.Optional;
 
 public class JungModuleGraph implements ModuleGraph<ModuleDependency>, ModuleMetrics {
 
-  private final DirectedGraph<Module, ModuleDependency> graph;
+  private final DirectedGraph<HWModule, ModuleDependency> graph;
 
-  public JungModuleGraph(DirectedGraph<Module, ModuleDependency> graph) {
+  public JungModuleGraph(DirectedGraph<HWModule, ModuleDependency> graph) {
     this.graph = graph;
   }
 
   @Override
-  public Optional<ModuleDependency> findDependency(Module vertex1, Module vertex2) {
+  public Optional<ModuleDependency> findDependency(HWModule vertex1, HWModule vertex2) {
     return Optional.ofNullable(graph.findEdge(vertex1, vertex2));
   }
 
@@ -37,17 +37,17 @@ public class JungModuleGraph implements ModuleGraph<ModuleDependency>, ModuleMet
   }
 
   @Override
-  public void addModule(Module vertex) {
+  public void addModule(HWModule vertex) {
     graph.addVertex(vertex);
   }
 
   @Override
-  public Collection<Module> dependencies(Module vertex) {
-    return Optional.ofNullable(graph.getSuccessors(vertex)).orElse(Collections.<Module>emptyList());
+  public Collection<HWModule> dependencies(HWModule vertex) {
+    return Optional.ofNullable(graph.getSuccessors(vertex)).orElse(Collections.<HWModule>emptyList());
   }
 
   @Override
-  public Optional<Integer> fanInOf(Module module) {
+  public Optional<Integer> fanInOf(HWModule module) {
     if (!graph.containsVertex(module))
       return Optional.empty();
     else {
@@ -57,7 +57,7 @@ public class JungModuleGraph implements ModuleGraph<ModuleDependency>, ModuleMet
   }
 
   @Override
-  public Optional<Integer> fanOutOf(Module module) {
+  public Optional<Integer> fanOutOf(HWModule module) {
     if (!graph.containsVertex(module))
       return Optional.empty();
     else {

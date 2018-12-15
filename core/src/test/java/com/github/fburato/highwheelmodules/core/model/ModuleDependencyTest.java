@@ -6,9 +6,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModuleDependencyTest {
 
-  private final Module moduleA = Module.make("module A", "module A").get();
-  private final Module moduleB = Module.make("module B", "module B").get();
-  private final Module moduleBAlt = Module.make("module B", "module B").get();
+  private final HWModule moduleA = HWModule.make("module A", "module A").get();
+  private final HWModule moduleB = HWModule.make("module B", "module B").get();
+  private final HWModule moduleBAlt = HWModule.make("module B", "module B").get();
 
   @Test
   public void getCountShouldReturnZeroOnNewDepedency() {

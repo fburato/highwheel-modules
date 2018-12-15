@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.externaladapters;
 
 import com.github.fburato.highwheelmodules.core.model.EvidenceModuleDependency;
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
@@ -16,12 +16,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JungTrackingModuleGraphTest {
 
-  private final DirectedGraph<Module, TrackingModuleDependency> graph = new DirectedSparseGraph<>();
+  private final DirectedGraph<HWModule, TrackingModuleDependency> graph = new DirectedSparseGraph<>();
   private final JungTrackingModuleGraph testee = new JungTrackingModuleGraph(graph, Optional.empty());
 
-  private final Module m1 = Module.make("module a", "A").get();
-  private final Module m2 = Module.make("module b", "B").get();
-  private final Module m3 = Module.make("module c", "C").get();
+  private final HWModule m1 = HWModule.make("module a", "A").get();
+  private final HWModule m2 = HWModule.make("module b", "B").get();
+  private final HWModule m3 = HWModule.make("module c", "C").get();
   private final AccessPoint ap1 = AccessPoint.create(ElementName.fromString("ap1"));
   private final AccessPoint ap2 = AccessPoint.create(ElementName.fromString("ap2"));
   private final AccessPoint ap3 = AccessPoint.create(ElementName.fromString("ap3"));

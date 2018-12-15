@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
 
@@ -15,12 +15,12 @@ import java.util.*;
 public class ModuleGraphTransitiveClosure {
 
   public static class Difference {
-    public final Module source;
-    public final Module dest;
+    public final HWModule source;
+    public final HWModule dest;
     public final int firstDistance;
     public final int secondDistance;
 
-    public Difference(Module source, Module dest, int firstDistance, int secondDistance) {
+    public Difference(HWModule source, HWModule dest, int firstDistance, int secondDistance) {
       this.source = source;
       this.dest = dest;
       this.firstDistance = firstDistance;
@@ -39,12 +39,12 @@ public class ModuleGraphTransitiveClosure {
   }
 
   public static class PathDifference {
-    public final Module source;
-    public final Module dest;
-    public final List<Module> firstPath;
-    public final List<Module> secondPath;
+    public final HWModule source;
+    public final HWModule dest;
+    public final List<HWModule> firstPath;
+    public final List<HWModule> secondPath;
 
-    public PathDifference(Module source, Module dest, List<Module> firstPath, List<Module> secondPath) {
+    public PathDifference(HWModule source, HWModule dest, List<HWModule> firstPath, List<HWModule> secondPath) {
       this.source = source;
       this.dest = dest;
       this.firstPath = firstPath;
@@ -62,11 +62,11 @@ public class ModuleGraphTransitiveClosure {
     }
   }
 
-  private final List<Module>[][] minimumPathMatrix;
-  private final Map<Module, Integer> indexMap;
-  private final Collection<Module> modules;
+  private final List<HWModule>[][] minimumPathMatrix;
+  private final Map<HWModule, Integer> indexMap;
+  private final Collection<HWModule> modules;
 
-  public ModuleGraphTransitiveClosure(ModuleGraph<ModuleDependency> moduleGraph, Collection<Module> modules) {
+  public ModuleGraphTransitiveClosure(ModuleGraph<ModuleDependency> moduleGraph, Collection<HWModule> modules) {
     this.modules = modules;
     minimumPathMatrix = initialiseSquareMatrixTo(modules.size());
     indexMap = createMapModuleIndex(modules);
@@ -77,26 +77,26 @@ public class ModuleGraphTransitiveClosure {
   }
 
   @SuppressWarnings("unchecked")
-  private List<Module>[][] initialiseSquareMatrixTo(final int size) {
-    final List<Module>[][] array = (List<Module>[][]) new List[size][size];
+  private List<HWModule>[][] initialiseSquareMatrixTo(final int size) {
+    final List<HWModule>[][] array = (List<HWModule>[][]) new List[size][size];
     for (int i = 0; i < array.length; ++i)
       for (int j = 0; j < array.length; ++j)
-        array[i][j] = new ArrayList<Module>();
+        array[i][j] = new ArrayList<HWModule>();
     return array;
   }
 
-  private Map<Module, Integer> createMapModuleIndex(Collection<Module> modules) {
-    final Map<Module, Integer> map = new HashMap<Module, Integer>(modules.size());
+  private Map<HWModule, Integer> createMapModuleIndex(Collection<HWModule> modules) {
+    final Map<HWModule, Integer> map = new HashMap<HWModule, Integer>(modules.size());
     int moduleCount = 0;
-    for (Module module : modules) {
+    for (HWModule module : modules) {
       map.put(module, moduleCount++);
     }
     return map;
   }
 
-  private void initialiseDistanceOneModules(Collection<Module> modules, ModuleGraph<ModuleDependency> moduleGraph) {
-    for (Module module : modules) {
-      for (Module dependency : moduleGraph.dependencies(module)) {
+  private void initialiseDistanceOneModules(Collection<HWModule> modules, ModuleGraph<ModuleDependency> moduleGraph) {
+    for (HWModule module : modules) {
+      for (HWModule dependency : moduleGraph.dependencies(module)) {
         minimumPathMatrix[indexMap.get(module)][indexMap.get(dependency)].add(dependency);
       }
     }
@@ -106,9 +106,9 @@ public class ModuleGraphTransitiveClosure {
     for (int i = 0; i < minimumPathMatrix.length; ++i) {
       for (int j = 0; j < minimumPathMatrix.length; ++j) {
         for (int k = 0; k < minimumPathMatrix.length; ++k) {
-          List<Module> pathIJ = minimumPathMatrix[i][j];
-          List<Module> pathIK = minimumPathMatrix[i][k];
-          List<Module> pathKJ = minimumPathMatrix[k][j];
+          List<HWModule> pathIJ = minimumPathMatrix[i][j];
+          List<HWModule> pathIK = minimumPathMatrix[i][k];
+          List<HWModule> pathKJ = minimumPathMatrix[k][j];
           if (pathIJ.isEmpty() && !pathIK.isEmpty() && !pathKJ.isEmpty()) {
             minimumPathMatrix[i][j].clear();
             minimumPathMatrix[i][j].addAll(pathIK);
@@ -125,7 +125,7 @@ public class ModuleGraphTransitiveClosure {
     }
   }
 
-  public Boolean isReachable(Module vertex1, Module vertex2) {
+  public Boolean isReachable(HWModule vertex1, HWModule vertex2) {
     return minimumDistance(vertex1, vertex2).map((a) -> a < Integer.MAX_VALUE).orElse(false);
   }
 
@@ -149,8 +149,8 @@ public class ModuleGraphTransitiveClosure {
     if (!modules.containsAll(other.modules) || !other.modules.containsAll(modules))
       return Optional.empty();
     final List<PathDifference> differences = new ArrayList<PathDifference>();
-    for (Module i : modules) {
-      for (Module j : modules) {
+    for (HWModule i : modules) {
+      for (HWModule j : modules) {
         int thisI = indexMap.get(i),
             thisJ = indexMap.get(j),
             otherI = indexMap.get(i),
@@ -163,7 +163,7 @@ public class ModuleGraphTransitiveClosure {
     return Optional.of(differences);
   }
 
-  public Optional<Integer> minimumDistance(Module vertex1, Module vertex2) {
+  public Optional<Integer> minimumDistance(HWModule vertex1, HWModule vertex2) {
     if (indexMap.get(vertex1) == null || indexMap.get(vertex2) == null)
       return Optional.empty();
     else {
@@ -172,9 +172,9 @@ public class ModuleGraphTransitiveClosure {
     }
   }
 
-  public List<Module> minimumDistancePath(Module vertex1, Module vertex2) {
+  public List<HWModule> minimumDistancePath(HWModule vertex1, HWModule vertex2) {
     if (indexMap.get(vertex1) == null || indexMap.get(vertex2) == null)
-      return new ArrayList<Module>();
+      return new ArrayList<HWModule>();
     else
       return minimumPathMatrix[indexMap.get(vertex1)][indexMap.get(vertex2)];
   }

@@ -5,12 +5,12 @@ import org.pitest.highwheel.model.AccessPoint;
 import java.util.Objects;
 
 public final class EvidenceModuleDependency {
-  public final Module sourceModule;
-  public final Module destModule;
+  public final HWModule sourceModule;
+  public final HWModule destModule;
   public final AccessPoint source;
   public final AccessPoint dest;
 
-  public EvidenceModuleDependency(Module sourceModule, Module destModule, AccessPoint source, AccessPoint dest) {
+  public EvidenceModuleDependency(HWModule sourceModule, HWModule destModule, AccessPoint source, AccessPoint dest) {
     this.sourceModule = sourceModule;
     this.destModule = destModule;
     this.source = source;

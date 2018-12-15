@@ -22,13 +22,13 @@ public class DefinitionVisitor {
   }
 
   public AnalysisState getAnalysisState(Definition definition) {
-    final Module other = Module.make("(other)", "").get();
-    final Collection<Module> modules = definition.modules;
+    final HWModule other = HWModule.make("(other)", "").get();
+    final Collection<HWModule> modules = definition.modules;
     if (modules.isEmpty())
       throw new AnalyserException("No modules provided in definition");
     final JungModuleGraph specModuleGraph = initialiseSpecificationGraph(modules, definition.dependencies);
     final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
-    final DirectedSparseGraph<Module, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
+    final DirectedSparseGraph<HWModule, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
     final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph, evidenceLimit);
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> moduleGraphBuilder =
         (sourceModule, destModule, sourceAP, destAP, type) -> new ModuleDependency(sourceModule, destModule);
@@ -42,11 +42,11 @@ public class DefinitionVisitor {
     return new AnalysisState(specModuleGraph, actualModuleGraph, trackingBareGraph, accessVisitor, other);
   }
 
-  private JungModuleGraph initialiseSpecificationGraph(Collection<Module> modules, Collection<Dependency> dependencies) {
-    final DirectedGraph<Module, ModuleDependency> specGraph = new DirectedSparseGraph<>();
+  private JungModuleGraph initialiseSpecificationGraph(Collection<HWModule> modules, Collection<Dependency> dependencies) {
+    final DirectedGraph<HWModule, ModuleDependency> specGraph = new DirectedSparseGraph<>();
     final JungModuleGraph specModuleGraph = new JungModuleGraph(specGraph);
 
-    for (Module module : modules) {
+    for (HWModule module : modules) {
       specModuleGraph.addModule(module);
     }
     for (Dependency dep : dependencies) {
@@ -57,7 +57,7 @@ public class DefinitionVisitor {
   }
 
   private JungModuleGraph initialiseEmptyGraph() {
-    final DirectedGraph<Module, ModuleDependency> actualGraph = new DirectedSparseGraph<>();
+    final DirectedGraph<HWModule, ModuleDependency> actualGraph = new DirectedSparseGraph<>();
     return new JungModuleGraph(actualGraph);
   }
 }

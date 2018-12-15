@@ -1,14 +1,14 @@
 package com.github.fburato.highwheelmodules.core.model.rules;
 
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 
 import java.util.Objects;
 
 public class Dependency implements Rule {
-  public final Module source;
-  public final Module dest;
+  public final HWModule source;
+  public final HWModule dest;
 
-  public Dependency(Module source, Module dest) {
+  public Dependency(HWModule source, HWModule dest) {
     this.source = source;
     this.dest = dest;
   }

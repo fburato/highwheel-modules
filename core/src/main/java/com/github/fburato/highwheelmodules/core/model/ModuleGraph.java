@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface ModuleGraph<T> {
-  Optional<T> findDependency(Module vertex1, Module vertex2);
+  Optional<T> findDependency(HWModule vertex1, HWModule vertex2);
 
   void addDependency(T dependency);
 
-  void addModule(Module vertex);
+  void addModule(HWModule vertex);
 
-  Collection<Module> dependencies(Module vertex);
+  Collection<HWModule> dependencies(HWModule vertex);
 }

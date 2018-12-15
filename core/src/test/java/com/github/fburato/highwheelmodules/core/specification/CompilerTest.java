@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
 import com.github.fburato.highwheelmodules.core.model.Definition;
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 import org.junit.Test;
@@ -16,10 +16,10 @@ public class CompilerTest {
 
   private final Compiler testee = new Compiler();
 
-  private final Module CORE = Module.make("core", "core").get();
-  private final Module COMMONS = Module.make("commons", "commons").get();
-  private final Module MAIN = Module.make("main", "main").get();
-  private final Module IO = Module.make("io", "io").get();
+  private final HWModule CORE = HWModule.make("core", "core").get();
+  private final HWModule COMMONS = HWModule.make("commons", "commons").get();
+  private final HWModule MAIN = HWModule.make("main", "main").get();
+  private final HWModule IO = HWModule.make("io", "io").get();
 
   @Test(expected = CompilerException.class)
   public void shouldFailIfRegularExpressionFailToParse() {
@@ -77,8 +77,8 @@ public class CompilerTest {
 
     final Definition actual = testee.compile(definition);
     assertThat(actual.modules).containsExactlyInAnyOrder(
-        Module.make("Foo", "org.example.foo.*", "org.example.foobar.*").get(),
-        Module.make("Bar", "org.example.bar.*").get()
+        HWModule.make("Foo", "org.example.foo.*", "org.example.foobar.*").get(),
+        HWModule.make("Bar", "org.example.bar.*").get()
     );
   }
 

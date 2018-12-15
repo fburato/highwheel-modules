@@ -2,7 +2,7 @@ package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure;
 import com.github.fburato.highwheelmodules.core.model.Definition;
-import com.github.fburato.highwheelmodules.core.model.Module;
+import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
 import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
@@ -30,7 +30,7 @@ public class LooseAnalyser {
   }
 
   private static List<AnalyserModel.AbsentDependencyViolation> getAbsentDependencies(ModuleGraphTransitiveClosure transitiveClosure,
-                                                                                     Collection<Dependency> dependencies, Module other) {
+                                                                                     Collection<Dependency> dependencies, HWModule other) {
     final List<AnalyserModel.AbsentDependencyViolation> dependencyViolations =
         new ArrayList<>();
     for (Dependency dependency : dependencies) {
@@ -44,8 +44,8 @@ public class LooseAnalyser {
   }
 
   private static List<AnalyserModel.UndesiredDependencyViolation> getUndesiredDependecies(
-      ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> noStrictDependencies, Module other,
-      DirectedGraph<Module, TrackingModuleDependency> trackingGraph) {
+      ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> noStrictDependencies, HWModule other,
+      DirectedGraph<HWModule, TrackingModuleDependency> trackingGraph) {
     final List<AnalyserModel.UndesiredDependencyViolation> undesiredDependencyViolations =
         new ArrayList<>();
     for (NoStrictDependency noStrictDependency : noStrictDependencies) {
