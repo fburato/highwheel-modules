@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.model.bytecodeparser;
+package com.github.fburato.highwheelmodules.bytecodeparser;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.objectweb.asm.Type;
-import com.github.fburato.highwheelmodules.model.bytecodeparser.classpath.ClassLoaderClassPathRoot;
+import com.github.fburato.highwheelmodules.bytecodeparser.classpath.ClassLoaderClassPathRoot;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;

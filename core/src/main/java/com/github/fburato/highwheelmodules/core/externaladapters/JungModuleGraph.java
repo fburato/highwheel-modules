@@ -1,9 +1,9 @@
 package com.github.fburato.highwheelmodules.core.externaladapters;
 
-import com.github.fburato.highwheelmodules.core.model.HWModule;
-import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
-import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
-import com.github.fburato.highwheelmodules.core.model.ModuleMetrics;
+import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
+import com.github.fburato.highwheelmodules.model.modules.ModuleGraph;
+import com.github.fburato.highwheelmodules.model.modules.ModuleMetrics;
 import edu.uci.ics.jung.graph.DirectedGraph;
 
 import java.util.Arrays;

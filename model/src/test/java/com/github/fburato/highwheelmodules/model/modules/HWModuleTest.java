@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.core.model;
+package com.github.fburato.highwheelmodules.model.modules;
 
 import org.junit.Test;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;

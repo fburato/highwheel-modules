@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.model.bytecodeparser.classpath;
+package com.github.fburato.highwheelmodules.bytecodeparser.classpath;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;

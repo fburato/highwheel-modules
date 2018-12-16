@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.model.bytecodeparser;
+package com.github.fburato.highwheelmodules.bytecodeparser;
 
 
 import java.io.IOException;

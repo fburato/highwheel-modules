@@ -1,9 +1,9 @@
 package com.github.fburato.highwheelmodules.core.externaladapters;
 
-import com.github.fburato.highwheelmodules.core.model.EvidenceModuleDependency;
-import com.github.fburato.highwheelmodules.core.model.HWModule;
-import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
-import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
+import com.github.fburato.highwheelmodules.model.modules.EvidenceModuleDependency;
+import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
+import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import org.junit.Test;

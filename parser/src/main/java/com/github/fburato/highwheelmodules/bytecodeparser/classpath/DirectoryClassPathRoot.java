@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.model.bytecodeparser.classpath;
+package com.github.fburato.highwheelmodules.bytecodeparser.classpath;
 
 import java.io.File;
 import java.io.FileInputStream;

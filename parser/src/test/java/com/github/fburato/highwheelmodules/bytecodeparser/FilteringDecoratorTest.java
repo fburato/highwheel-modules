@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.model.bytecodeparser;
+package com.github.fburato.highwheelmodules.bytecodeparser;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;

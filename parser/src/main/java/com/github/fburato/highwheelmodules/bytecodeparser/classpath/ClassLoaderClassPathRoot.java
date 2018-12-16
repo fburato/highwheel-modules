@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.model.bytecodeparser.classpath;
+package com.github.fburato.highwheelmodules.bytecodeparser.classpath;
 
 /*
  * Copyright 2010 Henry Coles

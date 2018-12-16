@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor;
-import com.github.fburato.highwheelmodules.core.model.Definition;
+import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 import com.github.fburato.highwheelmodules.model.classpath.ClassParser;

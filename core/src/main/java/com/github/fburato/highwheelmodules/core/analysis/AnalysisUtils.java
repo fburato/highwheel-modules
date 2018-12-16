@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
-import com.github.fburato.highwheelmodules.core.model.*;
+import com.github.fburato.highwheelmodules.model.modules.*;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import edu.uci.ics.jung.graph.DirectedGraph;
 

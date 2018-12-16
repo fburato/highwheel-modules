@@ -1,13 +1,13 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
-import com.github.fburato.highwheelmodules.core.model.Definition;
-import com.github.fburato.highwheelmodules.core.model.HWModule;
-import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
-import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
+import com.github.fburato.highwheelmodules.model.modules.Definition;
+import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.rules.Dependency;
+import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import org.junit.Test;
-import com.github.fburato.highwheelmodules.model.bytecodeparser.ClassPathParser;
-import com.github.fburato.highwheelmodules.model.bytecodeparser.classpath.DirectoryClassPathRoot;
+import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser;
+import com.github.fburato.highwheelmodules.bytecodeparser.classpath.DirectoryClassPathRoot;
 import com.github.fburato.highwheelmodules.model.classpath.ClassParser;
 import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;

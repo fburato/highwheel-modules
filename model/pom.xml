@@ -7,10 +7,15 @@
         <version>1.4.1-SNAPSHOT</version>
     </parent>
     <artifactId>highwheel-modules-model</artifactId>
-    <name>core</name>
+    <name>model</name>
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.fburato</groupId>
+            <artifactId>highwheel-modules-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>

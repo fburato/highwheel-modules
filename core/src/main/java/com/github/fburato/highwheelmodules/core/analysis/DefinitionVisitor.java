@@ -4,8 +4,8 @@ import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleDependenciesGraphBuildingVisitor;
 import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
 import com.github.fburato.highwheelmodules.core.externaladapters.JungTrackingModuleGraph;
-import com.github.fburato.highwheelmodules.core.model.*;
-import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
+import com.github.fburato.highwheelmodules.model.modules.*;
+import com.github.fburato.highwheelmodules.model.rules.Dependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;

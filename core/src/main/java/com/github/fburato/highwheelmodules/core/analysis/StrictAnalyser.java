@@ -1,10 +1,10 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure;
-import com.github.fburato.highwheelmodules.core.model.Definition;
-import com.github.fburato.highwheelmodules.core.model.HWModule;
-import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
-import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
+import com.github.fburato.highwheelmodules.model.modules.Definition;
+import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependency;
+import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 
 import java.util.ArrayList;

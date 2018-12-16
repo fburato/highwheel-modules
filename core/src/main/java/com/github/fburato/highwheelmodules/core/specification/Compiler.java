@@ -1,9 +1,9 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
-import com.github.fburato.highwheelmodules.core.model.Definition;
-import com.github.fburato.highwheelmodules.core.model.HWModule;
-import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
-import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
+import com.github.fburato.highwheelmodules.model.modules.Definition;
+import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.rules.Dependency;
+import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
 
 import java.util.*;
 import java.util.stream.Collectors;

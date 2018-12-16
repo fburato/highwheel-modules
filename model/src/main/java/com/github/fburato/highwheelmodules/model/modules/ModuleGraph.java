@@ -1,4 +1,4 @@
-package com.github.fburato.highwheelmodules.core.model;
+package com.github.fburato.highwheelmodules.model.modules;
 
 import java.util.Collection;
 import java.util.Optional;

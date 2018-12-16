@@ -1,8 +1,8 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
-import com.github.fburato.highwheelmodules.core.model.HWModule;
-import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
+import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 

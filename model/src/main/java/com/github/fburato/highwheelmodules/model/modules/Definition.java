@@ -1,7 +1,7 @@
-package com.github.fburato.highwheelmodules.core.model;
+package com.github.fburato.highwheelmodules.model.modules;
 
-import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
-import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
+import com.github.fburato.highwheelmodules.model.rules.Dependency;
+import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
 
 import java.util.Collection;
 

@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
-import com.github.fburato.highwheelmodules.core.model.HWModule;
-import com.github.fburato.highwheelmodules.core.model.ModuleGraph;
+import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.modules.ModuleGraph;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessType;

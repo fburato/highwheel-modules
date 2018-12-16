@@ -1,6 +1,6 @@
-package com.github.fburato.highwheelmodules.model.bytecodeparser;
+package com.github.fburato.highwheelmodules.bytecodeparser;
 
-import static com.github.fburato.highwheelmodules.model.bytecodeparser.NameUtil.getElementNameForType;
+import static com.github.fburato.highwheelmodules.bytecodeparser.NameUtil.getElementNameForType;
 
 import org.objectweb.asm.*;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
