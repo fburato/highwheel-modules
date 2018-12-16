@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+Getting ready for the release of the project for Java 11.
+
+### Changed
+- **Isolation of Jung graph library**. By experimenting with the introduction of new the `module-info`s, I've noticed
+that the Jung graph library has what is called `split-package` problem, i.e. it has two artifacts that define classes
+in the same package. This doesn't work well with Jigsaw's module system because it is required for every package to be
+exported and provided by one module and one module only. I plan on changing the implementation to another library in
+the feature (because it seems like the project is not going to be maintained in the current state) and in preparation
+for that I've isolated Jung in one package and left everything else to use an internal interface.
+
+### Removed
+- **Dependency from highwheel**. I've included in the project directly the modules that I was including from highwheels by
+copying over the source code and the tests. Given the new release train for Java I want to get more control over the
+release of the necessary components, and considering the dependency on ASM is the main reason why I included highwheels
+in the first place and Henry is not particularly interested in maintaining the library, I just moved the code here.
+I'll always maintain the reference to the original project in the documentation, but the time has come to HWM to be
+more independent. This resulted in the limitation of the dependencies to `jparsec` and `jung`, which is great.
+
 ## [1.4.0] - 2018-10-03
 
 Aren't you tired of having to specify the complete package name for all module regex even if they all begin with the
