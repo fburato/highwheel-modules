@@ -4,7 +4,7 @@ import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph
 import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import org.pitest.highwheel.classpath.AccessVisitor;
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 
 import java.util.Objects;
 

@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.model;
 
 import com.github.fburato.highwheelmodules.utils.GlobToRegex;
-import org.pitest.highwheel.model.ElementName;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 import java.util.Arrays;
 import java.util.List;

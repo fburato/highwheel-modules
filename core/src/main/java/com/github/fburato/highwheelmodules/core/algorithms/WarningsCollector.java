@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
 import com.github.fburato.highwheelmodules.core.model.HWModule;
-import org.pitest.highwheel.model.ElementName;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 import java.util.Collection;
 

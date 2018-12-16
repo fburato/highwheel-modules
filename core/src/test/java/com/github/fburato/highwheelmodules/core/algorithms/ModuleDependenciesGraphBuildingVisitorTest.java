@@ -5,8 +5,8 @@ import com.github.fburato.highwheelmodules.core.model.HWModule;
 import com.github.fburato.highwheelmodules.core.model.ModuleDependency;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import org.junit.Test;
-import org.pitest.highwheel.model.AccessPoint;
-import org.pitest.highwheel.model.ElementName;
+import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 import java.util.*;
 

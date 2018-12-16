@@ -1,9 +1,9 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
-import org.pitest.highwheel.classpath.AccessVisitor;
-import org.pitest.highwheel.model.AccessPoint;
-import org.pitest.highwheel.model.AccessType;
-import org.pitest.highwheel.model.ElementName;
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
+import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
+import com.github.fburato.highwheelmodules.model.bytecode.AccessType;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 import java.util.Arrays;
 import java.util.List;

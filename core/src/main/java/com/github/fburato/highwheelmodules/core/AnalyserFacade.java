@@ -7,14 +7,14 @@ import com.github.fburato.highwheelmodules.core.model.Definition;
 import com.github.fburato.highwheelmodules.core.specification.Compiler;
 import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
 import com.github.fburato.highwheelmodules.core.specification.parsers.DefinitionParser;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 import com.github.fburato.highwheelmodules.utils.Pair;
-import org.pitest.highwheel.bytecodeparser.ClassPathParser;
-import org.pitest.highwheel.bytecodeparser.classpath.ArchiveClassPathRoot;
-import org.pitest.highwheel.bytecodeparser.classpath.CompoundClassPathRoot;
-import org.pitest.highwheel.bytecodeparser.classpath.DirectoryClassPathRoot;
-import org.pitest.highwheel.classpath.ClassParser;
-import org.pitest.highwheel.classpath.ClasspathRoot;
-import org.pitest.highwheel.cycles.Filter;
+import com.github.fburato.highwheelmodules.model.bytecodeparser.ClassPathParser;
+import com.github.fburato.highwheelmodules.model.bytecodeparser.classpath.ArchiveClassPathRoot;
+import com.github.fburato.highwheelmodules.model.bytecodeparser.classpath.CompoundClassPathRoot;
+import com.github.fburato.highwheelmodules.model.bytecodeparser.classpath.DirectoryClassPathRoot;
+import com.github.fburato.highwheelmodules.model.classpath.ClassParser;
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,12 +25,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class AnalyserFacade {
 
-  private static Filter includeAll = (item) -> true;
+  private static final Predicate<ElementName> includeAll = (item) -> true;
 
   public enum ExecutionMode {
     STRICT, LOOSE

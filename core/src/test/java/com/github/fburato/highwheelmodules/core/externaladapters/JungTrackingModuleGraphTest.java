@@ -7,8 +7,8 @@ import com.github.fburato.highwheelmodules.core.model.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import org.junit.Test;
-import org.pitest.highwheel.model.AccessPoint;
-import org.pitest.highwheel.model.ElementName;
+import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 import java.util.Optional;
 

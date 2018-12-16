@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.model;
 
-import org.pitest.highwheel.model.AccessPoint;
+import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 
 import java.util.*;
 

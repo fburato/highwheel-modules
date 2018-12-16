@@ -8,7 +8,7 @@ import com.github.fburato.highwheelmodules.core.model.*;
 import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import org.pitest.highwheel.classpath.AccessVisitor;
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 
 import java.util.Collection;
 import java.util.Optional;

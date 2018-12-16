@@ -6,12 +6,11 @@ import com.github.fburato.highwheelmodules.core.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.core.model.rules.NoStrictDependency;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import org.junit.Test;
-import org.pitest.highwheel.bytecodeparser.ClassPathParser;
-import org.pitest.highwheel.bytecodeparser.classpath.DirectoryClassPathRoot;
-import org.pitest.highwheel.classpath.ClassParser;
-import org.pitest.highwheel.classpath.ClasspathRoot;
-import org.pitest.highwheel.cycles.Filter;
-import org.pitest.highwheel.model.ElementName;
+import com.github.fburato.highwheelmodules.model.bytecodeparser.ClassPathParser;
+import com.github.fburato.highwheelmodules.model.bytecodeparser.classpath.DirectoryClassPathRoot;
+import com.github.fburato.highwheelmodules.model.classpath.ClassParser;
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,12 +28,9 @@ public class ModuleAnalyserTest {
 
   private final ClasspathRoot orgExamples =
       new DirectoryClassPathRoot(new File(join(File.separatorChar + "", Arrays.asList("target", "test-classes"))));
-  private final Filter matchOnlyExampleDotOrg = new Filter() {
-    @Override
-    public boolean include(ElementName item) {
-      return item.asJavaName().startsWith("org.example");
-    }
-  };
+  private  final Predicate<ElementName> matchOnlyExampleDotOrg = item ->
+      item.asJavaName().startsWith("org.example");
+
 
   private final ClassParser realClassParser = new ClassPathParser(matchOnlyExampleDotOrg);
   private final ClassParser classParser = spy(realClassParser);

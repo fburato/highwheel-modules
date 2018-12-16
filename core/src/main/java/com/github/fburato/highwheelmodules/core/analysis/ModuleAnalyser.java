@@ -3,9 +3,9 @@ package com.github.fburato.highwheelmodules.core.analysis;
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor;
 import com.github.fburato.highwheelmodules.core.model.Definition;
 import com.github.fburato.highwheelmodules.utils.Pair;
-import org.pitest.highwheel.classpath.AccessVisitor;
-import org.pitest.highwheel.classpath.ClassParser;
-import org.pitest.highwheel.classpath.ClasspathRoot;
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
+import com.github.fburato.highwheelmodules.model.classpath.ClassParser;
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.model;
 
 import org.junit.Test;
-import org.pitest.highwheel.model.ElementName;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
