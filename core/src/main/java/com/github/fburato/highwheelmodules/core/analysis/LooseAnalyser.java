@@ -3,10 +3,10 @@ package com.github.fburato.highwheelmodules.core.analysis;
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.modules.ModuleGraph;
 import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependency;
 import com.github.fburato.highwheelmodules.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
-import edu.uci.ics.jung.graph.DirectedGraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +45,7 @@ public class LooseAnalyser {
 
   private static List<AnalyserModel.UndesiredDependencyViolation> getUndesiredDependecies(
       ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> noStrictDependencies, HWModule other,
-      DirectedGraph<HWModule, TrackingModuleDependency> trackingGraph) {
+      ModuleGraph<TrackingModuleDependency> trackingGraph) {
     final List<AnalyserModel.UndesiredDependencyViolation> undesiredDependencyViolations =
         new ArrayList<>();
     for (NoStrictDependency noStrictDependency : noStrictDependencies) {

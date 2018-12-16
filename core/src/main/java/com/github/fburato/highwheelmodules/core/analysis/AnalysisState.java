@@ -1,23 +1,20 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
-import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
-import com.github.fburato.highwheelmodules.model.modules.HWModule;
-import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependency;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import com.github.fburato.highwheelmodules.model.modules.*;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 
 import java.util.Objects;
 
 public class AnalysisState {
-  public final JungModuleGraph specGraph;
-  public final JungModuleGraph actualGraph;
-  public final DirectedSparseGraph<HWModule, TrackingModuleDependency> actualTrackingGraph;
+  public final MetricModuleGraph<ModuleDependency> specGraph;
+  public final MetricModuleGraph<ModuleDependency> actualGraph;
+  public final ModuleGraph<TrackingModuleDependency> actualTrackingGraph;
   public final AccessVisitor visitor;
   public final HWModule other;
 
-  public AnalysisState(JungModuleGraph specGraph,
-                       JungModuleGraph actualGraph,
-                       DirectedSparseGraph<HWModule, TrackingModuleDependency> actualTrackingGraph,
+  public AnalysisState(MetricModuleGraph<ModuleDependency> specGraph,
+                       MetricModuleGraph<ModuleDependency> actualGraph,
+                       ModuleGraph<TrackingModuleDependency> actualTrackingGraph,
                        AccessVisitor visitor,
                        HWModule other) {
     this.specGraph = specGraph;

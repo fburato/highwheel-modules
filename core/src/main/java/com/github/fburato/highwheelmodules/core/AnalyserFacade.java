@@ -3,11 +3,13 @@ package com.github.fburato.highwheelmodules.core;
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserException;
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserModel;
 import com.github.fburato.highwheelmodules.core.analysis.ModuleAnalyser;
+import com.github.fburato.highwheelmodules.core.externaladapters.JungGraphFactory;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.core.specification.Compiler;
 import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
 import com.github.fburato.highwheelmodules.core.specification.parsers.DefinitionParser;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import com.github.fburato.highwheelmodules.model.modules.ModuleGraphFactory;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser;
 import com.github.fburato.highwheelmodules.bytecodeparser.classpath.ArchiveClassPathRoot;
@@ -89,6 +91,7 @@ public class AnalyserFacade {
   private final EventSink.MeasureEventSink measureEventSink;
   private final EventSink.StrictAnalysisEventSink strictAnalysisEventSink;
   private final EventSink.LooseAnalysisEventSink looseAnalysisEventSink;
+  private final ModuleGraphFactory factory = new JungGraphFactory();
 
   public AnalyserFacade(final Printer printer,
                         final EventSink.PathEventSink pathEventSink,
@@ -107,7 +110,7 @@ public class AnalyserFacade {
     final ClasspathRoot classpathRoot = getAnalysisScope(classPathRoots);
     final List<Pair<String, Definition>> definitions = specificationPath.stream().map(p -> Pair.make(p, compileSpecification(p))).collect(Collectors.toList());
     final ClassParser classParser = new ClassPathParser(includeAll);
-    final ModuleAnalyser analyser = new ModuleAnalyser(classParser, classpathRoot, evidenceLimit);
+    final ModuleAnalyser analyser = new ModuleAnalyser(classParser, classpathRoot, evidenceLimit,factory);
     if (executionMode == ExecutionMode.STRICT) {
       executeGenericAnalysis(definitions, analyser::analyseStrict, this::strictAnalysis);
     } else {

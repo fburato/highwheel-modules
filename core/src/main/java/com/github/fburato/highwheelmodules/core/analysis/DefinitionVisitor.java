@@ -2,13 +2,8 @@ package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor;
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleDependenciesGraphBuildingVisitor;
-import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
-import com.github.fburato.highwheelmodules.core.externaladapters.JungEvidenceModuleGraph;
-import com.github.fburato.highwheelmodules.core.externaladapters.JungTrackingModuleGraph;
 import com.github.fburato.highwheelmodules.model.modules.*;
 import com.github.fburato.highwheelmodules.model.rules.Dependency;
-import edu.uci.ics.jung.graph.DirectedGraph;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 
 import java.util.Collection;
@@ -16,9 +11,11 @@ import java.util.Optional;
 
 public class DefinitionVisitor {
 
+  private final ModuleGraphFactory factory;
   private final Optional<Integer> evidenceLimit;
 
-  public DefinitionVisitor(Optional<Integer> evidenceLimit) {
+  public DefinitionVisitor(ModuleGraphFactory factory, Optional<Integer> evidenceLimit) {
+    this.factory = factory;
     this.evidenceLimit = evidenceLimit;
   }
 
@@ -27,11 +24,10 @@ public class DefinitionVisitor {
     final Collection<HWModule> modules = definition.modules;
     if (modules.isEmpty())
       throw new AnalyserException("No modules provided in definition");
-    final JungModuleGraph specModuleGraph = initialiseSpecificationGraph(modules, definition.dependencies);
-    final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
-    final DirectedSparseGraph<HWModule, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
-    final JungTrackingModuleGraph auxTrackingBareGraph = new JungTrackingModuleGraph(trackingBareGraph);
-    final JungEvidenceModuleGraph trackingGraph = new JungEvidenceModuleGraph(auxTrackingBareGraph, evidenceLimit);
+    final MetricModuleGraph<ModuleDependency> specModuleGraph = initialiseSpecificationGraph(modules, definition.dependencies);
+    final MetricModuleGraph<ModuleDependency> actualModuleGraph = initialiseEmptyGraph();
+    final ModuleGraph<TrackingModuleDependency> auxTrackingBareGraph = factory.buildTrackingModuleGraph();
+    final ModuleGraph<EvidenceModuleDependency> trackingGraph = factory.buildEvidenceModuleGraph(auxTrackingBareGraph, evidenceLimit);
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> moduleGraphBuilder =
         (sourceModule, destModule, sourceAP, destAP, type) -> new ModuleDependency(sourceModule, destModule);
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<EvidenceModuleDependency> evidenceGraphBuilder =
@@ -41,12 +37,11 @@ public class DefinitionVisitor {
     final ModuleDependenciesGraphBuildingVisitor<EvidenceModuleDependency> evidenceGraphVisitor =
         new ModuleDependenciesGraphBuildingVisitor<>(modules, trackingGraph, other, evidenceGraphBuilder);
     final AccessVisitor accessVisitor = new CompoundAccessVisitor(moduleGraphVisitor, evidenceGraphVisitor);
-    return new AnalysisState(specModuleGraph, actualModuleGraph, trackingBareGraph, accessVisitor, other);
+    return new AnalysisState(specModuleGraph, actualModuleGraph, auxTrackingBareGraph, accessVisitor, other);
   }
 
-  private JungModuleGraph initialiseSpecificationGraph(Collection<HWModule> modules, Collection<Dependency> dependencies) {
-    final DirectedGraph<HWModule, ModuleDependency> specGraph = new DirectedSparseGraph<>();
-    final JungModuleGraph specModuleGraph = new JungModuleGraph(specGraph);
+  private MetricModuleGraph<ModuleDependency> initialiseSpecificationGraph(Collection<HWModule> modules, Collection<Dependency> dependencies) {
+    final MetricModuleGraph<ModuleDependency> specModuleGraph = factory.buildMetricModuleGraph();
 
     for (HWModule module : modules) {
       specModuleGraph.addModule(module);
@@ -58,8 +53,7 @@ public class DefinitionVisitor {
     return specModuleGraph;
   }
 
-  private JungModuleGraph initialiseEmptyGraph() {
-    final DirectedGraph<HWModule, ModuleDependency> actualGraph = new DirectedSparseGraph<>();
-    return new JungModuleGraph(actualGraph);
+  private MetricModuleGraph<ModuleDependency> initialiseEmptyGraph() {
+    return factory.buildMetricModuleGraph();
   }
 }

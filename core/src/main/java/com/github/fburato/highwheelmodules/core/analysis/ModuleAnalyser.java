@@ -2,6 +2,7 @@ package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
+import com.github.fburato.highwheelmodules.model.modules.ModuleGraphFactory;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 import com.github.fburato.highwheelmodules.model.classpath.ClassParser;
@@ -19,11 +20,13 @@ public class ModuleAnalyser {
   private final ClassParser classParser;
   private final ClasspathRoot root;
   private final Optional<Integer> evidenceLimit;
+  private final ModuleGraphFactory factory;
 
-  public ModuleAnalyser(final ClassParser classParser, final ClasspathRoot root, Optional<Integer> evidenceLimit) {
+  public ModuleAnalyser(final ClassParser classParser, final ClasspathRoot root, Optional<Integer> evidenceLimit, ModuleGraphFactory factory) {
     this.classParser = classParser;
     this.root = root;
     this.evidenceLimit = evidenceLimit;
+    this.factory = factory;
   }
 
   public List<Pair<Definition, AnalyserModel.StrictAnalysisResult>> analyseStrict(final List<Definition> definitions) {
@@ -51,7 +54,7 @@ public class ModuleAnalyser {
   }
 
   private List<Pair<Definition, AnalysisState>> getAnalysisStates(List<Definition> definitions) {
-    final DefinitionVisitor definitionVisitor = new DefinitionVisitor(evidenceLimit);
+    final DefinitionVisitor definitionVisitor = new DefinitionVisitor(factory,evidenceLimit);
     return definitions.stream().map(
         def -> Pair.make(def, definitionVisitor.getAnalysisState(def))
     ).collect(Collectors.toList());
@@ -64,7 +67,7 @@ public class ModuleAnalyser {
   }
 
   public AnalyserModel.StrictAnalysisResult internalAnalyseStrict(final Definition definition) {
-    final DefinitionVisitor definitionVisitor = new DefinitionVisitor(evidenceLimit);
+    final DefinitionVisitor definitionVisitor = new DefinitionVisitor(factory,evidenceLimit);
     final AnalysisState analysisState = definitionVisitor.getAnalysisState(definition);
 
     try {
@@ -102,7 +105,7 @@ public class ModuleAnalyser {
   }
 
   private AnalyserModel.LooseAnalysisResult internalAnalyseLoose(final Definition definition) {
-    final DefinitionVisitor definitionVisitor = new DefinitionVisitor(evidenceLimit);
+    final DefinitionVisitor definitionVisitor = new DefinitionVisitor(factory,evidenceLimit);
     final AnalysisState analysisState = definitionVisitor.getAnalysisState(definition);
 
     try {

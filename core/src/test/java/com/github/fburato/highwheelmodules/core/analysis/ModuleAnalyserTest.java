@@ -1,7 +1,9 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
+import com.github.fburato.highwheelmodules.core.externaladapters.JungGraphFactory;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
+import com.github.fburato.highwheelmodules.model.modules.ModuleGraphFactory;
 import com.github.fburato.highwheelmodules.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
 import com.github.fburato.highwheelmodules.utils.Pair;
@@ -34,6 +36,7 @@ public class ModuleAnalyserTest {
 
   private final ClassParser realClassParser = new ClassPathParser(matchOnlyExampleDotOrg);
   private final ClassParser classParser = spy(realClassParser);
+  private final ModuleGraphFactory factory = new JungGraphFactory();
 
   private final HWModule MAIN = HWModule.make("Main", "org.example.Main").get();
   private final HWModule CONTROLLER = HWModule.make("Controllers", "org.example.controller.*").get();
@@ -45,7 +48,7 @@ public class ModuleAnalyserTest {
   private final HWModule UTILS = HWModule.make("Commons", "org.example.commons.*").get();
 
   private ModuleAnalyser testee(ClasspathRoot root, Optional<Integer> evidenceLimit) {
-    return new ModuleAnalyser(classParser, root, evidenceLimit);
+    return new ModuleAnalyser(classParser, root, evidenceLimit,factory);
   }
 
   @Test

@@ -1,9 +1,6 @@
 package com.github.fburato.highwheelmodules.core.externaladapters;
 
-import com.github.fburato.highwheelmodules.model.modules.HWModule;
-import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
-import com.github.fburato.highwheelmodules.model.modules.ModuleGraph;
-import com.github.fburato.highwheelmodules.model.modules.ModuleMetrics;
+import com.github.fburato.highwheelmodules.model.modules.*;
 import edu.uci.ics.jung.graph.DirectedGraph;
 
 import java.util.Arrays;
@@ -11,7 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-public class JungModuleGraph implements ModuleGraph<ModuleDependency>, ModuleMetrics {
+public class JungModuleGraph implements MetricModuleGraph<ModuleDependency> {
 
   private final DirectedGraph<HWModule, ModuleDependency> graph;
 
