@@ -50,7 +50,7 @@ public class AnalyserFacadeTest {
     testee = new AnalyserFacade(printer, pathEventSink, measureEventSink, strictAnalysisEventSink, looseAnalysisEventSink);
   }
 
-  private static class CollectionContains extends ArgumentMatcher<List<String>> {
+  private static class CollectionContains implements ArgumentMatcher<List<String>> {
 
     private final String regex;
 
@@ -59,10 +59,8 @@ public class AnalyserFacadeTest {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public boolean matches(Object o) {
-      Collection<String> collection = (Collection) o;
-      return collection.stream().anyMatch((el) -> el.matches(regex));
+    public boolean matches(List<String> strings) {
+      return strings.stream().anyMatch((el) -> el.matches(regex));
     }
   }
 

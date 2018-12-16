@@ -12,14 +12,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.pitest</groupId>
-      <artifactId>highwheel-model</artifactId>
-      <version>${highwheel.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pitest</groupId>
-      <artifactId>highwheel-parser</artifactId>
-      <version>${highwheel.version}</version>
+      <groupId>com.github.fburato</groupId>
+      <artifactId>highwheel-modules-parser</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.fburato</groupId>
