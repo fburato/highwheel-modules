@@ -21,7 +21,7 @@ public class JungTrackingModuleGraph implements ModuleGraph<TrackingModuleDepend
 
   @Override
   public Optional<TrackingModuleDependency> findDependency(HWModule vertex1, HWModule vertex2) {
-    return Optional.empty();
+    return Optional.ofNullable(graph.findEdge(vertex1,vertex2));
   }
 
   @Override
@@ -43,6 +43,11 @@ public class JungTrackingModuleGraph implements ModuleGraph<TrackingModuleDepend
   @Override
   public void addModule(HWModule vertex) {
     graph.addVertex(vertex);
+  }
+
+  @Override
+  public Collection<HWModule> modules() {
+    return graph.getVertices();
   }
 
   @Override

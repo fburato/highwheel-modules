@@ -17,7 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JungEvidenceModuleGraphTest {
 
   private final DirectedGraph<HWModule, TrackingModuleDependency> graph = new DirectedSparseGraph<>();
-  private final JungEvidenceModuleGraph testee = new JungEvidenceModuleGraph(graph, Optional.empty());
+  private final JungTrackingModuleGraph aux = new JungTrackingModuleGraph(graph);
+  private final JungEvidenceModuleGraph testee = new JungEvidenceModuleGraph(aux, Optional.empty());
 
   private final HWModule m1 = HWModule.make("module a", "A").get();
   private final HWModule m2 = HWModule.make("module b", "B").get();
@@ -56,7 +57,7 @@ public class JungEvidenceModuleGraphTest {
 
   @Test
   public void addDependencyShouldBuildTrackingDependencyWithNoEvidenceLimitIfGraphIsInitialisedWithoutLimit() {
-    final JungEvidenceModuleGraph otherTestee = new JungEvidenceModuleGraph(graph, Optional.empty());
+    final JungEvidenceModuleGraph otherTestee = new JungEvidenceModuleGraph(aux, Optional.empty());
     otherTestee.addModule(m1);
     otherTestee.addModule(m2);
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -71,7 +72,7 @@ public class JungEvidenceModuleGraphTest {
 
   @Test
   public void addDependencyShouldBuildTrackingDependencyWithEvidenceLimitIfGraphIsInitialisedWithLimit() {
-    final JungEvidenceModuleGraph otherTestee = new JungEvidenceModuleGraph(graph, Optional.of(1));
+    final JungEvidenceModuleGraph otherTestee = new JungEvidenceModuleGraph(aux, Optional.of(1));
     otherTestee.addModule(m1);
     otherTestee.addModule(m2);
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -82,6 +83,21 @@ public class JungEvidenceModuleGraphTest {
     assertThat(dependency.source).isEqualTo(m1);
     assertThat(dependency.dest).isEqualTo(m2);
     assertThat(dependency.getDestinations()).containsExactly(ap2);
+  }
+
+  @Test
+  public void addDependencyShouldKeepTrackOfDependenciesIfLimitOfDependencyIs0() {
+    final JungEvidenceModuleGraph otherTestee = new JungEvidenceModuleGraph(aux, Optional.of(0));
+    otherTestee.addModule(m1);
+    otherTestee.addModule(m2);
+    otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
+
+    final TrackingModuleDependency dependency = graph.findEdge(m1, m2);
+
+    assertThat(dependency.source).isEqualTo(m1);
+    assertThat(dependency.dest).isEqualTo(m2);
+    assertThat(dependency.getSources()).isEmpty();
+    assertThat(dependency.getSources()).isEmpty();
   }
 
   @Test

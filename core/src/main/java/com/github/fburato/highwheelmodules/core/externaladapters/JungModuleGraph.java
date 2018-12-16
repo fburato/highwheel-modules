@@ -42,6 +42,11 @@ public class JungModuleGraph implements ModuleGraph<ModuleDependency>, ModuleMet
   }
 
   @Override
+  public Collection<HWModule> modules() {
+    return graph.getVertices();
+  }
+
+  @Override
   public Collection<HWModule> dependencies(HWModule vertex) {
     return Optional.ofNullable(graph.getSuccessors(vertex)).orElse(Collections.<HWModule>emptyList());
   }

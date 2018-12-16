@@ -70,6 +70,24 @@ public class JungTrackingModuleGraphTest {
   }
 
   @Test
+  public void addDependencyShouldNotAddEvidencesIfAlreadyPresent(){
+    testee.addModule(m1); testee.addModule(m2);
+
+    TrackingModuleDependency dep1 = new TrackingModuleDependency(m1,m2);
+    dep1.addEvidence(ap1,ap2);
+
+    TrackingModuleDependency dep2 = new TrackingModuleDependency(m1,m2);
+    dep2.addEvidence(ap1,ap2);
+
+    testee.addDependency(dep1);
+    testee.addDependency(dep2);
+
+    assertThat(graph.findEdge(m1,m2).getDestinationsFromSource(ap1)).containsExactlyInAnyOrder(ap2);
+    assertThat(graph.findEdge(m1,m2).getDestinations()).containsExactlyInAnyOrder(ap2);
+    assertThat(graph.findEdge(m1,m2).getSources()).containsExactlyInAnyOrder(ap1);
+  }
+
+  @Test
   public void addDependencyShouldMergeEvidencesFromSameAccessPoint(){
     testee.addModule(m1); testee.addModule(m2);
 
@@ -124,5 +142,31 @@ public class JungTrackingModuleGraphTest {
 
     assertThat(testee.dependencies(m1)).containsExactlyInAnyOrder(m2,m3);
     assertThat(testee.dependencies(m2)).isEmpty();
+  }
+
+  @Test
+  public void findDependencyShouldReturnExpectedDependency() {
+    testee.addModule(m1);
+    testee.addModule(m2);
+
+    TrackingModuleDependency dep = new TrackingModuleDependency(m1,m2);
+    dep.addEvidence(ap1,ap2);
+
+    testee.addDependency(dep);
+
+    assertThat(testee.findDependency(m1,m2)).contains(dep);
+  }
+
+  @Test
+  public void findDependencyShouldReturnEmptyIfDependencyNotDefined() {
+    testee.addModule(m1);
+    testee.addModule(m2);
+
+    TrackingModuleDependency dep = new TrackingModuleDependency(m1,m2);
+    dep.addEvidence(ap1,ap2);
+
+    testee.addDependency(dep);
+
+    assertThat(testee.findDependency(m1,m1)).isEmpty();
   }
 }

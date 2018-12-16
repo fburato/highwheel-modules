@@ -10,5 +10,7 @@ public interface ModuleGraph<T> {
 
   void addModule(HWModule vertex);
 
+  Collection<HWModule> modules();
+
   Collection<HWModule> dependencies(HWModule vertex);
 }
