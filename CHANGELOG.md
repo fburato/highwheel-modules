@@ -16,7 +16,7 @@ the feature (because it seems like the project is not going to be maintained in 
 for that I've isolated Jung in one package and left everything else to use an internal interface.
 
 ### Removed
-- **Dependency from highwheel**. I've included in the project directly the modules that I was including from highwheels by
+- **Dependency from highwheel**. I've included in the project the modules that I was importing from highwheels by
 copying over the source code and the tests. Given the new release train for Java I want to get more control over the
 release of the necessary components, and considering the dependency on ASM is the main reason why I included highwheels
 in the first place and Henry is not particularly interested in maintaining the library, I just moved the code here.
