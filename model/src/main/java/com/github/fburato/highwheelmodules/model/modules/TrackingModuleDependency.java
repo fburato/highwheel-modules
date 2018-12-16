@@ -9,23 +9,23 @@ public final class TrackingModuleDependency {
   public final HWModule source;
   public final HWModule dest;
   private final Map<AccessPoint, Set<AccessPoint>> evidences;
-  private final Optional<Integer> evidenceLimit;
   private int evidenceCounter = 0;
 
-  public TrackingModuleDependency(final HWModule source, final HWModule dest, final Optional<Integer> evidenceLimit) {
+  public TrackingModuleDependency(final HWModule source, final HWModule dest) {
     this.source = source;
     this.dest = dest;
     this.evidences = new HashMap<>();
-    this.evidenceLimit = evidenceLimit;
   }
 
   public void addEvidence(AccessPoint source, AccessPoint dest) {
-    if (!evidenceLimit.isPresent() || evidenceCounter < evidenceLimit.get()) {
       final Set<AccessPoint> newDestinations = evidences.getOrDefault(source, new HashSet<>());
       newDestinations.add(dest);
       evidences.put(source, newDestinations);
       evidenceCounter++;
-    }
+  }
+
+  public int getEvidenceCounter() {
+    return evidenceCounter;
   }
 
   public Set<AccessPoint> getSources() {

@@ -3,7 +3,7 @@ package com.github.fburato.highwheelmodules.core.analysis;
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor;
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleDependenciesGraphBuildingVisitor;
 import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
-import com.github.fburato.highwheelmodules.core.externaladapters.JungTrackingModuleGraph;
+import com.github.fburato.highwheelmodules.core.externaladapters.JungEvidenceModuleGraph;
 import com.github.fburato.highwheelmodules.model.modules.*;
 import com.github.fburato.highwheelmodules.model.rules.Dependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
@@ -29,7 +29,7 @@ public class DefinitionVisitor {
     final JungModuleGraph specModuleGraph = initialiseSpecificationGraph(modules, definition.dependencies);
     final JungModuleGraph actualModuleGraph = initialiseEmptyGraph();
     final DirectedSparseGraph<HWModule, TrackingModuleDependency> trackingBareGraph = new DirectedSparseGraph<>();
-    final JungTrackingModuleGraph trackingGraph = new JungTrackingModuleGraph(trackingBareGraph, evidenceLimit);
+    final JungEvidenceModuleGraph trackingGraph = new JungEvidenceModuleGraph(trackingBareGraph, evidenceLimit);
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> moduleGraphBuilder =
         (sourceModule, destModule, sourceAP, destAP, type) -> new ModuleDependency(sourceModule, destModule);
     final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<EvidenceModuleDependency> evidenceGraphBuilder =
