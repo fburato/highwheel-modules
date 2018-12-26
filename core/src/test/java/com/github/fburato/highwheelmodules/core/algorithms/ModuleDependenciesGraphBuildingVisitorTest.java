@@ -3,7 +3,8 @@ package com.github.fburato.highwheelmodules.core.algorithms;
 import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import com.google.common.graph.MutableNetwork;
+import com.google.common.graph.NetworkBuilder;
 import org.junit.Test;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
@@ -55,7 +56,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     }
   }
 
-  private final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+  private final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
   private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
   private final WarningsCollector warningsCollector = new AddToListWarnings();
   private final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> builder = (m1, m2, source, dest, type) -> new ModuleDependency(m1, m2);
@@ -67,8 +68,8 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     final List<HWModule> allModules = new ArrayList<>(modules.size() + 1);
     allModules.addAll(modules);
     allModules.add(OTHER);
-    assertThat(graph.getVertices().containsAll(allModules)).isTrue();
-    assertThat(allModules.containsAll(graph.getVertices())).isTrue();
+    assertThat(graph.nodes().containsAll(allModules)).isTrue();
+    assertThat(allModules.containsAll(graph.nodes())).isTrue();
   }
 
   @Test
@@ -77,7 +78,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         HWModule.make("Core", "org.example.core.*").get(),
         HWModule.make("Core", "org.example.io.*").get()
     );
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final WarningsCollector warningsCollector = new AddToListWarnings();
     new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
@@ -156,7 +157,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         SUPER_MODULE,
         IO
     );
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final ModuleDependenciesGraphBuildingVisitor testee =
         new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder);
@@ -182,7 +183,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         SUPER_MODULE,
         IO
     );
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
     final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     final ModuleDependenciesGraphBuildingVisitor testee =
         new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);

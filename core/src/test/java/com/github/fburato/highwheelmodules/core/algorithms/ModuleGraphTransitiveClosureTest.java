@@ -3,7 +3,8 @@ package com.github.fburato.highwheelmodules.core.algorithms;
 import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import com.google.common.graph.MutableNetwork;
+import com.google.common.graph.NetworkBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,7 +23,7 @@ public class ModuleGraphTransitiveClosureTest {
   private final HWModule MAIN = HWModule.make("Main", "org.example.Main").get();
 
   private final List<HWModule> modules = Arrays.asList(CORE, FACADE, IO, COMMONS, ENDPOINTS, MAIN);
-  private final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+  private final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
   private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
   private ModuleGraphTransitiveClosure testee;
 
@@ -152,7 +153,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {
@@ -183,7 +184,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("DIFFERENT NAME", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {
@@ -214,7 +215,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {
@@ -245,7 +246,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {
@@ -276,7 +277,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("DIFFERENT NAME", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {
@@ -307,7 +308,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {
@@ -344,7 +345,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {
@@ -375,7 +376,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("DIFFERENT NAME", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {
@@ -406,7 +407,7 @@ public class ModuleGraphTransitiveClosureTest {
     final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
     final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-    final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    final MutableNetwork<HWModule, ModuleDependency> graph_2 = NetworkBuilder.directed().allowsSelfLoops(true).build();
     final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
     for (HWModule module : modules_2) {

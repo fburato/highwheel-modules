@@ -1,23 +1,23 @@
 package com.github.fburato.highwheelmodules.core.externaladapters;
 
 import com.github.fburato.highwheelmodules.model.modules.*;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import com.google.common.graph.NetworkBuilder;
 
 import java.util.Optional;
 
 public class JungGraphFactory implements ModuleGraphFactory {
   @Override
-  public MetricModuleGraph<ModuleDependency> buildMetricModuleGraph() {
-    return new JungModuleGraph(new DirectedSparseGraph<>());
+  public JungModuleGraph buildMetricModuleGraph() {
+    return new JungModuleGraph(NetworkBuilder.directed().allowsSelfLoops(true).build());
   }
 
   @Override
-  public ModuleGraph<EvidenceModuleDependency> buildEvidenceModuleGraph(ModuleGraph<TrackingModuleDependency> trackingGraph, Optional<Integer> evidenceLimit) {
+  public JungEvidenceModuleGraph buildEvidenceModuleGraph(ModuleGraph<TrackingModuleDependency> trackingGraph, Optional<Integer> evidenceLimit) {
     return new JungEvidenceModuleGraph(trackingGraph,evidenceLimit);
   }
 
   @Override
-  public ModuleGraph<TrackingModuleDependency> buildTrackingModuleGraph() {
-    return new JungTrackingModuleGraph(new DirectedSparseGraph<>());
+  public JungTrackingModuleGraph buildTrackingModuleGraph() {
+    return new JungTrackingModuleGraph(NetworkBuilder.directed().allowsSelfLoops(true).build());
   }
 }

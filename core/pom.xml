@@ -22,9 +22,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>net.sf.jung</groupId>
-      <artifactId>jung-graph-impl</artifactId>
-      <version>2.0.1</version>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>27.0.1-jre</version>
     </dependency>
     <dependency>
       <groupId>org.jparsec</groupId>
@@ -32,4 +32,20 @@
       <version>3.0</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>
+            --add-opens com.github.highwheel.modules.core/com.github.fburato.highwheelmodules.core=ALL-UNNAMED
+            --add-opens com.github.highwheel.modules.core/com.github.fburato.highwheelmodules.core.analysis=ALL-UNNAMED
+            --add-opens com.github.highwheel.modules.parser/com.github.fburato.highwheelmodules.bytecodeparser=ALL-UNNAMED
+            --add-opens com.github.highwheel.modules.parser/com.github.fburato.highwheelmodules.bytecodeparser.classpath=ALL-UNNAMED
+          </argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

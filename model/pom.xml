@@ -23,4 +23,20 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-opens com.github.highwheel.modules.model/com.github.fburato.highwheelmodules.model.bytecode=ALL-UNNAMED
+                        --add-opens com.github.highwheel.modules.model/com.github.fburato.highwheelmodules.model.classpath=ALL-UNNAMED
+                        --add-opens com.github.highwheel.modules.model/com.github.fburato.highwheelmodules.model.modules=ALL-UNNAMED
+                        --add-opens com.github.highwheel.modules.model/com.github.fburato.highwheelmodules.model.rules=ALL-UNNAMED
+                    </argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

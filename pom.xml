@@ -100,7 +100,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.7.0</version>
+                    <version>3.8.0</version>
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
@@ -143,11 +143,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.2.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
                     <version>1.6</version>
                 </plugin>
@@ -164,6 +159,8 @@
         <profile>
             <id>integration-tests</id>
             <modules>
+                <module>model</module>
+                <module>parser</module>
                 <module>core</module>
                 <module>utils</module>
                 <module>cli</module>
@@ -255,8 +252,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <hamcrest.version>1.3.RC2</hamcrest.version>
         <junit.version>4.12</junit.version>
-        <surefire.version>2.21.0</surefire.version>
-        <java.version>1.8</java.version>
+        <surefire.version>2.22.1</surefire.version>
+        <java.version>11</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
