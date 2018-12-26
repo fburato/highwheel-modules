@@ -5,11 +5,11 @@ import com.google.common.graph.MutableNetwork;
 
 import java.util.*;
 
-public class JungModuleGraph implements MetricModuleGraph<ModuleDependency> {
+public class GuavaModuleGraph implements MetricModuleGraph<ModuleDependency> {
 
   private final MutableNetwork<HWModule, ModuleDependency> graph;
 
-  public JungModuleGraph(MutableNetwork<HWModule, ModuleDependency> graph) {
+  public GuavaModuleGraph(MutableNetwork<HWModule, ModuleDependency> graph) {
     this.graph = graph;
   }
 

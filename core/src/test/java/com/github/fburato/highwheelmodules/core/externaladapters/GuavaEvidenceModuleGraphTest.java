@@ -14,11 +14,11 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JungEvidenceModuleGraphTest {
+public class GuavaEvidenceModuleGraphTest {
 
   private final MutableNetwork<HWModule, TrackingModuleDependency> graph = NetworkBuilder.directed().allowsSelfLoops(true).build();
-  private final JungTrackingModuleGraph aux = new JungTrackingModuleGraph(graph);
-  private final JungEvidenceModuleGraph testee = new JungEvidenceModuleGraph(aux, Optional.empty());
+  private final GuavaTrackingModuleGraph aux = new GuavaTrackingModuleGraph(graph);
+  private final GuavaEvidenceModuleGraph testee = new GuavaEvidenceModuleGraph(aux, Optional.empty());
 
   private final HWModule m1 = HWModule.make("module a", "A").get();
   private final HWModule m2 = HWModule.make("module b", "B").get();
@@ -57,7 +57,7 @@ public class JungEvidenceModuleGraphTest {
 
   @Test
   public void addDependencyShouldBuildTrackingDependencyWithNoEvidenceLimitIfGraphIsInitialisedWithoutLimit() {
-    final JungEvidenceModuleGraph otherTestee = new JungEvidenceModuleGraph(aux, Optional.empty());
+    final GuavaEvidenceModuleGraph otherTestee = new GuavaEvidenceModuleGraph(aux, Optional.empty());
     otherTestee.addModule(m1);
     otherTestee.addModule(m2);
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -72,7 +72,7 @@ public class JungEvidenceModuleGraphTest {
 
   @Test
   public void addDependencyShouldBuildTrackingDependencyWithEvidenceLimitIfGraphIsInitialisedWithLimit() {
-    final JungEvidenceModuleGraph otherTestee = new JungEvidenceModuleGraph(aux, Optional.of(1));
+    final GuavaEvidenceModuleGraph otherTestee = new GuavaEvidenceModuleGraph(aux, Optional.of(1));
     otherTestee.addModule(m1);
     otherTestee.addModule(m2);
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -87,7 +87,7 @@ public class JungEvidenceModuleGraphTest {
 
   @Test
   public void addDependencyShouldKeepTrackOfDependenciesIfLimitOfDependencyIs0() {
-    final JungEvidenceModuleGraph otherTestee = new JungEvidenceModuleGraph(aux, Optional.of(0));
+    final GuavaEvidenceModuleGraph otherTestee = new GuavaEvidenceModuleGraph(aux, Optional.of(0));
     otherTestee.addModule(m1);
     otherTestee.addModule(m2);
     otherTestee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));

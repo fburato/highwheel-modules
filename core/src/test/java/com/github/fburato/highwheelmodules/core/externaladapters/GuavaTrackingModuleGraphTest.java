@@ -10,11 +10,11 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JungTrackingModuleGraphTest {
+public class GuavaTrackingModuleGraphTest {
 
 
   private final MutableNetwork<HWModule, TrackingModuleDependency> graph = NetworkBuilder.directed().allowsSelfLoops(true).build();
-  private final JungTrackingModuleGraph testee = new JungTrackingModuleGraph(graph);
+  private final GuavaTrackingModuleGraph testee = new GuavaTrackingModuleGraph(graph);
   private final HWModule m1 = HWModule.make("module a", "A").get();
   private final HWModule m2 = HWModule.make("module b", "B").get();
   private final HWModule m3 = HWModule.make("module c", "C").get();

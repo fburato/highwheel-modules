@@ -8,14 +8,14 @@ import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependenc
 
 import java.util.*;
 
-public class JungEvidenceModuleGraph implements ModuleGraph<EvidenceModuleDependency> {
+public class GuavaEvidenceModuleGraph implements ModuleGraph<EvidenceModuleDependency> {
 
   private final ModuleGraph<TrackingModuleDependency> graph;
 
   private final Optional<Integer> evidenceLimit;
 
 
-  public JungEvidenceModuleGraph(ModuleGraph<TrackingModuleDependency> graph, Optional<Integer> evidenceLimit) {
+  public GuavaEvidenceModuleGraph(ModuleGraph<TrackingModuleDependency> graph, Optional<Integer> evidenceLimit) {
     this.graph = graph;
     this.evidenceLimit = evidenceLimit;
   }

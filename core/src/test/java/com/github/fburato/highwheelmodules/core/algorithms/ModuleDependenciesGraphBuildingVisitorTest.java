@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
-import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
+import com.github.fburato.highwheelmodules.core.externaladapters.GuavaModuleGraph;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
 import com.google.common.graph.MutableNetwork;
@@ -57,7 +57,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
   }
 
   private final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
-  private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
+  private final GuavaModuleGraph moduleGraph = new GuavaModuleGraph(graph);
   private final WarningsCollector warningsCollector = new AddToListWarnings();
   private final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> builder = (m1, m2, source, dest, type) -> new ModuleDependency(m1, m2);
   private final ModuleDependenciesGraphBuildingVisitor<ModuleDependency> testee =
@@ -79,7 +79,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         HWModule.make("Core", "org.example.io.*").get()
     );
     final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
-    final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
+    final GuavaModuleGraph moduleGraph = new GuavaModuleGraph(graph);
     final WarningsCollector warningsCollector = new AddToListWarnings();
     new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
 
@@ -158,7 +158,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         IO
     );
     final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
-    final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
+    final GuavaModuleGraph moduleGraph = new GuavaModuleGraph(graph);
     final ModuleDependenciesGraphBuildingVisitor testee =
         new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder);
 
@@ -184,7 +184,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         IO
     );
     final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
-    final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
+    final GuavaModuleGraph moduleGraph = new GuavaModuleGraph(graph);
     final ModuleDependenciesGraphBuildingVisitor testee =
         new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
 

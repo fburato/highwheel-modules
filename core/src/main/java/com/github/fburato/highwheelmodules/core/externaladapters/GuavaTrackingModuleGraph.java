@@ -11,11 +11,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-public class JungTrackingModuleGraph implements ModuleGraph<TrackingModuleDependency> {
+public class GuavaTrackingModuleGraph implements ModuleGraph<TrackingModuleDependency> {
 
   private final MutableNetwork<HWModule,TrackingModuleDependency> graph;
 
-  public JungTrackingModuleGraph(MutableNetwork<HWModule,TrackingModuleDependency> graph) {
+  public GuavaTrackingModuleGraph(MutableNetwork<HWModule,TrackingModuleDependency> graph) {
     this.graph = graph;
   }
 

@@ -10,10 +10,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JungModuleGraphTest {
+public class GuavaModuleGraphTest {
 
   private final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().allowsSelfLoops(true).build();
-  private final JungModuleGraph testee = new JungModuleGraph(graph);
+  private final GuavaModuleGraph testee = new GuavaModuleGraph(graph);
 
   private final HWModule m1 = HWModule.make("module a", "A").get();
   private final HWModule m2 = HWModule.make("module b", "B").get();
