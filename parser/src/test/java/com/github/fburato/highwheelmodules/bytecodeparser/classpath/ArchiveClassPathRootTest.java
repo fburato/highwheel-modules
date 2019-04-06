@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class ArchiveClassPathRootTest {
 
     private ArchiveClassPathRoot testee;
@@ -46,7 +47,7 @@ public class ArchiveClassPathRootTest {
 
     @Test
     public void shouldReturnAReadableInputStream() {
-        final byte b[] = new byte[100];
+        final byte[] b = new byte[100];
         try {
             final InputStream actual = this.testee.getData(ElementName.fromString("injar.p1.P1Test"));
             actual.read(b);

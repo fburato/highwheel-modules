@@ -35,7 +35,7 @@ public class LooseAnalyser {
             ModuleGraphTransitiveClosure transitiveClosure, Collection<Dependency> dependencies, HWModule other) {
         final List<AnalyserModel.AbsentDependencyViolation> dependencyViolations = new ArrayList<>();
         for (Dependency dependency : dependencies) {
-            if (!dependency.source.equals(other) && !dependency.equals(other)
+            if (!dependency.source.equals(other) && !dependency.dest.equals(other)
                     && !transitiveClosure.isReachable(dependency.source, dependency.dest)) {
                 dependencyViolations
                         .add(new AnalyserModel.AbsentDependencyViolation(dependency.source.name, dependency.dest.name));

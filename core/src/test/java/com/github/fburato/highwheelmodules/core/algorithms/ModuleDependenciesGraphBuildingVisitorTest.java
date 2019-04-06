@@ -35,12 +35,11 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     }
 
     private static <T1, T2> Pair<T1, T2> makePair(T1 first, T2 second) {
-        return new Pair<T1, T2>(first, second);
+        return new Pair<>(first, second);
     }
 
-    private final List<HWModule> constructionWarnings = new ArrayList<HWModule>(5);
-    private final List<Pair<ElementName, Collection<HWModule>>> visitWarnings = new ArrayList<Pair<ElementName, Collection<HWModule>>>(
-            5);
+    private final List<HWModule> constructionWarnings = new ArrayList<>(5);
+    private final List<Pair<ElementName, Collection<HWModule>>> visitWarnings = new ArrayList<>(5);
 
     private class AddToListWarnings implements WarningsCollector {
 
@@ -55,7 +54,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         }
     }
 
-    private final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    private final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
     private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     private final WarningsCollector warningsCollector = new AddToListWarnings();
     private final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> builder = (m1, m2, source,
@@ -76,7 +75,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     public void constructorShouldRemarkRepeatedModules() {
         final List<HWModule> repeatedModules = Arrays.asList(HWModule.make("Core", "org.example.core.*").get(),
                 HWModule.make("Core", "org.example.io.*").get());
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
         final WarningsCollector warningsCollector = new AddToListWarnings();
         new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
@@ -151,7 +150,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     @Test
     public void applyShouldAddSourceAndDestToMoreModulesIfMoreModuleGlobRegexMatch() {
         final List<HWModule> repeatedModules = Arrays.asList(CORE, SUPER_MODULE, IO);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
         final ModuleDependenciesGraphBuildingVisitor testee = new ModuleDependenciesGraphBuildingVisitor<>(
                 repeatedModules, moduleGraph, OTHER, builder);
@@ -173,7 +172,7 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     @Test
     public void applyShouldAddWarningsIfMoreModuleGlobRegexMatch() {
         final List<HWModule> repeatedModules = Arrays.asList(CORE, SUPER_MODULE, IO);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
         final ModuleDependenciesGraphBuildingVisitor testee = new ModuleDependenciesGraphBuildingVisitor<>(
                 repeatedModules, moduleGraph, OTHER, builder, warningsCollector);

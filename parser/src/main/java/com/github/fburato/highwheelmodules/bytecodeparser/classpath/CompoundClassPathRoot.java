@@ -31,7 +31,7 @@ public class CompoundClassPathRoot implements ClasspathRoot {
     }
 
     public Collection<ElementName> classNames() {
-        final List<ElementName> cns = new ArrayList<ElementName>();
+        final List<ElementName> cns = new ArrayList<>();
         for (final ClasspathRoot each : this.roots) {
             cns.addAll(each.classNames());
         }

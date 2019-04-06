@@ -124,7 +124,7 @@ public class Main {
     }
 
     private static String printEvidences(List<String> modules, List<List<Pair<String, String>>> evidences) {
-        final StringBuilder result = new StringBuilder("");
+        final StringBuilder result = new StringBuilder();
         for (int i = 0; i < modules.size() - 1; ++i) {
             final String current = modules.get(i);
             final String next = modules.get(i + 1);

@@ -72,12 +72,12 @@ public class ModuleGraphTransitiveClosure {
         final List<HWModule>[][] array = (List<HWModule>[][]) new List[size][size];
         for (int i = 0; i < array.length; ++i)
             for (int j = 0; j < array.length; ++j)
-                array[i][j] = new ArrayList<HWModule>();
+                array[i][j] = new ArrayList<>();
         return array;
     }
 
     private Map<HWModule, Integer> createMapModuleIndex(Collection<HWModule> modules) {
-        final Map<HWModule, Integer> map = new HashMap<HWModule, Integer>(modules.size());
+        final Map<HWModule, Integer> map = new HashMap<>(modules.size());
         int moduleCount = 0;
         for (HWModule module : modules) {
             map.put(module, moduleCount++);
@@ -126,7 +126,7 @@ public class ModuleGraphTransitiveClosure {
 
     public Optional<List<Difference>> diff(ModuleGraphTransitiveClosure other) {
         return diffPath(other).map((argument) -> {
-            final List<Difference> result = new ArrayList<Difference>(argument.size());
+            final List<Difference> result = new ArrayList<>(argument.size());
             for (PathDifference pathDifference : argument) {
                 result.add(new Difference(pathDifference.source, pathDifference.dest, pathDifference.firstPath.size(),
                         pathDifference.secondPath.size()));
@@ -138,7 +138,7 @@ public class ModuleGraphTransitiveClosure {
     public Optional<List<PathDifference>> diffPath(ModuleGraphTransitiveClosure other) {
         if (!modules.containsAll(other.modules) || !other.modules.containsAll(modules))
             return Optional.empty();
-        final List<PathDifference> differences = new ArrayList<PathDifference>();
+        final List<PathDifference> differences = new ArrayList<>();
         for (HWModule i : modules) {
             for (HWModule j : modules) {
                 int thisI = indexMap.get(i), thisJ = indexMap.get(j), otherI = indexMap.get(i),
@@ -162,7 +162,7 @@ public class ModuleGraphTransitiveClosure {
 
     public List<HWModule> minimumDistancePath(HWModule vertex1, HWModule vertex2) {
         if (indexMap.get(vertex1) == null || indexMap.get(vertex2) == null)
-            return new ArrayList<HWModule>();
+            return new ArrayList<>();
         else
             return minimumPathMatrix[indexMap.get(vertex1)][indexMap.get(vertex2)];
     }

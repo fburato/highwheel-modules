@@ -55,8 +55,8 @@ public class Compiler {
 
     private Pair<List<Dependency>, List<NoStrictDependency>> compileRules(List<SyntaxTree.Rule> rulesDefinition,
             Map<String, HWModule> modules) {
-        final List<Dependency> dependencies = new ArrayList<Dependency>();
-        final List<NoStrictDependency> noDirectDependencies = new ArrayList<NoStrictDependency>();
+        final List<Dependency> dependencies = new ArrayList<>();
+        final List<NoStrictDependency> noDirectDependencies = new ArrayList<>();
         for (SyntaxTree.Rule ruleDefinition : rulesDefinition) {
             if (ruleDefinition instanceof SyntaxTree.ChainDependencyRule) {
                 SyntaxTree.ChainDependencyRule chainDependencyRule = (SyntaxTree.ChainDependencyRule) ruleDefinition;
@@ -70,7 +70,7 @@ public class Compiler {
     }
 
     private List<Dependency> compileChainDependencies(List<String> chainDependencies, Map<String, HWModule> modules) {
-        final List<Dependency> result = new ArrayList<Dependency>(chainDependencies.size() - 1);
+        final List<Dependency> result = new ArrayList<>(chainDependencies.size() - 1);
         for (int i = 0; i < chainDependencies.size() - 1; ++i) {
             final String current = chainDependencies.get(i);
             final String next = chainDependencies.get(i + 1);

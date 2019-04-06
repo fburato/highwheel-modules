@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +14,7 @@ public class StreamUtilTest {
 
     @Test
     public void shouldReadToString() throws IOException {
-        final InputStream is = new ByteArrayInputStream("foo".getBytes("UTF-8"));
+        final InputStream is = new ByteArrayInputStream("foo".getBytes(StandardCharsets.UTF_8));
         assertThat("foo").isEqualTo(StreamUtil.toString(is, "UTF-8"));
     }
 
@@ -43,7 +44,6 @@ public class StreamUtilTest {
     }
 
     private byte[] createByteArray() {
-        final byte[] expected = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0xA };
-        return expected;
+        return new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0xA };
     }
 }

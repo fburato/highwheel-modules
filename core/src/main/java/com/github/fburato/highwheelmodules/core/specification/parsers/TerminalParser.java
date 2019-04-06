@@ -8,7 +8,7 @@ final class TerminalParser {
     private final Terminals terminals = Terminals.operators(operators).words(Scanners.IDENTIFIER)
             .keywords("modules", "rules", "prefix").build();
 
-    private final Parser<?> tokeniser = Parsers.<Object> or(terminals.tokenizer(),
+    private final Parser<?> tokeniser = Parsers.or(terminals.tokenizer(),
             Terminals.StringLiteral.DOUBLE_QUOTE_TOKENIZER);
 
     private Parser<Token> term(String name) {

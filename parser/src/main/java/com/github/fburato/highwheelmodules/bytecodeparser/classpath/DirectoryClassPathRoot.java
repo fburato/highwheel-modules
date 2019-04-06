@@ -38,7 +38,7 @@ public class DirectoryClassPathRoot implements ClasspathRoot {
     }
 
     private Collection<ElementName> classNames(final File file) {
-        final List<ElementName> classNames = new LinkedList<ElementName>();
+        final List<ElementName> classNames = new LinkedList<>();
 
         if (!file.exists() || !file.isDirectory()) {
             return Collections.emptyList();

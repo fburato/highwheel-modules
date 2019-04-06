@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class DependencyClassPathRootTest {
 
     @Test
     public void shouldNotReturnClassNames() {
-        when(this.child.classNames()).thenReturn(Arrays.asList(ElementName.fromString("foo")));
+        when(this.child.classNames()).thenReturn(Collections.singletonList(ElementName.fromString("foo")));
         assertThat(this.testee.classNames()).isEmpty();
     }
 

@@ -164,7 +164,7 @@ public class AnalyserFacade {
         pathEventSink.directories(getPaths(dirs));
         pathEventSink.jars(getPaths(jars));
 
-        final List<ClasspathRoot> classpathRoots = new ArrayList<ClasspathRoot>();
+        final List<ClasspathRoot> classpathRoots = new ArrayList<>();
         for (File jar : jars) {
             classpathRoots.add(new ArchiveClassPathRoot(jar));
         }
@@ -176,7 +176,7 @@ public class AnalyserFacade {
     }
 
     private List<String> getPaths(List<File> files) {
-        final List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<>();
         for (File f : files) {
             result.add(f.getAbsolutePath());
         }

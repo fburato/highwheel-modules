@@ -44,7 +44,7 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
 
     private void addModulesToGraph() {
         graph.addModule(other);
-        final Set<String> processedModuleNames = new HashSet<String>(modules.size());
+        final Set<String> processedModuleNames = new HashSet<>(modules.size());
         for (HWModule module : modules) {
             graph.addModule(module);
             if (processedModuleNames.contains(module.name)) {
@@ -85,7 +85,7 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
     }
 
     private List<HWModule> getMatchingModules(ElementName name) {
-        final List<HWModule> modulesMatchingName = new ArrayList<HWModule>(modules.size());
+        final List<HWModule> modulesMatchingName = new ArrayList<>(modules.size());
         for (HWModule module : modules) {
             if (module.contains(name)) {
                 modulesMatchingName.add(module);

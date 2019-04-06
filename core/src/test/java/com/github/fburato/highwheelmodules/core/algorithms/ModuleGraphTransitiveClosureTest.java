@@ -22,7 +22,7 @@ public class ModuleGraphTransitiveClosureTest {
     private final HWModule MAIN = HWModule.make("Main", "org.example.Main").get();
 
     private final List<HWModule> modules = Arrays.asList(CORE, FACADE, IO, COMMONS, ENDPOINTS, MAIN);
-    private final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<HWModule, ModuleDependency>();
+    private final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
     private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
     private ModuleGraphTransitiveClosure testee;
 
@@ -116,17 +116,17 @@ public class ModuleGraphTransitiveClosureTest {
 
     @Test
     public void minimumDistancePathShouldBeTheExpectedOneForDependentModules() {
-        assertThat(testee.minimumDistancePath(CORE, COMMONS)).isEqualTo(Arrays.asList(COMMONS));
-        assertThat(testee.minimumDistancePath(FACADE, CORE)).isEqualTo(Arrays.asList(CORE));
+        assertThat(testee.minimumDistancePath(CORE, COMMONS)).isEqualTo(Collections.singletonList(COMMONS));
+        assertThat(testee.minimumDistancePath(FACADE, CORE)).isEqualTo(Collections.singletonList(CORE));
         assertThat(testee.minimumDistancePath(FACADE, COMMONS)).isEqualTo(Arrays.asList(CORE, COMMONS));
-        assertThat(testee.minimumDistancePath(IO, COMMONS)).isEqualTo(Arrays.asList(COMMONS));
-        assertThat(testee.minimumDistancePath(IO, CORE)).isEqualTo(Arrays.asList(CORE));
-        assertThat(testee.minimumDistancePath(ENDPOINTS, FACADE)).isEqualTo(Arrays.asList(FACADE));
+        assertThat(testee.minimumDistancePath(IO, COMMONS)).isEqualTo(Collections.singletonList(COMMONS));
+        assertThat(testee.minimumDistancePath(IO, CORE)).isEqualTo(Collections.singletonList(CORE));
+        assertThat(testee.minimumDistancePath(ENDPOINTS, FACADE)).isEqualTo(Collections.singletonList(FACADE));
         assertThat(testee.minimumDistancePath(ENDPOINTS, CORE)).isEqualTo(Arrays.asList(FACADE, CORE));
-        assertThat(testee.minimumDistancePath(ENDPOINTS, COMMONS)).isEqualTo(Arrays.asList(COMMONS));
-        assertThat(testee.minimumDistancePath(MAIN, CORE)).isEqualTo(Arrays.asList(CORE));
-        assertThat(testee.minimumDistancePath(MAIN, IO)).isEqualTo(Arrays.asList(IO));
-        assertThat(testee.minimumDistancePath(MAIN, ENDPOINTS)).isEqualTo(Arrays.asList(ENDPOINTS));
+        assertThat(testee.minimumDistancePath(ENDPOINTS, COMMONS)).isEqualTo(Collections.singletonList(COMMONS));
+        assertThat(testee.minimumDistancePath(MAIN, CORE)).isEqualTo(Collections.singletonList(CORE));
+        assertThat(testee.minimumDistancePath(MAIN, IO)).isEqualTo(Collections.singletonList(IO));
+        assertThat(testee.minimumDistancePath(MAIN, ENDPOINTS)).isEqualTo(Collections.singletonList(ENDPOINTS));
         assertThat(testee.minimumDistancePath(MAIN, FACADE)).isEqualTo(Arrays.asList(ENDPOINTS, FACADE));
         assertThat(testee.minimumDistancePath(MAIN, COMMONS).size()).isEqualTo(2);
     }
@@ -153,7 +153,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -184,7 +184,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("DIFFERENT NAME", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -215,7 +215,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -246,7 +246,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -277,7 +277,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("DIFFERENT NAME", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -308,7 +308,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -345,7 +345,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -376,7 +376,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("DIFFERENT NAME", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -407,7 +407,7 @@ public class ModuleGraphTransitiveClosureTest {
         final HWModule MAIN_2 = HWModule.make("Main", "org.example.Main").get();
 
         final List<HWModule> modules_2 = Arrays.asList(CORE_2, FACADE_2, IO_2, COMMONS_2, ENDPOINTS_2, MAIN_2);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<HWModule, ModuleDependency>();
+        final DirectedSparseGraph<HWModule, ModuleDependency> graph_2 = new DirectedSparseGraph<>();
         final JungModuleGraph moduleGraph_2 = new JungModuleGraph(graph_2);
 
         for (HWModule module : modules_2) {
@@ -430,7 +430,7 @@ public class ModuleGraphTransitiveClosureTest {
 
         assertThat(differences.get(0).source).isEqualTo(MAIN);
         assertThat(differences.get(0).dest).isEqualTo(CORE);
-        assertThat(differences.get(0).firstPath).isEqualTo(Arrays.asList(CORE));
+        assertThat(differences.get(0).firstPath).isEqualTo(Collections.singletonList(CORE));
         assertThat(differences.get(0).secondPath.size()).isEqualTo(2);
         assertThat(differences.get(0).secondPath.get(1)).isEqualTo(CORE);
     }

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -183,7 +184,7 @@ public class DefinitionParserTest {
     @Test
     public void rulesSectionShouldParsePreambleAndRuleWithEndOfFile() {
         assertParse(testee.rulesSection, "rules:\n\n\nida->idb",
-                Arrays.asList(new SyntaxTree.ChainDependencyRule("ida", "idb")));
+                Collections.singletonList(new SyntaxTree.ChainDependencyRule("ida", "idb")));
     }
 
     @Test

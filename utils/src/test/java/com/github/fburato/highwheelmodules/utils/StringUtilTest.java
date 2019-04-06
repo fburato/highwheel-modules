@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +33,7 @@ public class StringUtilTest {
 
     @Test
     public void joinShouldReturnToStringOfContainedObjectIfOnlyOneAvailable() {
-        assertThat(join(",", Arrays.asList(new TestClass(9, "hello")))).isEqualTo("hello-9");
+        assertThat(join(",", Collections.singletonList(new TestClass(9, "hello")))).isEqualTo("hello-9");
     }
 
     @Test

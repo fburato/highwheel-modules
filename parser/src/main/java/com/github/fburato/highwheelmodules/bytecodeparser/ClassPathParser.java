@@ -35,14 +35,11 @@ public class ClassPathParser implements ClassParser {
     }
 
     private void parseClass(final ClasspathRoot cp, final AccessVisitor dv, final ElementName each) throws IOException {
-        final InputStream is = cp.getData(each);
-        try {
+        try (InputStream is = cp.getData(each)) {
             final ClassReader reader = new ClassReader(is);
             final DependencyClassVisitor cv = new DependencyClassVisitor(null, new FilteringDecorator(dv, this.filter),
                     nameTransformer);
             reader.accept(cv, 0);
-        } finally {
-            is.close();
         }
 
     }

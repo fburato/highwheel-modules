@@ -4,6 +4,6 @@ import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 public interface NameTransformer {
 
-    public ElementName transform(String name);
+    ElementName transform(String name);
 
 }

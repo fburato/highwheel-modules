@@ -31,46 +31,46 @@ public class GlobToRegexTest {
 
     @Test
     public void shouldNotMatchIfContentDiffersBeforeAStar() {
-        final String glob = new String("org.foo.*");
+        final String glob = "org.foo.*";
         assertThat(matches(glob, "org.fo")).isFalse();
     }
 
     @Test
     public void shouldEscapeDotsInGeneratedRegex() {
-        final String glob = new String("org.foo.bar");
+        final String glob = "org.foo.bar";
         assertThat(matches(glob, "orgafooabar")).isFalse();
     }
 
     @Test
     public void shouldSupportQuestionMarkWildCard() {
-        final String glob = new String("org?foo?bar");
+        final String glob = "org?foo?bar";
         assertThat(matches(glob, "org.foo.bar")).isTrue();
         assertThat(matches(glob, "orgafooabar")).isTrue();
     }
 
     @Test
     public void shouldEscapeEscapesInGeneratedRegex() {
-        final String glob = new String("org.\\bar");
+        final String glob = "org.\\bar";
         assertThat(matches(glob, "org.\\bar")).isTrue();
         assertThat(matches(glob, "org.bar")).isFalse();
     }
 
     @Test
     public void shouldEscapeDollarSign() {
-        final String glob = new String("org$bar");
+        final String glob = "org$bar";
         assertThat(matches(glob, "org$bar")).isTrue();
     }
 
     @Test
     public void shouldSupportMultipleWildcards() {
-        final String glob = new String("foo*bar*car");
+        final String glob = "foo*bar*car";
         assertThat(matches(glob, "foo!!!bar!!!car")).isTrue();
         assertThat(matches(glob, "foo!!!!!car")).isFalse();
     }
 
     @Test
     public void shouldBeCaseSensitice() {
-        final String glob = new String("foo*bar*car");
+        final String glob = "foo*bar*car";
         assertThat(matches(glob, "foo!!!bar!!!car")).isTrue();
         assertThat(matches(glob, "foo!!!Bar!!!car")).isFalse();
     }

@@ -46,7 +46,7 @@ public class JungModuleGraph implements MetricModuleGraph<ModuleDependency> {
 
     @Override
     public Collection<HWModule> dependencies(HWModule vertex) {
-        return Optional.ofNullable(graph.getSuccessors(vertex)).orElse(Collections.<HWModule> emptyList());
+        return Optional.ofNullable(graph.getSuccessors(vertex)).orElse(Collections.emptyList());
     }
 
     @Override

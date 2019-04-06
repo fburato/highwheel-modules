@@ -52,22 +52,22 @@ public class ModuleAnalyserTest {
 
     @Test
     public void analyseStrictShouldAnalyseIfSpecificationIncludesOnlyOneModuleAndNoRules() {
-        final Definition definition = new Definition(Arrays.asList(MAIN), Collections.<Dependency> emptyList(),
-                Collections.<NoStrictDependency> emptyList());
+        final Definition definition = new Definition(Collections.singletonList(MAIN), Collections.emptyList(),
+                Collections.emptyList());
 
         final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples, Optional.empty())
                 .analyseStrict(one(definition)).get(0).second;
 
         assertThat(actual.dependencyViolations.isEmpty()).isTrue();
         assertThat(actual.noStrictDependencyViolations.isEmpty()).isTrue();
-        assertThat(actual.metrics).isEqualTo(Arrays.asList(met("Main", 0, 0)));
+        assertThat(actual.metrics).isEqualTo(Collections.singletonList(met("Main", 0, 0)));
     }
 
     @Test
     public void analyseStrictShouldFailIfNoModuleIsProvided() {
         assertThrows(AnalyserException.class, () -> {
-            final Definition definition = new Definition(Collections.<HWModule> emptyList(),
-                    Collections.<Dependency> emptyList(), Collections.<NoStrictDependency> emptyList());
+            final Definition definition = new Definition(Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList());
 
             testee(orgExamples, Optional.empty()).analyseStrict(one(definition));
         });
@@ -80,7 +80,7 @@ public class ModuleAnalyserTest {
     @Test
     public void analyseStrictShouldAnalyseSpecificationWithMoreModulesAndRules() {
         final Definition definition = new Definition(Arrays.asList(MAIN, CONTROLLER),
-                Arrays.asList(dep(MAIN, CONTROLLER)), Arrays.asList(noSD(CONTROLLER, MAIN)));
+                Collections.singletonList(dep(MAIN, CONTROLLER)), Collections.singletonList(noSD(CONTROLLER, MAIN)));
         final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples, Optional.empty())
                 .analyseStrict(one(definition)).get(0).second;
 
@@ -93,14 +93,14 @@ public class ModuleAnalyserTest {
     public void analyseStrictShouldDetectViolationsOnSpecification() {
         final Definition definition = new Definition(Arrays.asList(MAIN, CONTROLLER, FACADE),
                 Arrays.asList(dep(MAIN, CONTROLLER), dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)),
-                Arrays.asList(noSD(MAIN, FACADE)));
+                Collections.singletonList(noSD(MAIN, FACADE)));
 
         final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples, Optional.empty())
                 .analyseStrict(one(definition)).get(0).second;
 
-        assertThat(actual.dependencyViolations).containsAll(Arrays.asList(
-                depV("Main", "Main", Arrays.asList("Controllers", "Main"), Collections.<String> emptyList()),
-                depV("Controllers", "Main", Arrays.asList("Main"), Collections.<String> emptyList())));
+        assertThat(actual.dependencyViolations).containsAll(
+                Arrays.asList(depV("Main", "Main", Arrays.asList("Controllers", "Main"), Collections.emptyList()),
+                        depV("Controllers", "Main", Collections.singletonList("Main"), Collections.emptyList())));
         assertThat(actual.noStrictDependencyViolations).contains(noDepV("Main", "Facade"));
         assertThat(actual.metrics)
                 .isEqualTo(Arrays.asList(met("Main", 0, 2), met("Controllers", 1, 1), met("Facade", 2, 0)));
@@ -116,18 +116,18 @@ public class ModuleAnalyserTest {
 
         assertThat(actual.dependencyViolations)
                 .containsAll(Arrays.asList(
-                        depV("Main", "Controllers", Collections.emptyList(), Arrays.asList("Controllers"),
-                                Arrays.asList(Arrays.asList(
+                        depV("Main", "Controllers", Collections.emptyList(), Collections.singletonList("Controllers"),
+                                Collections.singletonList(Arrays.asList(
                                         Pair.make("org.example.Main:main", "org.example.controller.Controller1:access"),
                                         Pair.make("org.example.Main:main", "org.example.controller.Controller1"),
                                         Pair.make("org.example.Main:main",
                                                 "org.example.controller.Controller1:(init)")))),
-                        depV("Main", "Facade", Collections.emptyList(), Arrays.asList("Facade"),
-                                Arrays.asList(Arrays.asList(
+                        depV("Main", "Facade", Collections.emptyList(), Collections.singletonList("Facade"),
+                                Collections.singletonList(Arrays.asList(
                                         Pair.make("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
                                         Pair.make("org.example.Main:main", "org.example.core.CoreFacade")))),
-                        depV("Controllers", "Facade", Collections.emptyList(), Arrays.asList("Facade"),
-                                Arrays.asList(Arrays.asList(
+                        depV("Controllers", "Facade", Collections.emptyList(), Collections.singletonList("Facade"),
+                                Collections.singletonList(Arrays.asList(
                                         Pair.make("org.example.controller.Controller1:access",
                                                 "org.example.core.CoreFacade:facadeMethod1"),
                                         Pair.make("org.example.controller.Controller1", "org.example.core.CoreFacade"),
@@ -193,7 +193,7 @@ public class ModuleAnalyserTest {
     public void analyseStrictShouldAnalyseMultipleDefinitionsWithOnePass() throws IOException {
         final Definition definition1 = new Definition(Arrays.asList(MAIN, CONTROLLER, FACADE),
                 Arrays.asList(dep(MAIN, CONTROLLER), dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)),
-                Arrays.asList(noSD(MAIN, FACADE)));
+                Collections.singletonList(noSD(MAIN, FACADE)));
 
         final Definition definition2 = new Definition(
                 Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
@@ -212,9 +212,9 @@ public class ModuleAnalyserTest {
 
         verify(classParser, times(1)).parse(eq(orgExamples), any());
 
-        assertThat(actual1.dependencyViolations).containsAll(Arrays.asList(
-                depV("Main", "Main", Arrays.asList("Controllers", "Main"), Collections.<String> emptyList()),
-                depV("Controllers", "Main", Arrays.asList("Main"), Collections.<String> emptyList())));
+        assertThat(actual1.dependencyViolations).containsAll(
+                Arrays.asList(depV("Main", "Main", Arrays.asList("Controllers", "Main"), Collections.emptyList()),
+                        depV("Controllers", "Main", Collections.singletonList("Main"), Collections.emptyList())));
         assertThat(actual1.noStrictDependencyViolations).contains(noDepV("Main", "Facade"));
         assertThat(actual1.metrics)
                 .isEqualTo(Arrays.asList(met("Main", 0, 2), met("Controllers", 1, 1), met("Facade", 2, 0)));
@@ -253,22 +253,22 @@ public class ModuleAnalyserTest {
 
     @Test
     public void analyseLooseShouldAnalyseIfSpecificationIncludesOnlyOneModuleAndNoRules() {
-        final Definition definition = new Definition(Arrays.asList(MAIN), Collections.<Dependency> emptyList(),
-                Collections.<NoStrictDependency> emptyList());
+        final Definition definition = new Definition(Collections.singletonList(MAIN), Collections.emptyList(),
+                Collections.emptyList());
 
         final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples, Optional.empty())
                 .analyseLoose(one(definition)).get(0).second;
 
         assertThat(actual.absentDependencyViolations.isEmpty()).isTrue();
         assertThat(actual.undesiredDependencyViolations.isEmpty()).isTrue();
-        assertThat(actual.metrics).isEqualTo(Arrays.asList(met("Main", 0, 0)));
+        assertThat(actual.metrics).isEqualTo(Collections.singletonList(met("Main", 0, 0)));
     }
 
     @Test
     public void analyseLooseShouldFailIfNoModuleIsProvided() {
         assertThrows(AnalyserException.class, () -> {
-            final Definition definition = new Definition(Collections.<HWModule> emptyList(),
-                    Collections.<Dependency> emptyList(), Collections.<NoStrictDependency> emptyList());
+            final Definition definition = new Definition(Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList());
 
             testee(orgExamples, Optional.empty()).analyseStrict(one(definition));
         });
@@ -277,7 +277,7 @@ public class ModuleAnalyserTest {
     @Test
     public void analyseLooseShouldAnalyseSpecificationWithMoreModulesAndRules() {
         final Definition definition = new Definition(Arrays.asList(MAIN, CONTROLLER),
-                Arrays.asList(dep(MAIN, CONTROLLER)), Arrays.asList(noSD(CONTROLLER, MAIN)));
+                Collections.singletonList(dep(MAIN, CONTROLLER)), Collections.singletonList(noSD(CONTROLLER, MAIN)));
         final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples, Optional.empty())
                 .analyseLoose(one(definition)).get(0).second;
 
@@ -289,15 +289,19 @@ public class ModuleAnalyserTest {
     @Test
     public void analyseLooseShouldDetectViolationsOnSpecification() {
         final Definition definition = new Definition(Arrays.asList(MAIN, CONTROLLER, FACADE),
-                Arrays.asList(dep(MAIN, CONTROLLER), dep(CONTROLLER, MAIN)), Arrays.asList(noSD(MAIN, FACADE)));
+                Arrays.asList(dep(MAIN, CONTROLLER), dep(CONTROLLER, MAIN)),
+                Collections.singletonList(noSD(MAIN, FACADE)));
 
         final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples, Optional.empty())
                 .analyseLoose(one(definition)).get(0).second;
 
-        assertThat(actual.absentDependencyViolations).containsAll(Arrays.asList(aDep("Controllers", "Main")));
-        assertThat(actual.undesiredDependencyViolations).contains(unDep("Main", "Facade", Arrays.asList("Facade"),
-                Arrays.asList(Arrays.asList(Pair.make("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
-                        Pair.make("org.example.Main:main", "org.example.core.CoreFacade")))));
+        assertThat(actual.absentDependencyViolations)
+                .containsAll(Collections.singletonList(aDep("Controllers", "Main")));
+        assertThat(actual.undesiredDependencyViolations)
+                .contains(unDep("Main", "Facade", Collections.singletonList("Facade"),
+                        Collections.singletonList(
+                                Arrays.asList(Pair.make("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
+                                        Pair.make("org.example.Main:main", "org.example.core.CoreFacade")))));
         assertThat(actual.metrics)
                 .isEqualTo(Arrays.asList(met("Main", 0, 2), met("Controllers", 1, 1), met("Facade", 2, 0)));
     }
@@ -305,14 +309,14 @@ public class ModuleAnalyserTest {
     @Test
     public void analyseLooseShouldProvideEvidenceForUndesiredDependency() {
         final Definition definition = new Definition(Arrays.asList(MAIN, CONTROLLER, FACADE), Collections.emptyList(),
-                Arrays.asList(noSD(MAIN, CONTROLLER)));
+                Collections.singletonList(noSD(MAIN, CONTROLLER)));
 
         final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples, Optional.empty())
                 .analyseLoose(one(definition)).get(0).second;
 
         assertThat(actual.undesiredDependencyViolations)
-                .contains(unDep("Main", "Controllers", Arrays.asList("Controllers"),
-                        Arrays.asList(Arrays.asList(
+                .contains(unDep("Main", "Controllers", Collections.singletonList("Controllers"),
+                        Collections.singletonList(Arrays.asList(
                                 Pair.make("org.example.Main:main", "org.example.controller.Controller1:access"),
                                 Pair.make("org.example.Main:main", "org.example.controller.Controller1"),
                                 Pair.make("org.example.Main:main", "org.example.controller.Controller1:(init)")))));
@@ -321,7 +325,7 @@ public class ModuleAnalyserTest {
     @Test
     public void analyseLooseShouldProvideLimitedDependenciesIfEvidenceLimitConfigured() {
         final Definition definition = new Definition(Arrays.asList(MAIN, CONTROLLER, FACADE), Collections.emptyList(),
-                Arrays.asList(noSD(MAIN, CONTROLLER)));
+                Collections.singletonList(noSD(MAIN, CONTROLLER)));
 
         final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples, Optional.of(1))
                 .analyseLoose(one(definition)).get(0).second;
@@ -367,7 +371,8 @@ public class ModuleAnalyserTest {
     @Test
     public void analyseLooseShouldAnalyseMultipleDefinitionsWithOnePass() throws IOException {
         final Definition definition1 = new Definition(Arrays.asList(MAIN, CONTROLLER, FACADE),
-                Arrays.asList(dep(MAIN, CONTROLLER), dep(CONTROLLER, MAIN)), Arrays.asList(noSD(MAIN, FACADE)));
+                Arrays.asList(dep(MAIN, CONTROLLER), dep(CONTROLLER, MAIN)),
+                Collections.singletonList(noSD(MAIN, FACADE)));
         final Definition definition2 = new Definition(
                 Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
                 Arrays.asList(dep(MAIN, CONTROLLER), dep(MAIN, IO), dep(MAIN, MODEL), dep(CONTROLLER, FACADE),
@@ -384,10 +389,13 @@ public class ModuleAnalyserTest {
 
         verify(classParser, times(1)).parse(eq(orgExamples), any());
 
-        assertThat(actual1.absentDependencyViolations).containsAll(Arrays.asList(aDep("Controllers", "Main")));
-        assertThat(actual1.undesiredDependencyViolations).contains(unDep("Main", "Facade", Arrays.asList("Facade"),
-                Arrays.asList(Arrays.asList(Pair.make("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
-                        Pair.make("org.example.Main:main", "org.example.core.CoreFacade")))));
+        assertThat(actual1.absentDependencyViolations)
+                .containsAll(Collections.singletonList(aDep("Controllers", "Main")));
+        assertThat(actual1.undesiredDependencyViolations)
+                .contains(unDep("Main", "Facade", Collections.singletonList("Facade"),
+                        Collections.singletonList(
+                                Arrays.asList(Pair.make("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
+                                        Pair.make("org.example.Main:main", "org.example.core.CoreFacade")))));
         assertThat(actual1.metrics)
                 .isEqualTo(Arrays.asList(met("Main", 0, 2), met("Controllers", 1, 1), met("Facade", 2, 0)));
         assertThat(actual2.absentDependencyViolations.isEmpty()).isTrue();

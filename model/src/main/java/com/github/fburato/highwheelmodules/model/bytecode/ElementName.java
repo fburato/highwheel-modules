@@ -47,7 +47,7 @@ public final class ElementName implements Serializable, Comparable<ElementName> 
     public ElementName getNameWithoutPackage() {
         final int lastSeperator = this.name.lastIndexOf('/');
         if (lastSeperator != -1) {
-            return new ElementName(this.name.substring(lastSeperator + 1, this.name.length()));
+            return new ElementName(this.name.substring(lastSeperator + 1));
         }
         return this;
     }
@@ -62,8 +62,7 @@ public final class ElementName implements Serializable, Comparable<ElementName> 
 
     public ElementName withoutPrefixChars(final int prefixLength) {
         final String nameWithoutPackage = this.getNameWithoutPackage().asJavaName();
-        return new ElementName(this.getParent().asJavaName() + "/"
-                + nameWithoutPackage.substring(prefixLength, nameWithoutPackage.length()));
+        return new ElementName(this.getParent().asJavaName() + "/" + nameWithoutPackage.substring(prefixLength));
     }
 
     public ElementName withoutSuffixChars(final int suffixLength) {

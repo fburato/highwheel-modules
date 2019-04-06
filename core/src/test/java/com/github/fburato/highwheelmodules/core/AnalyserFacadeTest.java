@@ -81,8 +81,8 @@ public class AnalyserFacadeTest {
     public void shouldPrintAsInfoJarsThatArePassedAsArgument() {
         assertThrows(AnalyserException.class, () -> {
             try {
-                testee.runAnalysis(Arrays.asList(jarPath), one(defaultSpec), AnalyserFacade.ExecutionMode.STRICT,
-                        Optional.empty());
+                testee.runAnalysis(Collections.singletonList(jarPath), one(defaultSpec),
+                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
             } finally {
                 verify(pathEventSink).jars(argThat(anyMatches(".*highwheel-model\\.jar.*")));
             }
@@ -91,8 +91,8 @@ public class AnalyserFacadeTest {
 
     @Test
     public void shouldPrintAsInfoDirectoriesThatPassedAsArgument() {
-        testee.runAnalysis(Arrays.asList(orgExamplePath), one(defaultSpec), AnalyserFacade.ExecutionMode.STRICT,
-                Optional.empty());
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec),
+                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
         verify(pathEventSink).directories(argThat(anyMatches(".*test-classes.*org.*")));
     }
 
@@ -100,8 +100,8 @@ public class AnalyserFacadeTest {
     public void shouldPrintAsIgnoredFileThatDoNotExist() {
         assertThrows(AnalyserException.class, () -> {
             try {
-                testee.runAnalysis(Arrays.asList("foobar"), one(defaultSpec), AnalyserFacade.ExecutionMode.STRICT,
-                        Optional.empty());
+                testee.runAnalysis(Collections.singletonList("foobar"), one(defaultSpec),
+                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
             } finally {
                 verify(pathEventSink).ignoredPaths(argThat(anyMatches(".*foobar.*")));
             }
@@ -119,16 +119,16 @@ public class AnalyserFacadeTest {
 
     @Test
     public void shoulFailIfSpecificationFileDoesNotExist() {
-        assertThrows(AnalyserException.class, () -> testee.runAnalysis(Arrays.asList(orgExamplePath), one("foobar"),
-                AnalyserFacade.ExecutionMode.STRICT, Optional.empty()));
+        assertThrows(AnalyserException.class, () -> testee.runAnalysis(Collections.singletonList(orgExamplePath),
+                one("foobar"), AnalyserFacade.ExecutionMode.STRICT, Optional.empty()));
     }
 
     @Test
     public void shouldFailIfParsingFails() {
         assertThrows(ParserException.class, () -> {
             try {
-                testee.runAnalysis(Arrays.asList(orgExamplePath), one(wrongSpec), AnalyserFacade.ExecutionMode.STRICT,
-                        Optional.empty());
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongSpec),
+                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
             } finally {
                 verify(printer).info(matches(".*Compiling specification.*"));
             }
@@ -139,7 +139,7 @@ public class AnalyserFacadeTest {
     public void shouldFailIfCompilationFails() {
         assertThrows(CompilerException.class, () -> {
             try {
-                testee.runAnalysis(Arrays.asList(orgExamplePath), one(wrongSemanticsSpec),
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongSemanticsSpec),
                         AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
             } finally {
                 verify(printer).info(matches(".*Compiling specification.*"));
@@ -149,24 +149,24 @@ public class AnalyserFacadeTest {
 
     @Test
     public void strictAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
-        testee.runAnalysis(Arrays.asList(orgExamplePath), one(defaultSpec), AnalyserFacade.ExecutionMode.STRICT,
-                Optional.empty());
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec),
+                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
         verify(strictAnalysisEventSink).dependenciesCorrect();
         verify(strictAnalysisEventSink).directDependenciesCorrect();
     }
 
     @Test
     public void looseAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
-        testee.runAnalysis(Arrays.asList(orgExamplePath), one(looseSpec), AnalyserFacade.ExecutionMode.LOOSE,
-                Optional.empty());
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpec),
+                AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
         verify(looseAnalysisEventSink).allDependenciesPresent();
         verify(looseAnalysisEventSink).noUndesiredDependencies();
     }
 
     @Test
     public void strictAnalysisShouldProduceMetrics() {
-        testee.runAnalysis(Arrays.asList(orgExamplePath), one(defaultSpec), AnalyserFacade.ExecutionMode.STRICT,
-                Optional.empty());
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec),
+                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
         verifyStrictMetrics();
     }
 
@@ -183,8 +183,8 @@ public class AnalyserFacadeTest {
 
     @Test
     public void looseAnalysisShouldProduceMetrics() {
-        testee.runAnalysis(Arrays.asList(orgExamplePath), one(looseSpec), AnalyserFacade.ExecutionMode.LOOSE,
-                Optional.empty());
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpec),
+                AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
         verifyLooseMetrics();
     }
 
@@ -203,13 +203,13 @@ public class AnalyserFacadeTest {
     public void strictAnalysisShouldFailAndPrintTheViolations() {
         assertThrows(AnalyserException.class, () -> {
             try {
-                testee.runAnalysis(Arrays.asList(orgExamplePath), one(wrongStrictDefinitionSpec),
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongStrictDefinitionSpec),
                         AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
             } finally {
                 verify(strictAnalysisEventSink).dependencyViolationsPresent();
                 verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(),
                         Arrays.asList("IO", "Utils"),
-                        Arrays.asList(Arrays.asList(
+                        Collections.singletonList(Arrays.asList(
                                 Pair.make("org.example.io.IOImplementaion:something",
                                         "org.example.commons.Utility:util"),
                                 Pair.make("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"),
@@ -225,12 +225,12 @@ public class AnalyserFacadeTest {
     public void strictAnalysisShouldFailAndPrintLimitedViolations() {
         assertThrows(AnalyserException.class, () -> {
             try {
-                testee.runAnalysis(Arrays.asList(orgExamplePath), one(wrongStrictDefinitionSpec),
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongStrictDefinitionSpec),
                         AnalyserFacade.ExecutionMode.STRICT, Optional.of(1));
             } finally {
                 verify(strictAnalysisEventSink).dependencyViolationsPresent();
                 verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(),
-                        Arrays.asList("IO", "Utils"), Arrays.asList(Arrays.asList(Pair
+                        Arrays.asList("IO", "Utils"), Collections.singletonList(Collections.singletonList(Pair
                                 .make("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"))));
                 verify(strictAnalysisEventSink).noDirectDependenciesViolationPresent();
                 verify(strictAnalysisEventSink).noDirectDependencyViolation("Facade", "CoreInternals");
@@ -242,14 +242,14 @@ public class AnalyserFacadeTest {
     public void looseAnalysisShouldFailAndPrintTheViolations() {
         assertThrows(AnalyserException.class, () -> {
             try {
-                testee.runAnalysis(Arrays.asList(orgExamplePath), one(wrongLooseDefinitionSpec),
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongLooseDefinitionSpec),
                         AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
             } finally {
                 verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
                 verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent();
                 verify(looseAnalysisEventSink).absentDependencyViolation("IO", "CoreInternals");
                 verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model", Arrays.asList("IO", "Model"),
-                        Arrays.asList(Arrays.asList(
+                        Collections.singletonList(Arrays.asList(
                                 Pair.make("org.example.io.IOImplementaion:reader",
                                         "org.example.core.model.Entity1:(init)"),
                                 Pair.make("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1"))));
@@ -261,14 +261,14 @@ public class AnalyserFacadeTest {
     public void looseAnalysisShouldFailAndPrintLimitedViolations() {
         assertThrows(AnalyserException.class, () -> {
             try {
-                testee.runAnalysis(Arrays.asList(orgExamplePath), one(wrongLooseDefinitionSpec),
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongLooseDefinitionSpec),
                         AnalyserFacade.ExecutionMode.LOOSE, Optional.of(1));
             } finally {
                 verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
                 verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent();
                 verify(looseAnalysisEventSink).absentDependencyViolation("IO", "CoreInternals");
                 verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model", Arrays.asList("IO", "Model"),
-                        Arrays.asList(Arrays.asList(
+                        Collections.singletonList(Collections.singletonList(
                                 Pair.make("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1"))));
             }
         });

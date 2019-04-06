@@ -288,7 +288,7 @@ public class ClassPathParserSystemTest {
     }
 
     private ClasspathRoot createRootFor(final Class<?>[] classes) {
-        final Collection<ElementName> elements = new ArrayList<ElementName>();
+        final Collection<ElementName> elements = new ArrayList<>();
         final ClassLoaderClassPathRoot data = new ClassLoaderClassPathRoot(
                 Thread.currentThread().getContextClassLoader());
 
@@ -317,7 +317,7 @@ public class ClassPathParserSystemTest {
 
     private Collection<? extends ElementName> first3InnerClassesIfPresent(final ElementName element,
             final ClassLoaderClassPathRoot data) {
-        final Collection<ElementName> innerClasses = new ArrayList<ElementName>();
+        final Collection<ElementName> innerClasses = new ArrayList<>();
         try {
             for (int i = 1; i != 4; i++) {
                 final ElementName innerClass = ElementName.fromString(element.asJavaName() + "$" + i);

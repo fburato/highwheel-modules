@@ -43,7 +43,7 @@ class DependencyMethodVisitor extends MethodVisitor {
         this.typeReceiver.apply(this.parent,
                 AccessPoint.create(nameTransformer.transform(method.getReturnType().getClassName())), AccessType.USES);
         for (Object o : bootstrapMethodArguments) {
-            if (o != null && o instanceof Handle) {
+            if (o instanceof Handle) {
                 final Handle h = (Handle) o;
                 this.typeReceiver.apply(this.parent, AccessPoint.create(ElementName.fromString(h.getOwner()),
                         AccessPointName.create(h.getName(), h.getDesc())), AccessType.USES);

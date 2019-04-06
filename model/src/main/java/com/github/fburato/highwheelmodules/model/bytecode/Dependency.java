@@ -6,7 +6,7 @@ import java.util.List;
 
 public final class Dependency {
 
-    private final List<Access> consituents = new ArrayList<Access>(3);
+    private final List<Access> consituents = new ArrayList<>(3);
 
     public int getCount() {
         return this.consituents.size();
