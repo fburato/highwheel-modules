@@ -17,37 +17,36 @@ import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 public class DependencyClassPathRootTest {
 
-  private DependencyClassPathRoot testee;
+    private DependencyClassPathRoot testee;
 
-  @Mock
-  private ClasspathRoot           child;
+    @Mock
+    private ClasspathRoot child;
 
-  @BeforeEach
-  public void setUp() {
-    MockitoAnnotations.initMocks(this);
-    this.testee = new DependencyClassPathRoot(this.child);
-  }
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        this.testee = new DependencyClassPathRoot(this.child);
+    }
 
-  @Test
-  public void shouldNotReturnClassNames() {
-    when(this.child.classNames()).thenReturn(
-        Arrays.asList(ElementName.fromString("foo")));
-    assertThat(this.testee.classNames()).isEmpty();
-  }
+    @Test
+    public void shouldNotReturnClassNames() {
+        when(this.child.classNames()).thenReturn(Arrays.asList(ElementName.fromString("foo")));
+        assertThat(this.testee.classNames()).isEmpty();
+    }
 
-  @Test
-  public void shouldReturnResourcesFromChild() throws IOException {
-    final InputStream is = Mockito.mock(InputStream.class);
-    when(this.child.getResource("foo")).thenReturn(is);
-    assertThat(is).isSameAs(this.testee.getResource("foo"));
-  }
+    @Test
+    public void shouldReturnResourcesFromChild() throws IOException {
+        final InputStream is = Mockito.mock(InputStream.class);
+        when(this.child.getResource("foo")).thenReturn(is);
+        assertThat(is).isSameAs(this.testee.getResource("foo"));
+    }
 
-  @Test
-  public void shouldReturnDataFromChild() throws IOException {
-    final ElementName cn = ElementName.fromString("foo");
-    final InputStream is = Mockito.mock(InputStream.class);
-    when(this.child.getData(cn)).thenReturn(is);
-    assertThat(is).isSameAs(this.testee.getData(cn));
-  }
+    @Test
+    public void shouldReturnDataFromChild() throws IOException {
+        final ElementName cn = ElementName.fromString("foo");
+        final InputStream is = Mockito.mock(InputStream.class);
+        when(this.child.getData(cn)).thenReturn(is);
+        assertThat(is).isSameAs(this.testee.getData(cn));
+    }
 
 }

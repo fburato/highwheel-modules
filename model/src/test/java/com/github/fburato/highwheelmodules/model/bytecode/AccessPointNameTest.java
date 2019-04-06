@@ -8,14 +8,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccessPointNameTest {
 
-  @Test
-  public void shouldObeyHashcodeEqualsContract() {
-    EqualsVerifier.forClass(AccessPointName.class).verify();
-  }
-  
-  @Test
-  public void shouldReplaceAngleBracketsInAttributes() {
-    assertThat(AccessPointName.create("(init)", "")).isEqualTo(AccessPointName.create("<init>", ""));
-  }
+    @Test
+    public void shouldObeyHashcodeEqualsContract() {
+        EqualsVerifier.forClass(AccessPointName.class).verify();
+    }
+
+    @Test
+    public void shouldReplaceAngleBracketsInAttributes() {
+        assertThat(AccessPointName.create("(init)", "")).isEqualTo(AccessPointName.create("<init>", ""));
+    }
 
 }

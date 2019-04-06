@@ -6,9 +6,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccessTypeTest {
 
-  @Test
-  public void shouldTreatInheritanceAsStrongerRelationshipThanComposure() {
-    assertThat(AccessType.COMPOSED.getStrength() < AccessType.INHERITANCE.getStrength()).isTrue();
-  }
+    @Test
+    public void shouldTreatInheritanceAsStrongerRelationshipThanComposure() {
+        assertThat(AccessType.COMPOSED.getStrength() < AccessType.INHERITANCE.getStrength()).isTrue();
+    }
 
 }

@@ -1,6 +1,5 @@
 package com.github.fburato.highwheelmodules.model.bytecode;
 
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,8 +44,7 @@ public class ElementNameTest {
 
     @Test
     public void getNameWithoutPackageShouldReturnNameOnlyWhenClassIsOuterClass() {
-        assertThat(new ElementName("String")).isEqualTo(
-                new ElementName(String.class).getNameWithoutPackage());
+        assertThat(new ElementName("String")).isEqualTo(new ElementName(String.class).getNameWithoutPackage());
     }
 
     static class Foo {
@@ -55,14 +53,13 @@ public class ElementNameTest {
 
     @Test
     public void getNameWithoutPackageShouldReturnNameWhenClassIsInnerClass() {
-        assertThat(new ElementName("ElementNameTest$Foo")).isEqualTo(new ElementName(
-                Foo.class).getNameWithoutPackage());
+        assertThat(new ElementName("ElementNameTest$Foo"))
+                .isEqualTo(new ElementName(Foo.class).getNameWithoutPackage());
     }
 
     @Test
     public void getNameWithoutPackageShouldReturnNameWhenClassInPackageDefault() {
-        assertThat(new ElementName("Foo")).isEqualTo(
-                new ElementName("Foo").getNameWithoutPackage());
+        assertThat(new ElementName("Foo")).isEqualTo(new ElementName("Foo").getNameWithoutPackage());
     }
 
     @Test
@@ -72,20 +69,20 @@ public class ElementNameTest {
 
     @Test
     public void getPackageShouldReturnPackageWhenClassWithinAPackage() {
-        assertThat(new ElementName("com.github.fburato.highwheelmodules.model.bytecode")).isEqualTo(
-                new ElementName(ElementNameTest.class).getParent());
+        assertThat(new ElementName("com.github.fburato.highwheelmodules.model.bytecode"))
+                .isEqualTo(new ElementName(ElementNameTest.class).getParent());
     }
 
     @Test
     public void withoutSuffixCharsShouldReturnPacakgeAndClassWithoutSuffixChars() {
-        assertThat(new ElementName("com.example.Foo")).isEqualTo(new ElementName(
-                "com.example.FooTest").withoutSuffixChars(4));
+        assertThat(new ElementName("com.example.Foo"))
+                .isEqualTo(new ElementName("com.example.FooTest").withoutSuffixChars(4));
     }
 
     @Test
     public void withoutPrefeixCharsShouldReturnPacakgeAndClassWithoutPrefixChars() {
-        assertThat(new ElementName("com.example.Foo")).isEqualTo(new ElementName(
-                "com.example.TestFoo").withoutPrefixChars(4));
+        assertThat(new ElementName("com.example.Foo"))
+                .isEqualTo(new ElementName("com.example.TestFoo").withoutPrefixChars(4));
     }
 
     @Test
@@ -100,27 +97,24 @@ public class ElementNameTest {
 
     @Test
     public void shouldProduceSameHashCodeForSameClass() {
-        assertThat(ElementName.fromString("org/example/Foo").hashCode()).isEqualTo(
-                ElementName.fromString("org.example.Foo").hashCode());
+        assertThat(ElementName.fromString("org/example/Foo").hashCode())
+                .isEqualTo(ElementName.fromString("org.example.Foo").hashCode());
     }
 
     @Test
     public void shouldProduceDifferentHashCodeForDifferentClasses() {
         assertThat(ElementName.fromString("org/example/Foo").hashCode())
-                .isNotEqualTo(ElementName
-                        .fromString("org.example.Bar").hashCode());
+                .isNotEqualTo(ElementName.fromString("org.example.Bar").hashCode());
     }
 
     @Test
     public void shouldTreatSameClassAsEqual() {
-        assertThat(ElementName.fromString("org/example/Foo")).isEqualTo(
-                ElementName.fromString("org.example.Foo"));
+        assertThat(ElementName.fromString("org/example/Foo")).isEqualTo(ElementName.fromString("org.example.Foo"));
     }
 
     @Test
     public void shouldTreatDifferentClassesAsNotEqual() {
-        assertThat(ElementName.fromString("org/example/Foo")).isNotEqualTo(
-                ElementName.fromString("org.example.Bar"));
+        assertThat(ElementName.fromString("org/example/Foo")).isNotEqualTo(ElementName.fromString("org.example.Bar"));
     }
 
 }

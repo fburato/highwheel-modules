@@ -8,9 +8,9 @@ import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 public interface ClasspathRoot {
 
-  InputStream getData(ElementName name) throws IOException;
+    InputStream getData(ElementName name) throws IOException;
 
-  Collection<ElementName> classNames();
+    Collection<ElementName> classNames();
 
-  InputStream getResource(final String name) throws IOException;
+    InputStream getResource(final String name) throws IOException;
 }

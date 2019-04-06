@@ -24,7 +24,7 @@ public class TerminalParserTest {
 
     @Test
     public void shouldNotTokeniseOtherSpecialCharacters() {
-        final String[] otherSpecial = new String[]{">", "<->", ".", ";"};
+        final String[] otherSpecial = new String[] { ">", "<->", ".", ";" };
         for (String other : otherSpecial) {
             boolean exceptionThrown = false;
             try {
@@ -112,9 +112,7 @@ public class TerminalParserTest {
 
     @Test
     public void moduleRegexShouldFailOnNotTerminatedDoubleQuotedStringLiteral() {
-        assertThrows(RuntimeException.class, () ->
-                assertParse(testee.stringLiteral(), "\"asdfasdf121123  sdfwe{{")
-        );
+        assertThrows(RuntimeException.class, () -> assertParse(testee.stringLiteral(), "\"asdfasdf121123  sdfwe{{"));
     }
 
     public void assertParse(Parser<?> p, String source) {

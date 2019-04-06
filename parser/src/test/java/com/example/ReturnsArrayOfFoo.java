@@ -2,7 +2,7 @@ package com.example;
 
 public class ReturnsArrayOfFoo {
 
-  Foo[] foo() {
-    return null;
-  }
+    Foo[] foo() {
+        return null;
+    }
 }

@@ -27,7 +27,7 @@ public class CompilerTest {
         assertThrows(CompilerException.class, () -> {
             final SyntaxTree.Definition definition = new SyntaxTree.Definition(
                     Arrays.asList(new SyntaxTree.ModuleDefinition("name", "invalidregex[")),
-                    Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("name", "name")));
+                    Arrays.<SyntaxTree.Rule> asList(new SyntaxTree.ChainDependencyRule("name", "name")));
             testee.compile(definition);
         });
     }
@@ -36,11 +36,9 @@ public class CompilerTest {
     public void shouldFailIfModuleNameAppearsTwice() {
         assertThrows(CompilerException.class, () -> {
             final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Arrays.asList(
-                            new SyntaxTree.ModuleDefinition("name", "name"),
-                            new SyntaxTree.ModuleDefinition("name", "name")
-                    ),
-                    Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("name", "name")));
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("name", "name"),
+                            new SyntaxTree.ModuleDefinition("name", "name")),
+                    Arrays.<SyntaxTree.Rule> asList(new SyntaxTree.ChainDependencyRule("name", "name")));
             testee.compile(definition);
         });
     }
@@ -48,13 +46,8 @@ public class CompilerTest {
     @Test
     public void shouldFailIfPrefixIsNotAValidRegex() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Optional.of("invalidRegex["),
-                    Arrays.asList(
-                            new SyntaxTree.ModuleDefinition("name", "name")
-                    ),
-                    Collections.emptyList()
-            );
+            final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.of("invalidRegex["),
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("name", "name")), Collections.emptyList());
             testee.compile(definition);
         });
     }
@@ -62,33 +55,23 @@ public class CompilerTest {
     @Test
     public void shouldFailIfPrefixAvailableAndModuleRegexIsNotAValidRegex() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Optional.of("prefix"),
-                    Arrays.asList(
-                            new SyntaxTree.ModuleDefinition("name", "invalidRegex[")
-                    ),
-                    Collections.emptyList()
-            );
+            final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.of("prefix"),
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("name", "invalidRegex[")), Collections.emptyList());
             testee.compile(definition);
         });
     }
 
     @Test
     public void shouldPrefixAllModulesRegexWithPrefix() {
-        final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Optional.of("org.example."),
-                Arrays.asList(
-                        new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*", "foobar.*")),
-                        new SyntaxTree.ModuleDefinition("Bar", "bar.*")
-                ),
-                Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("Foo", "Bar"))
-        );
+        final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.of("org.example."),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*", "foobar.*")),
+                        new SyntaxTree.ModuleDefinition("Bar", "bar.*")),
+                Arrays.<SyntaxTree.Rule> asList(new SyntaxTree.ChainDependencyRule("Foo", "Bar")));
 
         final Definition actual = testee.compile(definition);
         assertThat(actual.modules).containsExactlyInAnyOrder(
                 HWModule.make("Foo", "org.example.foo.*", "org.example.foobar.*").get(),
-                HWModule.make("Bar", "org.example.bar.*").get()
-        );
+                HWModule.make("Bar", "org.example.bar.*").get());
     }
 
     @Test
@@ -96,7 +79,7 @@ public class CompilerTest {
         assertThrows(CompilerException.class, () -> {
             final SyntaxTree.Definition definition = new SyntaxTree.Definition(
                     Arrays.asList(new SyntaxTree.ModuleDefinition("name", "regex")),
-                    Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("name", "name1")));
+                    Arrays.<SyntaxTree.Rule> asList(new SyntaxTree.ChainDependencyRule("name", "name1")));
             testee.compile(definition);
         });
     }
@@ -104,13 +87,10 @@ public class CompilerTest {
     @Test
     public void shouldReturnTheExpectedModules() {
         final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Arrays.asList(
-                        new SyntaxTree.ModuleDefinition("core", "core"),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
                         new SyntaxTree.ModuleDefinition("commons", "commons"),
-                        new SyntaxTree.ModuleDefinition("main", "main"),
-                        new SyntaxTree.ModuleDefinition("io", "io")
-                ),
-                Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("core", "commons")));
+                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
+                Arrays.<SyntaxTree.Rule> asList(new SyntaxTree.ChainDependencyRule("core", "commons")));
         Definition actual = testee.compile(definition);
         assertThat(actual.modules).containsExactlyInAnyOrder(CORE, COMMONS, IO, MAIN);
     }
@@ -118,28 +98,22 @@ public class CompilerTest {
     @Test
     public void shouldConvertChainDependencyInTwoByTwoDependencies() {
         final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Arrays.asList(
-                        new SyntaxTree.ModuleDefinition("core", "core"),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
                         new SyntaxTree.ModuleDefinition("commons", "commons"),
-                        new SyntaxTree.ModuleDefinition("main", "main"),
-                        new SyntaxTree.ModuleDefinition("io", "io")
-                ),
-                Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.ChainDependencyRule("main", "core", "commons")));
+                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
+                Arrays.<SyntaxTree.Rule> asList(new SyntaxTree.ChainDependencyRule("main", "core", "commons")));
         Definition actual = testee.compile(definition);
-        assertThat(actual.dependencies)
-                .containsExactlyInAnyOrder(new Dependency(MAIN, CORE), new Dependency(CORE, COMMONS));
+        assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(MAIN, CORE),
+                new Dependency(CORE, COMMONS));
     }
 
     @Test
     public void shouldConvertNoDependencyRulesAppropriately() {
         final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Arrays.asList(
-                        new SyntaxTree.ModuleDefinition("core", "core"),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
                         new SyntaxTree.ModuleDefinition("commons", "commons"),
-                        new SyntaxTree.ModuleDefinition("main", "main"),
-                        new SyntaxTree.ModuleDefinition("io", "io")
-                ),
-                Arrays.<SyntaxTree.Rule>asList(new SyntaxTree.NoDependentRule("core", "io")));
+                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
+                Arrays.<SyntaxTree.Rule> asList(new SyntaxTree.NoDependentRule("core", "io")));
         Definition actual = testee.compile(definition);
         assertThat(actual.noStrictDependencies).containsExactlyInAnyOrder(new NoStrictDependency(CORE, IO));
     }

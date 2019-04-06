@@ -19,57 +19,56 @@ import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 public class CompoundClassPathRootTest {
 
-  private CompoundClassPathRoot testee;
+    private CompoundClassPathRoot testee;
 
-  @Mock
-  private ClasspathRoot         child1;
+    @Mock
+    private ClasspathRoot child1;
 
-  @Mock
-  private ClasspathRoot         child2;
+    @Mock
+    private ClasspathRoot child2;
 
-  @BeforeEach
-  public void setUp() {
-    MockitoAnnotations.initMocks(this);
-    this.testee = new CompoundClassPathRoot(Arrays.asList(this.child1,
-        this.child2));
-  }
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        this.testee = new CompoundClassPathRoot(Arrays.asList(this.child1, this.child2));
+    }
 
-  @Test
-  public void shouldReturnNamesOfAllClassesKnownByChildren() {
-    final ElementName foo = ElementName.fromString("Foo");
-    final ElementName bar = ElementName.fromString("Foo");
+    @Test
+    public void shouldReturnNamesOfAllClassesKnownByChildren() {
+        final ElementName foo = ElementName.fromString("Foo");
+        final ElementName bar = ElementName.fromString("Foo");
 
-    when(this.child1.classNames()).thenReturn(Collections.singletonList(foo));
-    when(this.child2.classNames()).thenReturn(Collections.singletonList(bar));
+        when(this.child1.classNames()).thenReturn(Collections.singletonList(foo));
+        when(this.child2.classNames()).thenReturn(Collections.singletonList(bar));
 
-    assertThat(this.testee.classNames()).containsExactly(foo, bar);
+        assertThat(this.testee.classNames()).containsExactly(foo, bar);
 
-  }
+    }
 
-  @Test
-  public void shouldReturnNullWhenNoChildCanSupplyData() throws IOException {
-    assertThat(this.testee.getData(ElementName.fromString("unknown"))).isNull();
-  }
-  
-  @Test
-  public void shouldReturnNullWhenNoChildCanSupplyResource() throws IOException {
-    assertThat(this.testee.getResource("unknown")).isNull();
-  }
-  
-  @Test
-  public void shouldReturnClassDataFromChildren() throws IOException {
-    when(this.child1.getData(any(ElementName.class))).thenReturn(null);
-    final InputStream is = Mockito.mock(InputStream.class);
-    when(this.child1.getData(any(ElementName.class))).thenReturn(is);
-    assertThat(this.testee.getData(ElementName.fromString("Foo"))).isSameAs(is);
-  }
+    @Test
+    public void shouldReturnNullWhenNoChildCanSupplyData() throws IOException {
+        assertThat(this.testee.getData(ElementName.fromString("unknown"))).isNull();
+    }
 
-  @Test
-  public void shouldReturnResourcesFromChildren() throws IOException {
-    when(this.child1.getResource(any(String.class))).thenReturn(null);
-    final InputStream is = Mockito.mock(InputStream.class);
-    when(this.child1.getResource(any(String.class))).thenReturn(is);
-    assertThat(this.testee.getResource("Foo")).isSameAs(is);
-  }
+    @Test
+    public void shouldReturnNullWhenNoChildCanSupplyResource() throws IOException {
+        assertThat(this.testee.getResource("unknown")).isNull();
+    }
+
+    @Test
+    public void shouldReturnClassDataFromChildren() throws IOException {
+        when(this.child1.getData(any(ElementName.class))).thenReturn(null);
+        final InputStream is = Mockito.mock(InputStream.class);
+        when(this.child1.getData(any(ElementName.class))).thenReturn(is);
+        assertThat(this.testee.getData(ElementName.fromString("Foo"))).isSameAs(is);
+    }
+
+    @Test
+    public void shouldReturnResourcesFromChildren() throws IOException {
+        when(this.child1.getResource(any(String.class))).thenReturn(null);
+        final InputStream is = Mockito.mock(InputStream.class);
+        when(this.child1.getResource(any(String.class))).thenReturn(is);
+        assertThat(this.testee.getResource("Foo")).isSameAs(is);
+    }
 
 }
