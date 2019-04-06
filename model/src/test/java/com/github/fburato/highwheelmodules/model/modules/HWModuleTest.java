@@ -1,49 +1,46 @@
 package com.github.fburato.highwheelmodules.model.modules;
 
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
-import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import org.junit.jupiter.api.TestFactory;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("HWModule")
 public class HWModuleTest {
-    public static final String MODULE_NAME = "module name";
-    public static final String GLOB = "org.pitest.foo*";
-    private final HWModule testee = HWModule.make(MODULE_NAME, GLOB).get();
+    private final String NAME = "NAME";
 
     @Test
-    public void makeShouldFailIfRegexPassedIsInvalid() {
-        assertThat(HWModule.make("a module", "[asdf").isPresent()).isFalse();
+    @DisplayName("equals should work on the pattern literals")
+    void testEqualsGlobs() {
+        assertThat(HWModule.make(NAME, "a", "b")).isEqualTo(HWModule.make(NAME, "a", "b"));
+        assertThat(HWModule.make(NAME, "a")).isNotEqualTo(HWModule.make(NAME, "b"));
     }
 
     @Test
-    public void makeShouldNotFailIfRegexPassedIsValid() {
-        assertThat(HWModule.make("another module", ".*").isPresent()).isTrue();
+    @DisplayName("equals should work on the module name")
+    void testEqualsName() {
+        assertThat(HWModule.make(NAME, "a", "b")).isNotEqualTo(HWModule.make("otherName", "a", "b"));
     }
 
     @Test
-    public void containsShouldBeTrueIfElementNameMatchesPattern() {
-        assertThat(testee.contains(new ElementName("org.pitest.foo.Something"))).isTrue();
+    @DisplayName("equals should work on the pattern literals in different order")
+    void testEqualsGlobOrder() {
+        assertThat(HWModule.make(NAME, "a", "b")).isEqualTo(HWModule.make(NAME, "b", "a"));
     }
 
-    @Test
-    public void containsShouldBeTrueOnMultiPatternModule() {
-        HWModule testee = HWModule.make("a module with two patterns", "a*", "b*").get();
-        assertThat(testee.contains(new ElementName("afoo"))).isTrue();
-        assertThat(testee.contains(new ElementName("bfoo"))).isTrue();
+    @TestFactory
+    @DisplayName("contains")
+    public List<DynamicTest> containsAnonymous() {
+        return AnonymousModuleTest.containsTests(globs -> HWModule.make(NAME, globs));
     }
 
-    @Test
-    public void containsShouldFailIfAnyPatternFails() {
-        assertThat(HWModule.make("a module", "valid", "[invalid").isPresent()).isFalse();
-    }
-
-    @Test
-    public void containsShouldBeFalseIfElementNameDoesNotMatchPattern() {
-        assertThat(testee.contains(new ElementName("not.pitest.foo"))).isFalse();
-    }
-
-    @Test
-    public void equalsShouldWorkOnModuleNameAndGlob() {
-        assertThat(testee).isEqualTo(HWModule.make(MODULE_NAME, GLOB).get());
+    @TestFactory
+    @DisplayName("make")
+    public List<DynamicTest> makeAnonymous() {
+        return AnonymousModuleTest.makeTests(globs -> HWModule.make(NAME, globs));
     }
 }
