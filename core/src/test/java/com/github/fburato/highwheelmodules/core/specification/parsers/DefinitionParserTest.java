@@ -3,6 +3,7 @@ package com.github.fburato.highwheelmodules.core.specification.parsers;
 import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
 import org.jparsec.Parser;
 import org.jparsec.Parsers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;
@@ -153,6 +154,18 @@ public class DefinitionParserTest {
     }
 
     @Test
+    @DisplayName("whitelist preamble should parse 'whitelist:' followed by newlines")
+    void testWhiteListPreamble() {
+        assertParse(testee.whiteListPreamble, "whitelist:\n\n\n\n", null);
+    }
+
+    @Test
+    @DisplayName("blacklist preamble should parse 'blacklist:' followed by newlines")
+    void testBlackListPreamble() {
+        assertParse(testee.blackListPreamble, "blacklist:\n\n\n\n", null);
+    }
+
+    @Test
     public void modulesPreambleShouldParseModulesColumnNewLineAndParseAdditionalNewLines() {
         assertParse(testee.modulesPreamble, "modules:\n\n\n", null);
     }
@@ -164,7 +177,31 @@ public class DefinitionParserTest {
 
     @Test
     public void prefixSectionShouldParsePreambleAndStringLiteralRegex() {
-        assertParse(testee.prefixSection, "prefix:\n\n\n\n\"a regex\"\n\n\n\n", Optional.of("a regex"));
+        assertParse(testee.prefixSection, "prefix:\n\n\n\n\"a regex\"\n\n\n\n", "a regex");
+    }
+
+    @Test
+    @DisplayName("whiteListSection should parse preamble and list of regexes")
+    void testWhiteListSection() {
+        assertParse(testee.whiteListSection, "whitelist:\n\n\n\"a\",\"b\"\n\n\n\n", Arrays.asList("a", "b"));
+    }
+
+    @Test
+    @DisplayName("blackListSection should parse preamble and list of regexes")
+    void testBlackListSection() {
+        assertParse(testee.blackListSection, "blacklist:\n\n\n\"c\",\"d\"\n\n\n\n", Arrays.asList("c", "d"));
+    }
+
+    @Test
+    @DisplayName("whiteListSection should parse preamble and one regex")
+    void testWhiteListSectionOne() {
+        assertParse(testee.whiteListSection, "whitelist:\n\n\n\"a\"\n\n\n\n", Arrays.asList("a"));
+    }
+
+    @Test
+    @DisplayName("blackListSection should parse preamble and list of regexes")
+    void testBlackListSectionOne() {
+        assertParse(testee.blackListSection, "blacklist:\n\n\n\"c\"\n\n\n\n", Arrays.asList("c"));
     }
 
     @Test
@@ -194,7 +231,8 @@ public class DefinitionParserTest {
     }
 
     @Test
-    public void grammarShouldParseModuleAndRulesAndReturnTheDefinitionWithoutPrefix() {
+    @DisplayName("grammar should parse module and rules without prefix, whitelist and blacklist")
+    public void testGrammarParseNoPrefixNoWhiteListNoBlackList() {
         assertParse(testee.grammar,
                 "modules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid1->id2->id3\nid6-/->id7\nid8->id9\n",
                 new SyntaxTree.Definition(
@@ -206,7 +244,8 @@ public class DefinitionParserTest {
     }
 
     @Test
-    public void grammarShouldParsePrefixModuleAndRulesAndReturnTheDefinition() {
+    @DisplayName("grammar should parse prefix, modules and rules")
+    public void testGrammarParsePrefix() {
         assertParse(testee.grammar,
                 "prefix:\"the prefix\"modules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid1->id2->id3\nid6-/->id7\nid8->id9\n",
                 new SyntaxTree.Definition(Optional.of("the prefix"),
@@ -218,7 +257,50 @@ public class DefinitionParserTest {
     }
 
     @Test
-    public void parserShouldReadReadableIgnoringSpacesAndJavaCommentsAndReturnDefinitionWithoutPrefix() {
+    @DisplayName("grammar should parse blacklist, modules and rules")
+    public void testGrammarParseBlacklist() {
+        assertParse(testee.grammar,
+                "blacklist:\"blacklist\"modules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid1->id2->id3\nid6-/->id7\nid8->id9\n",
+                new SyntaxTree.Definition(Optional.empty(), Optional.empty(),
+                        Optional.of(Collections.singletonList("blacklist")),
+                        Arrays.asList(new SyntaxTree.ModuleDefinition("m1", "regex1.*"),
+                                new SyntaxTree.ModuleDefinition("m2", "regex2+")),
+                        Arrays.asList(new SyntaxTree.ChainDependencyRule("id1", "id2", "id3"),
+                                new SyntaxTree.NoDependentRule("id6", "id7"),
+                                new SyntaxTree.ChainDependencyRule("id8", "id9"))));
+    }
+
+    @Test
+    @DisplayName("grammar should parse whitelist, modules and rules")
+    public void testGrammarParseWhiteList() {
+        assertParse(testee.grammar,
+                "whitelist:\"whitelist\"modules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid1->id2->id3\nid6-/->id7\nid8->id9\n",
+                new SyntaxTree.Definition(Optional.empty(), Optional.of(Collections.singletonList("whitelist")),
+                        Optional.empty(),
+                        Arrays.asList(new SyntaxTree.ModuleDefinition("m1", "regex1.*"),
+                                new SyntaxTree.ModuleDefinition("m2", "regex2+")),
+                        Arrays.asList(new SyntaxTree.ChainDependencyRule("id1", "id2", "id3"),
+                                new SyntaxTree.NoDependentRule("id6", "id7"),
+                                new SyntaxTree.ChainDependencyRule("id8", "id9"))));
+    }
+
+    @Test
+    @DisplayName("grammar should parse prefix, whitelist, blacklist, modules and rules")
+    public void testGrammarParseComplete() {
+        assertParse(testee.grammar,
+                "prefix:\"the prefix\"\nwhitelist:\"white1\",\"white2\"\nblacklist:\"black1\",\"black2\"\nmodules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid1->id2->id3\nid6-/->id7\nid8->id9\n",
+                new SyntaxTree.Definition(Optional.of("the prefix"), Optional.of(Arrays.asList("white1", "white2")),
+                        Optional.of(Arrays.asList("black1", "black2")),
+                        Arrays.asList(new SyntaxTree.ModuleDefinition("m1", "regex1.*"),
+                                new SyntaxTree.ModuleDefinition("m2", "regex2+")),
+                        Arrays.asList(new SyntaxTree.ChainDependencyRule("id1", "id2", "id3"),
+                                new SyntaxTree.NoDependentRule("id6", "id7"),
+                                new SyntaxTree.ChainDependencyRule("id8", "id9"))));
+    }
+
+    @Test
+    @DisplayName("parser should parse minimum definition (modules, rules) ignoring spaces and java comments")
+    public void testBaseParserIgnore() {
         final InputStreamReader reader = new InputStreamReader(
                 this.getClass().getClassLoader().getResourceAsStream("./example-def.txt"));
         assertThat(testee.parse(reader))
@@ -239,10 +321,66 @@ public class DefinitionParserTest {
     }
 
     @Test
-    public void parserShouldReadReadableIgnoringSpacesAndJavaCommentsAndReturnDefinitionWithPrefix() {
+    @DisplayName("parser should parse definition (prefix, modules, rules) ignoring spaces and java comments")
+    public void testPrefixBaseParserIgnore() {
         final InputStreamReader reader = new InputStreamReader(
                 this.getClass().getClassLoader().getResourceAsStream("./example-def-with-prefix.txt"));
         assertThat(testee.parse(reader)).isEqualTo(new SyntaxTree.Definition(Optional.of("com.pitest.highwheel."),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("Core", Arrays.asList("core.*", "core2.*")),
+                        new SyntaxTree.ModuleDefinition("Utils", "utils.*"),
+                        new SyntaxTree.ModuleDefinition("Modules", "modules.*"),
+                        new SyntaxTree.ModuleDefinition("Parser", "parser.*")),
+                Arrays.asList(new SyntaxTree.ChainDependencyRule("Parser", "Core", "Utils"),
+                        new SyntaxTree.NoDependentRule("Utils", "Core"),
+                        new SyntaxTree.NoDependentRule("Utils", "Parser"),
+                        new SyntaxTree.ChainDependencyRule("Modules", "Core"),
+                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"))));
+    }
+
+    @Test
+    @DisplayName("parser should parse definition (whitelist, modules, rules) ignoring spaces and java comments")
+    public void testWhitelistBaseParserIgnore() {
+        final InputStreamReader reader = new InputStreamReader(
+                this.getClass().getClassLoader().getResourceAsStream("./example-def-with-whitelist.txt"));
+        assertThat(testee.parse(reader)).isEqualTo(new SyntaxTree.Definition(Optional.empty(),
+                Optional.of(Arrays.asList("com.pitest.highwheel.", "something")), Optional.empty(),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("Core", Arrays.asList("core.*", "core2.*")),
+                        new SyntaxTree.ModuleDefinition("Utils", "utils.*"),
+                        new SyntaxTree.ModuleDefinition("Modules", "modules.*"),
+                        new SyntaxTree.ModuleDefinition("Parser", "parser.*")),
+                Arrays.asList(new SyntaxTree.ChainDependencyRule("Parser", "Core", "Utils"),
+                        new SyntaxTree.NoDependentRule("Utils", "Core"),
+                        new SyntaxTree.NoDependentRule("Utils", "Parser"),
+                        new SyntaxTree.ChainDependencyRule("Modules", "Core"),
+                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"))));
+    }
+
+    @Test
+    @DisplayName("parser should parse definition (blacklist, modules, rules) ignoring spaces and java comments")
+    public void testBlacklistBaseParserIgnore() {
+        final InputStreamReader reader = new InputStreamReader(
+                this.getClass().getClassLoader().getResourceAsStream("./example-def-with-blacklist.txt"));
+        assertThat(testee.parse(reader)).isEqualTo(new SyntaxTree.Definition(Optional.empty(), Optional.empty(),
+                Optional.of(Arrays.asList("com.pitest.highwheel.", "something")),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("Core", Arrays.asList("core.*", "core2.*")),
+                        new SyntaxTree.ModuleDefinition("Utils", "utils.*"),
+                        new SyntaxTree.ModuleDefinition("Modules", "modules.*"),
+                        new SyntaxTree.ModuleDefinition("Parser", "parser.*")),
+                Arrays.asList(new SyntaxTree.ChainDependencyRule("Parser", "Core", "Utils"),
+                        new SyntaxTree.NoDependentRule("Utils", "Core"),
+                        new SyntaxTree.NoDependentRule("Utils", "Parser"),
+                        new SyntaxTree.ChainDependencyRule("Modules", "Core"),
+                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"))));
+    }
+
+    @Test
+    @DisplayName("parser should parse complete definition (prefix, whitelist blacklist, modules, rules) ignoring spaces and java comments")
+    public void testCompleteBaseParserIgnore() {
+        final InputStreamReader reader = new InputStreamReader(
+                this.getClass().getClassLoader().getResourceAsStream("./example-def-with-alloptionals.txt"));
+        assertThat(testee.parse(reader)).isEqualTo(new SyntaxTree.Definition(Optional.of("com.pitest.highwheel."),
+                Optional.of(Arrays.asList("com.pitest.highwheel.", "foo")),
+                Optional.of(Arrays.asList("com.pitest.highwheel.", "bar")),
                 Arrays.asList(new SyntaxTree.ModuleDefinition("Core", Arrays.asList("core.*", "core2.*")),
                         new SyntaxTree.ModuleDefinition("Utils", "utils.*"),
                         new SyntaxTree.ModuleDefinition("Modules", "modules.*"),

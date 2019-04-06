@@ -2,6 +2,7 @@ package com.github.fburato.highwheelmodules.core.specification.parsers;
 
 import org.jparsec.Parser;
 import org.jparsec.Parsers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +41,9 @@ public class TerminalParserTest {
     public void keywordsShouldBeTokenised() {
         parser.parse("modules");
         parser.parse("rules");
+        parser.parse("prefix");
+        parser.parse("whitelist");
+        parser.parse("blacklist");
     }
 
     @Test
@@ -93,6 +97,18 @@ public class TerminalParserTest {
     @Test
     public void prefixPreambleShouldParsePrefixKeyword() {
         assertParse(testee.prefixPreamble(), "prefix");
+    }
+
+    @Test
+    @DisplayName("whitelist preamble should parse whitelist keyword")
+    public void testWhiteListPreamble() {
+        assertParse(testee.whiteListPreamble(), "whitelist");
+    }
+
+    @Test
+    @DisplayName("blacklist preamble should parse blacklist keyword")
+    public void testBlackListPreamble() {
+        assertParse(testee.blackListPreamble(), "blacklist");
     }
 
     @Test

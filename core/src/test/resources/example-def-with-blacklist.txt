@@ -1,0 +1,15 @@
+blacklist:
+    "com.pitest.highwheel.", "something"
+
+modules:
+    Core = "core.*" , "core2.*"
+    Utils = "utils.*"
+    Modules = "modules.*"
+    Parser = "parser.*"
+rules:
+    Parser -> Core -> Utils
+    Utils -/-> Core
+    Utils -/-> Parser
+    Modules -> Core
+    Modules -> Utils // -> Core
+    // Modules -/-> Parser

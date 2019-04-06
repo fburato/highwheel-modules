@@ -5,8 +5,14 @@ import org.jparsec.*;
 final class TerminalParser {
     private final String[] operators = { "=", "\n", ":", "->", "-/->", "," };
 
+    private final String MODULES_KEYWORD = "modules";
+    private final String RULES_KEYWORD = "rules";
+    private final String PREFIX_KEYWORD = "prefix";
+    private final String WHITELIST_KEYWORD = "whitelist";
+    private final String BLACKLIST_KEWYWORD = "blacklist";
+
     private final Terminals terminals = Terminals.operators(operators).words(Scanners.IDENTIFIER)
-            .keywords("modules", "rules", "prefix").build();
+            .keywords(MODULES_KEYWORD, RULES_KEYWORD, PREFIX_KEYWORD, WHITELIST_KEYWORD, BLACKLIST_KEWYWORD).build();
 
     private final Parser<?> tokeniser = Parsers.or(terminals.tokenizer(),
             Terminals.StringLiteral.DOUBLE_QUOTE_TOKENIZER);
@@ -51,19 +57,31 @@ final class TerminalParser {
         return this.newLine;
     }
 
-    private final Parser<Token> prefixPreamble = term("prefix");
+    private final Parser<Token> prefixPreamble = term(PREFIX_KEYWORD);
 
     public Parser<Token> prefixPreamble() {
         return this.prefixPreamble;
     }
 
-    private final Parser<Token> modulesPreamble = term("modules");
+    private final Parser<Token> whiteListPreamble = term(WHITELIST_KEYWORD);
+
+    public Parser<Token> whiteListPreamble() {
+        return whiteListPreamble;
+    }
+
+    private final Parser<Token> blackListPreamble = term(BLACKLIST_KEWYWORD);
+
+    public Parser<Token> blackListPreamble() {
+        return blackListPreamble;
+    }
+
+    private final Parser<Token> modulesPreamble = term(MODULES_KEYWORD);
 
     public Parser<Token> modulesPreamble() {
         return this.modulesPreamble;
     }
 
-    private final Parser<Token> rulesPreamble = term("rules");
+    private final Parser<Token> rulesPreamble = term(RULES_KEYWORD);
 
     public Parser<Token> rulesPreamble() {
         return this.rulesPreamble;
