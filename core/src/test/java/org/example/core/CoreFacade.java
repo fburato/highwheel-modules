@@ -6,10 +6,10 @@ import org.example.core.model.Entity1;
 
 public class CoreFacade {
 
-  public CoreFacade(IOInterface ioInterface) {
-  }
+    public CoreFacade(IOInterface ioInterface) {
+    }
 
-  public void facadeMethod1() {
-    final BusinessLogic1 bl1 = new BusinessLogic1(new Entity1());
-  }
+    public void facadeMethod1() {
+        final BusinessLogic1 bl1 = new BusinessLogic1(new Entity1());
+    }
 }

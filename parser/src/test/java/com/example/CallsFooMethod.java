@@ -1,7 +1,7 @@
 package com.example;
 
 public class CallsFooMethod {
-  public Object foo() {
-    return Foo.aMethod();
-  }
+    public Object foo() {
+        return Foo.aMethod();
+    }
 }

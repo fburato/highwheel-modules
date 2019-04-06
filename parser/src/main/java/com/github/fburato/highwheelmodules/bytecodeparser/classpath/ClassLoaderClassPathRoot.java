@@ -25,22 +25,22 @@ import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 
 public class ClassLoaderClassPathRoot implements ClasspathRoot {
 
-  private final ClassLoader loader;
+    private final ClassLoader loader;
 
-  public ClassLoaderClassPathRoot(final ClassLoader loader) {
-    this.loader = loader;
-  }
+    public ClassLoaderClassPathRoot(final ClassLoader loader) {
+        this.loader = loader;
+    }
 
-  public Collection<ElementName> classNames() {
-    return Collections.emptyList();
-  }
+    public Collection<ElementName> classNames() {
+        return Collections.emptyList();
+    }
 
-  public InputStream getData(final ElementName name) throws IOException {
-    return this.loader.getResourceAsStream(name.asInternalName() + ".class");
-  }
+    public InputStream getData(final ElementName name) throws IOException {
+        return this.loader.getResourceAsStream(name.asInternalName() + ".class");
+    }
 
-  public InputStream getResource(final String name) throws IOException {
-    return this.loader.getResourceAsStream(name);
-  }
+    public InputStream getResource(final String name) throws IOException {
+        return this.loader.getResourceAsStream(name);
+    }
 
 }

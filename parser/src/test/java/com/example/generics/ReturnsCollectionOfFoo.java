@@ -6,7 +6,7 @@ import com.example.Foo;
 
 public class ReturnsCollectionOfFoo {
 
-  Collection<Foo> foo() {
-    return null;
-  }
+    Collection<Foo> foo() {
+        return null;
+    }
 }

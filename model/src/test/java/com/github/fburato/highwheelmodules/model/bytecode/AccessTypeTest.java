@@ -1,14 +1,14 @@
 package com.github.fburato.highwheelmodules.model.bytecode;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccessTypeTest {
 
-  @Test
-  public void shouldTreatInheritanceAsStrongerRelationshipThanComposure() {
-    assertTrue(AccessType.COMPOSED.getStrength() < AccessType.INHERITANCE.getStrength());
-  }
+    @Test
+    public void shouldTreatInheritanceAsStrongerRelationshipThanComposure() {
+        assertThat(AccessType.COMPOSED.getStrength() < AccessType.INHERITANCE.getStrength()).isTrue();
+    }
 
 }

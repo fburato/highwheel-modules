@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public interface ClassParser {
 
-   void parse(ClasspathRoot cp, final AccessVisitor v) throws IOException;
-	
+    void parse(ClasspathRoot cp, final AccessVisitor v) throws IOException;
+
 }
