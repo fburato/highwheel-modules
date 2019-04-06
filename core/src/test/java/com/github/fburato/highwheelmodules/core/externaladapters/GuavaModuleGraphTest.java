@@ -2,18 +2,19 @@ package com.github.fburato.highwheelmodules.core.externaladapters;
 
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
-import edu.uci.ics.jung.graph.DirectedGraph;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import com.google.common.graph.MutableNetwork;
+import com.google.common.graph.NetworkBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JungModuleGraphTest {
+public class GuavaModuleGraphTest {
 
-    private final DirectedGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
-    private final JungModuleGraph testee = new JungModuleGraph(graph);
+    private final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().allowsSelfLoops(true)
+            .build();
+    private final GuavaModuleGraph testee = new GuavaModuleGraph(graph);
 
     private final HWModule m1 = HWModule.make("module a", "A").get();
     private final HWModule m2 = HWModule.make("module b", "B").get();
@@ -24,7 +25,7 @@ public class JungModuleGraphTest {
     public void addModuleShouldAddVertexToJungGraph() {
         testee.addModule(m1);
 
-        assertThat(graph.getVertices().contains(m1)).isTrue();
+        assertThat(graph.nodes()).contains(m1);
     }
 
     @Test
@@ -32,7 +33,7 @@ public class JungModuleGraphTest {
         testee.addModule(m1);
         testee.addModule(m1);
 
-        assertThat(graph.getVertices().size()).isEqualTo(1);
+        assertThat(graph.nodes().size()).isEqualTo(1);
     }
 
     @Test
@@ -41,7 +42,7 @@ public class JungModuleGraphTest {
         testee.addModule(m2);
         testee.addDependency(new ModuleDependency(m1, m2));
 
-        final ModuleDependency dependency = graph.findEdge(m1, m2);
+        final ModuleDependency dependency = graph.edgeConnecting(m1, m2).get();
 
         assertThat(dependency.source).isEqualTo(m1);
         assertThat(dependency.dest).isEqualTo(m2);
@@ -52,7 +53,7 @@ public class JungModuleGraphTest {
         testee.addModule(m1);
         testee.addDependency(new ModuleDependency(m1, m2));
 
-        assertThat(graph.findEdge(m1, m2)).isNull();
+        assertThat(graph.edges()).isEmpty();
     }
 
     @Test
@@ -61,7 +62,7 @@ public class JungModuleGraphTest {
         testee.addModule(m2);
         testee.addDependency(new ModuleDependency(m1, m2));
 
-        assertThat(graph.findEdge(m1, m2).getCount()).isEqualTo(1);
+        assertThat(graph.edgeConnecting(m1, m2).get().getCount()).isEqualTo(1);
     }
 
     @Test
@@ -71,7 +72,7 @@ public class JungModuleGraphTest {
         testee.addDependency(new ModuleDependency(m1, m2));
         testee.addDependency(new ModuleDependency(m1, m2));
 
-        assertThat(graph.findEdge(m1, m2).getCount()).isEqualTo(2);
+        assertThat(graph.edgeConnecting(m1, m2).get().getCount()).isEqualTo(2);
     }
 
     @Test

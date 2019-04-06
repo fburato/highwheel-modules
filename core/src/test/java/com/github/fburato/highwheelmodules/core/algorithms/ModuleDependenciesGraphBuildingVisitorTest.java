@@ -1,9 +1,10 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
-import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph;
+import com.github.fburato.highwheelmodules.core.externaladapters.GuavaModuleGraph;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import com.google.common.graph.MutableNetwork;
+import com.google.common.graph.NetworkBuilder;
 import org.junit.jupiter.api.Test;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
@@ -54,8 +55,8 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         }
     }
 
-    private final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
-    private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
+    private final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
+    private final GuavaModuleGraph moduleGraph = new GuavaModuleGraph(graph);
     private final WarningsCollector warningsCollector = new AddToListWarnings();
     private final ModuleDependenciesGraphBuildingVisitor.DependencyBuilder<ModuleDependency> builder = (m1, m2, source,
             dest, type) -> new ModuleDependency(m1, m2);
@@ -67,16 +68,16 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
         final List<HWModule> allModules = new ArrayList<>(modules.size() + 1);
         allModules.addAll(modules);
         allModules.add(OTHER);
-        assertThat(graph.getVertices().containsAll(allModules)).isTrue();
-        assertThat(allModules.containsAll(graph.getVertices())).isTrue();
+        assertThat(graph.nodes().containsAll(allModules)).isTrue();
+        assertThat(allModules.containsAll(graph.nodes())).isTrue();
     }
 
     @Test
     public void constructorShouldRemarkRepeatedModules() {
         final List<HWModule> repeatedModules = Arrays.asList(HWModule.make("Core", "org.example.core.*").get(),
                 HWModule.make("Core", "org.example.io.*").get());
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
-        final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
+        final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
+        final GuavaModuleGraph moduleGraph = new GuavaModuleGraph(graph);
         final WarningsCollector warningsCollector = new AddToListWarnings();
         new ModuleDependenciesGraphBuildingVisitor<>(repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
 
@@ -150,8 +151,8 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     @Test
     public void applyShouldAddSourceAndDestToMoreModulesIfMoreModuleGlobRegexMatch() {
         final List<HWModule> repeatedModules = Arrays.asList(CORE, SUPER_MODULE, IO);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
-        final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
+        final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
+        final GuavaModuleGraph moduleGraph = new GuavaModuleGraph(graph);
         final ModuleDependenciesGraphBuildingVisitor testee = new ModuleDependenciesGraphBuildingVisitor<>(
                 repeatedModules, moduleGraph, OTHER, builder);
 
@@ -172,8 +173,8 @@ public class ModuleDependenciesGraphBuildingVisitorTest {
     @Test
     public void applyShouldAddWarningsIfMoreModuleGlobRegexMatch() {
         final List<HWModule> repeatedModules = Arrays.asList(CORE, SUPER_MODULE, IO);
-        final DirectedSparseGraph<HWModule, ModuleDependency> graph = new DirectedSparseGraph<>();
-        final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
+        final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().build();
+        final GuavaModuleGraph moduleGraph = new GuavaModuleGraph(graph);
         final ModuleDependenciesGraphBuildingVisitor testee = new ModuleDependenciesGraphBuildingVisitor<>(
                 repeatedModules, moduleGraph, OTHER, builder, warningsCollector);
 

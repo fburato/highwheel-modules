@@ -1,33 +1,35 @@
 package com.github.fburato.highwheelmodules.core.externaladapters;
 
 import com.github.fburato.highwheelmodules.model.modules.*;
-import edu.uci.ics.jung.graph.DirectedGraph;
+import com.google.common.graph.MutableNetwork;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
-public class JungModuleGraph implements MetricModuleGraph<ModuleDependency> {
+public class GuavaModuleGraph implements MetricModuleGraph<ModuleDependency> {
 
-    private final DirectedGraph<HWModule, ModuleDependency> graph;
+    private final MutableNetwork<HWModule, ModuleDependency> graph;
 
-    public JungModuleGraph(DirectedGraph<HWModule, ModuleDependency> graph) {
+    public GuavaModuleGraph(MutableNetwork<HWModule, ModuleDependency> graph) {
         this.graph = graph;
     }
 
     @Override
     public Optional<ModuleDependency> findDependency(HWModule vertex1, HWModule vertex2) {
-        return Optional.ofNullable(graph.findEdge(vertex1, vertex2));
+        if (graph.nodes().containsAll(Arrays.asList(vertex1, vertex2))) {
+            return graph.edgeConnecting(vertex1, vertex2);
+        }
+        return Optional.empty();
     }
 
     @Override
     public void addDependency(final ModuleDependency dependency) {
-        if (graph.getVertices().containsAll(Arrays.asList(dependency.source, dependency.dest))) {
-            Optional<ModuleDependency> dependencyOptional = Optional
-                    .ofNullable(graph.findEdge(dependency.source, dependency.dest));
+        if (graph.nodes().containsAll(Arrays.asList(dependency.source, dependency.dest))) {
+            Optional<ModuleDependency> dependencyOptional = graph.edgeConnecting(dependency.source, dependency.dest);
             final ModuleDependency moduleDependency = dependencyOptional.orElseGet(() -> {
-                graph.addEdge(dependency, dependency.source, dependency.dest);
+                graph.addEdge(dependency.source, dependency.dest, dependency);
                 return dependency;
             });
             moduleDependency.incrementCount();
@@ -36,22 +38,26 @@ public class JungModuleGraph implements MetricModuleGraph<ModuleDependency> {
 
     @Override
     public void addModule(HWModule vertex) {
-        graph.addVertex(vertex);
+        graph.addNode(vertex);
     }
 
     @Override
     public Collection<HWModule> modules() {
-        return graph.getVertices();
+        return graph.nodes();
     }
 
     @Override
     public Collection<HWModule> dependencies(HWModule vertex) {
-        return Optional.ofNullable(graph.getSuccessors(vertex)).orElse(Collections.emptyList());
+        if (graph.nodes().contains(vertex)) {
+            return graph.successors(vertex);
+        } else {
+            return Collections.emptySet();
+        }
     }
 
     @Override
     public Optional<Integer> fanInOf(HWModule module) {
-        if (!graph.containsVertex(module))
+        if (!graph.nodes().contains(module))
             return Optional.empty();
         else {
             final Optional<ModuleDependency> self = findDependency(module, module);
@@ -61,7 +67,7 @@ public class JungModuleGraph implements MetricModuleGraph<ModuleDependency> {
 
     @Override
     public Optional<Integer> fanOutOf(HWModule module) {
-        if (!graph.containsVertex(module))
+        if (!graph.nodes().contains(module))
             return Optional.empty();
         else {
             final Optional<ModuleDependency> self = findDependency(module, module);

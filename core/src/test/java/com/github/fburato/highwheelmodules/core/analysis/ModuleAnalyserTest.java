@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
-import com.github.fburato.highwheelmodules.core.externaladapters.JungGraphFactory;
+import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleGraphFactory;
@@ -35,7 +35,7 @@ public class ModuleAnalyserTest {
 
     private final ClassParser realClassParser = new ClassPathParser(matchOnlyExampleDotOrg);
     private final ClassParser classParser = spy(realClassParser);
-    private final ModuleGraphFactory factory = new JungGraphFactory();
+    private final ModuleGraphFactory factory = new GuavaGraphFactory();
 
     private final HWModule MAIN = HWModule.make("Main", "org.example.Main").get();
     private final HWModule CONTROLLER = HWModule.make("Controllers", "org.example.controller.*").get();

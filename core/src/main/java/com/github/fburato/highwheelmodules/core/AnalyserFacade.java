@@ -3,7 +3,7 @@ package com.github.fburato.highwheelmodules.core;
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserException;
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserModel;
 import com.github.fburato.highwheelmodules.core.analysis.ModuleAnalyser;
-import com.github.fburato.highwheelmodules.core.externaladapters.JungGraphFactory;
+import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.core.specification.Compiler;
 import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
@@ -93,7 +93,7 @@ public class AnalyserFacade {
     private final EventSink.MeasureEventSink measureEventSink;
     private final EventSink.StrictAnalysisEventSink strictAnalysisEventSink;
     private final EventSink.LooseAnalysisEventSink looseAnalysisEventSink;
-    private final ModuleGraphFactory factory = new JungGraphFactory();
+    private final ModuleGraphFactory factory = new GuavaGraphFactory();
 
     public AnalyserFacade(final Printer printer, final EventSink.PathEventSink pathEventSink,
             final EventSink.MeasureEventSink measureEventSink,

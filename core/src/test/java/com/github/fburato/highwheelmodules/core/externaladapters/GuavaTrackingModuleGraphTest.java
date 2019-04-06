@@ -4,16 +4,17 @@ import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependency;
-import edu.uci.ics.jung.graph.DirectedGraph;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import com.google.common.graph.MutableNetwork;
+import com.google.common.graph.NetworkBuilder;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JungTrackingModuleGraphTest {
+public class GuavaTrackingModuleGraphTest {
 
-    private final DirectedGraph<HWModule, TrackingModuleDependency> graph = new DirectedSparseGraph<>();
-    private final JungTrackingModuleGraph testee = new JungTrackingModuleGraph(graph);
+    private final MutableNetwork<HWModule, TrackingModuleDependency> graph = NetworkBuilder.directed()
+            .allowsSelfLoops(true).build();
+    private final GuavaTrackingModuleGraph testee = new GuavaTrackingModuleGraph(graph);
     private final HWModule m1 = HWModule.make("module a", "A").get();
     private final HWModule m2 = HWModule.make("module b", "B").get();
     private final HWModule m3 = HWModule.make("module c", "C").get();
@@ -25,7 +26,7 @@ public class JungTrackingModuleGraphTest {
     public void addModuleShouldAddVertexToJungGraph() {
         testee.addModule(m1);
 
-        assertThat(graph.getVertices().contains(m1)).isTrue();
+        assertThat(graph.nodes()).contains(m1);
     }
 
     @Test
@@ -33,7 +34,7 @@ public class JungTrackingModuleGraphTest {
         testee.addModule(m1);
         testee.addModule(m1);
 
-        assertThat(graph.getVertices().size()).isEqualTo(1);
+        assertThat(graph.nodes().size()).isEqualTo(1);
     }
 
     @Test
@@ -46,7 +47,7 @@ public class JungTrackingModuleGraphTest {
 
         testee.addDependency(dep);
 
-        assertThat(graph.findEdge(m1, m2)).isEqualTo(dep);
+        assertThat(graph.edgeConnecting(m1, m2)).contains(dep);
     }
 
     @Test
@@ -63,10 +64,10 @@ public class JungTrackingModuleGraphTest {
         testee.addDependency(dep1);
         testee.addDependency(dep2);
 
-        assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap1)).containsExactlyInAnyOrder(ap2);
-        assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap2)).containsExactlyInAnyOrder(ap3);
-        assertThat(graph.findEdge(m1, m2).getDestinations()).containsExactlyInAnyOrder(ap2, ap3);
-        assertThat(graph.findEdge(m1, m2).getSources()).containsExactlyInAnyOrder(ap1, ap2);
+        assertThat(graph.edgeConnecting(m1, m2).get().getDestinationsFromSource(ap1)).containsExactlyInAnyOrder(ap2);
+        assertThat(graph.edgeConnecting(m1, m2).get().getDestinationsFromSource(ap2)).containsExactlyInAnyOrder(ap3);
+        assertThat(graph.edgeConnecting(m1, m2).get().getDestinations()).containsExactlyInAnyOrder(ap2, ap3);
+        assertThat(graph.edgeConnecting(m1, m2).get().getSources()).containsExactlyInAnyOrder(ap1, ap2);
     }
 
     @Test
@@ -83,9 +84,9 @@ public class JungTrackingModuleGraphTest {
         testee.addDependency(dep1);
         testee.addDependency(dep2);
 
-        assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap1)).containsExactlyInAnyOrder(ap2);
-        assertThat(graph.findEdge(m1, m2).getDestinations()).containsExactlyInAnyOrder(ap2);
-        assertThat(graph.findEdge(m1, m2).getSources()).containsExactlyInAnyOrder(ap1);
+        assertThat(graph.edgeConnecting(m1, m2).get().getDestinationsFromSource(ap1)).containsExactlyInAnyOrder(ap2);
+        assertThat(graph.edgeConnecting(m1, m2).get().getDestinations()).containsExactlyInAnyOrder(ap2);
+        assertThat(graph.edgeConnecting(m1, m2).get().getSources()).containsExactlyInAnyOrder(ap1);
     }
 
     @Test
@@ -101,9 +102,10 @@ public class JungTrackingModuleGraphTest {
         testee.addDependency(dep1);
         testee.addDependency(dep2);
 
-        assertThat(graph.findEdge(m1, m2).getDestinationsFromSource(ap1)).containsExactlyInAnyOrder(ap2, ap3);
-        assertThat(graph.findEdge(m1, m2).getDestinations()).containsExactlyInAnyOrder(ap2, ap3);
-        assertThat(graph.findEdge(m1, m2).getSources()).containsExactlyInAnyOrder(ap1);
+        assertThat(graph.edgeConnecting(m1, m2).get().getDestinationsFromSource(ap1)).containsExactlyInAnyOrder(ap2,
+                ap3);
+        assertThat(graph.edgeConnecting(m1, m2).get().getDestinations()).containsExactlyInAnyOrder(ap2, ap3);
+        assertThat(graph.edgeConnecting(m1, m2).get().getSources()).containsExactlyInAnyOrder(ap1);
     }
 
     @Test
@@ -120,10 +122,10 @@ public class JungTrackingModuleGraphTest {
         testee.addDependency(dep1);
         testee.addDependency(dep2);
 
-        assertThat(graph.findEdge(m1, m2).getSources()).containsExactlyInAnyOrder(ap1);
-        assertThat(graph.findEdge(m1, m2).getDestinations()).containsExactlyInAnyOrder(ap2);
-        assertThat(graph.findEdge(m1, m3).getSources()).containsExactlyInAnyOrder(ap1);
-        assertThat(graph.findEdge(m1, m3).getDestinations()).containsExactlyInAnyOrder(ap3);
+        assertThat(graph.edgeConnecting(m1, m2).get().getSources()).containsExactlyInAnyOrder(ap1);
+        assertThat(graph.edgeConnecting(m1, m2).get().getDestinations()).containsExactlyInAnyOrder(ap2);
+        assertThat(graph.edgeConnecting(m1, m3).get().getSources()).containsExactlyInAnyOrder(ap1);
+        assertThat(graph.edgeConnecting(m1, m3).get().getDestinations()).containsExactlyInAnyOrder(ap3);
     }
 
     @Test
@@ -134,7 +136,7 @@ public class JungTrackingModuleGraphTest {
         TrackingModuleDependency dep = new TrackingModuleDependency(m1, m3);
         testee.addDependency(dep);
 
-        assertThat(graph.getEdgeCount()).isEqualTo(0);
+        assertThat(graph.edges().size()).isEqualTo(0);
     }
 
     @Test
