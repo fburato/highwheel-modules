@@ -1,9 +1,11 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
+import com.github.fburato.highwheelmodules.model.modules.AnonymousModule;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -119,5 +121,52 @@ public class CompilerTest {
                 Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.NoDependentRule("core", "io")));
         Definition actual = testee.compile(definition);
         assertThat(actual.noStrictDependencies).containsExactlyInAnyOrder(new NoStrictDependency(CORE, IO));
+    }
+
+    @Test
+    @DisplayName("should fail if whitelist contains malformed regex")
+    void testFailWhiteList() {
+        assertThrows(CompilerException.class, () -> {
+            final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.empty(),
+                    Optional.of(Arrays.asList("", "[[123")), Optional.empty(),
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
+                            new SyntaxTree.ModuleDefinition("commons", "commons"),
+                            new SyntaxTree.ModuleDefinition("main", "main"),
+                            new SyntaxTree.ModuleDefinition("io", "io")),
+                    Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.NoDependentRule("core", "io")));
+            testee.compile(definition);
+        });
+    }
+
+    @Test
+    @DisplayName("should fail if whitelist contains malformed regex")
+    void testFailBlacList() {
+        assertThrows(CompilerException.class, () -> {
+            final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.empty(), Optional.empty(),
+                    Optional.of(Arrays.asList("dd", "", "[[1asdf   asdf")),
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
+                            new SyntaxTree.ModuleDefinition("commons", "commons"),
+                            new SyntaxTree.ModuleDefinition("main", "main"),
+                            new SyntaxTree.ModuleDefinition("io", "io")),
+                    Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.NoDependentRule("core", "io")));
+            testee.compile(definition);
+        });
+    }
+
+    @Test
+    @DisplayName("should compile definition with whitelist and blacklist")
+    void testCompileWhiteBlack() {
+        final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.of("org.example."),
+                Optional.of(Arrays.asList("a", "b")), Optional.of(Arrays.asList("c", "d")),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*", "foobar.*")),
+                        new SyntaxTree.ModuleDefinition("Bar", "bar.*")),
+                Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("Foo", "Bar")));
+        Definition actual = testee.compile(definition);
+        final HWModule Foo = HWModule.make("Foo", "org.example.foo.*", "org.example.foobar.*").get();
+        final HWModule Bar = HWModule.make("Bar", "org.example.bar.*").get();
+        assertThat(actual.modules).containsExactlyInAnyOrder(Foo, Bar);
+        assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(Foo, Bar));
+        assertThat(actual.whitelist).contains(AnonymousModule.make(Arrays.asList("a", "b")).get());
+        assertThat(actual.blackList).contains(AnonymousModule.make(Arrays.asList("c", "d")).get());
     }
 }
