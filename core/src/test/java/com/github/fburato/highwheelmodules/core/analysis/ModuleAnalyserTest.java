@@ -1,12 +1,14 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory;
+import com.github.fburato.highwheelmodules.model.modules.AnonymousModule;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleGraphFactory;
 import com.github.fburato.highwheelmodules.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
 import com.github.fburato.highwheelmodules.utils.Pair;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser;
 import com.github.fburato.highwheelmodules.bytecodeparser.classpath.DirectoryClassPathRoot;
@@ -190,6 +192,66 @@ public class ModuleAnalyserTest {
     }
 
     @Test
+    @DisplayName("analyseStrict should consider only dependencies in the whitelist")
+    void testStrictWhiteList() {
+        final Definition definition = new Definition(
+                AnonymousModule.make("org.example.Main", "org.example.controller.*"), Optional.empty(),
+                Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
+                Collections.singletonList(dep(MAIN, CONTROLLER)), Collections.emptyList());
+
+        final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples, Optional.empty())
+                .analyseStrict(one(definition)).get(0).second;
+
+        assertThat(actual.dependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.noStrictDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 1), met(CONTROLLER.name, 1, 0),
+                met(FACADE.name, 0, 0), met(COREAPI.name, 0, 0), met(COREINTERNALS.name, 0, 0), met(IO.name, 0, 0),
+                met(MODEL.name, 0, 0), met(UTILS.name, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("analyseStrict should consider dependencies not in the blacklist")
+    void testStrictBlackList() {
+        final Definition definition = new Definition(Optional.empty(),
+                AnonymousModule.make("org.example.Main", "org.example.commons.*"),
+                Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
+                Arrays.asList(dep(CONTROLLER, FACADE), dep(COREINTERNALS, MODEL), dep(FACADE, COREINTERNALS),
+                        dep(FACADE, COREAPI), dep(FACADE, MODEL), dep(COREAPI, MODEL), dep(IO, COREAPI),
+                        dep(IO, MODEL)),
+                Arrays.asList(noSD(CONTROLLER, COREINTERNALS), noSD(IO, COREINTERNALS)));
+
+        final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples, Optional.empty())
+                .analyseStrict(one(definition)).get(0).second;
+
+        assertThat(actual.dependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.noStrictDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
+                met(FACADE.name, 1, 3), met(COREAPI.name, 2, 1), met(COREINTERNALS.name, 1, 1), met(IO.name, 0, 2),
+                met(MODEL.name, 4, 0), met(UTILS.name, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("analyseStrict should consider dependencies not in the blacklist and in the whitelist")
+    void testStrictWhiteBlackList() {
+        final Definition definition = new Definition(AnonymousModule.make("org.example.*"),
+                AnonymousModule.make("org.example.Main", "org.example.commons.*"),
+                Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
+                Arrays.asList(dep(CONTROLLER, FACADE), dep(COREINTERNALS, MODEL), dep(FACADE, COREINTERNALS),
+                        dep(FACADE, COREAPI), dep(FACADE, MODEL), dep(COREAPI, MODEL), dep(IO, COREAPI),
+                        dep(IO, MODEL)),
+                Arrays.asList(noSD(CONTROLLER, COREINTERNALS), noSD(IO, COREINTERNALS)));
+
+        final AnalyserModel.StrictAnalysisResult actual = testee(orgExamples, Optional.empty())
+                .analyseStrict(one(definition)).get(0).second;
+
+        assertThat(actual.dependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.noStrictDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
+                met(FACADE.name, 1, 3), met(COREAPI.name, 2, 1), met(COREINTERNALS.name, 1, 1), met(IO.name, 0, 2),
+                met(MODEL.name, 4, 0), met(UTILS.name, 0, 0)));
+    }
+
+    @Test
     public void analyseStrictShouldAnalyseMultipleDefinitionsWithOnePass() throws IOException {
         final Definition definition1 = new Definition(Arrays.asList(MAIN, CONTROLLER, FACADE),
                 Arrays.asList(dep(MAIN, CONTROLLER), dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)),
@@ -366,6 +428,63 @@ public class ModuleAnalyserTest {
         assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
                 met(FACADE.name, 2, 3), met(COREAPI.name, 3, 1), met(COREINTERNALS.name, 1, 2), met(IO.name, 1, 3),
                 met(MODEL.name, 4, 0), met(UTILS.name, 2, 0)));
+    }
+
+    @Test
+    @DisplayName("analyseLoose should consider only dependencies in the whitelist")
+    void testAnalyseLooseWhiteList() {
+        final Definition definition = new Definition(
+                AnonymousModule.make("org.example.controller.*", "org.example.core.CoreFacade",
+                        "org.example.core.model.*"),
+                Optional.empty(), Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
+                Arrays.asList(dep(CONTROLLER, FACADE), dep(FACADE, MODEL)),
+                Arrays.asList(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)));
+
+        final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples, Optional.empty())
+                .analyseLoose(one(definition)).get(0).second;
+        assertThat(actual.absentDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.undesiredDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
+                met(FACADE.name, 1, 1), met(COREAPI.name, 0, 0), met(COREINTERNALS.name, 0, 0), met(IO.name, 0, 0),
+                met(MODEL.name, 1, 0), met(UTILS.name, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("analyseLoose should consider dependencies not in the blacklist")
+    void testAnalyseLooseBlackList() {
+        final Definition definition = new Definition(Optional.empty(),
+                AnonymousModule.make("org.example.Main", "org.example.commons.*"),
+                Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
+                Arrays.asList(dep(CONTROLLER, FACADE), dep(COREINTERNALS, MODEL), dep(FACADE, COREINTERNALS),
+                        dep(FACADE, MODEL), dep(COREAPI, MODEL), dep(IO, COREAPI), dep(IO, MODEL)),
+                Arrays.asList(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)));
+
+        final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples, Optional.empty())
+                .analyseLoose(one(definition)).get(0).second;
+        assertThat(actual.absentDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.undesiredDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
+                met(FACADE.name, 1, 3), met(COREAPI.name, 2, 1), met(COREINTERNALS.name, 1, 1), met(IO.name, 0, 2),
+                met(MODEL.name, 4, 0), met(UTILS.name, 0, 0)));
+    }
+
+    @Test
+    @DisplayName("analyseLoose should consider dependencies in the whitelist and not in the blacklist")
+    void testAnalyseLooseWhiteBlackList() {
+        final Definition definition = new Definition(AnonymousModule.make("org.example.*"),
+                AnonymousModule.make("org.example.Main", "org.example.commons.*"),
+                Arrays.asList(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
+                Arrays.asList(dep(CONTROLLER, FACADE), dep(COREINTERNALS, MODEL), dep(FACADE, COREINTERNALS),
+                        dep(FACADE, MODEL), dep(COREAPI, MODEL), dep(IO, COREAPI), dep(IO, MODEL)),
+                Arrays.asList(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)));
+
+        final AnalyserModel.LooseAnalysisResult actual = testee(orgExamples, Optional.empty())
+                .analyseLoose(one(definition)).get(0).second;
+        assertThat(actual.absentDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.undesiredDependencyViolations.isEmpty()).isTrue();
+        assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
+                met(FACADE.name, 1, 3), met(COREAPI.name, 2, 1), met(COREINTERNALS.name, 1, 1), met(IO.name, 0, 2),
+                met(MODEL.name, 4, 0), met(UTILS.name, 0, 0)));
     }
 
     @Test

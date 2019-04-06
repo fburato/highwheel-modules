@@ -36,9 +36,9 @@ public class DefinitionVisitor {
                 sourceModule, destModule, sourceAP, destAP,
                 type) -> new EvidenceModuleDependency(sourceModule, destModule, sourceAP, destAP);
         final ModuleDependenciesGraphBuildingVisitor<ModuleDependency> moduleGraphVisitor = new ModuleDependenciesGraphBuildingVisitor<>(
-                modules, actualModuleGraph, other, moduleGraphBuilder);
+                modules, actualModuleGraph, other, moduleGraphBuilder, definition.whitelist, definition.blackList);
         final ModuleDependenciesGraphBuildingVisitor<EvidenceModuleDependency> evidenceGraphVisitor = new ModuleDependenciesGraphBuildingVisitor<>(
-                modules, trackingGraph, other, evidenceGraphBuilder);
+                modules, trackingGraph, other, evidenceGraphBuilder, definition.whitelist, definition.blackList);
         final AccessVisitor accessVisitor = new CompoundAccessVisitor(moduleGraphVisitor, evidenceGraphVisitor);
         return new AnalysisState(specModuleGraph, actualModuleGraph, auxTrackingBareGraph, accessVisitor, other);
     }

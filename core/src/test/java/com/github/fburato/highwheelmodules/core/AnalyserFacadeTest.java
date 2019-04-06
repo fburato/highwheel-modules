@@ -1,10 +1,12 @@
 package com.github.fburato.highwheelmodules.core;
 
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserException;
+import com.github.fburato.highwheelmodules.core.specification.Compiler;
 import com.github.fburato.highwheelmodules.core.specification.CompilerException;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import org.jparsec.error.ParserException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 
@@ -37,6 +39,10 @@ public class AnalyserFacadeTest {
     private AnalyserFacade testee;
 
     private final String defaultSpec = join(File.separator, Arrays.asList("src", "test", "resources", "spec.hwm"));
+    private final String defaultSpecWhiteBlack = join(File.separator,
+            Arrays.asList("src", "test", "resources", "spec-whiteblack.hwm"));
+    private final String wrongSpecWhiteBlack = join(File.separator,
+            Arrays.asList("src", "test", "resources", "wrong-spec-whiteblack.hwm"));
     private final String alternativeStrictSpec = join(File.separator,
             Arrays.asList("src", "test", "resources", "alternate-strict-spec.hwm"));
     private final String jarPath = join(File.separator,
@@ -48,6 +54,10 @@ public class AnalyserFacadeTest {
     private final String wrongStrictDefinitionSpec = join(File.separator,
             Arrays.asList("src", "test", "resources", "wrong-strict-spec.hwm"));
     private final String looseSpec = join(File.separator, Arrays.asList("src", "test", "resources", "loose-spec.hwm"));
+    private final String looseSpecWhiteBlack = join(File.separator,
+            Arrays.asList("src", "test", "resources", "loose-spec-whiteblack.hwm"));
+    private final String wronglooseSpecWhiteBlack = join(File.separator,
+            Arrays.asList("src", "test", "resources", "wrong-loose-spec-whiteblack.hwm"));
     private final String orgExamplePath = join(File.separator, Arrays.asList("target", "test-classes", "org"));
     private final String wrongLooseDefinitionSpec = join(File.separator,
             Arrays.asList("src", "test", "resources", "wrong-loose-spec.hwm"));
@@ -156,11 +166,59 @@ public class AnalyserFacadeTest {
     }
 
     @Test
+    @DisplayName("strict analysis should consider white and blacklist")
+    void testStrictWhiteBlack() {
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpecWhiteBlack),
+                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+        verify(strictAnalysisEventSink).dependenciesCorrect();
+        verify(strictAnalysisEventSink).directDependenciesCorrect();
+    }
+
+    @Test
+    @DisplayName("strict analysis should fail with white and blacklist")
+    void testWrongStrictWhiteBlack() {
+        assertThrows(AnalyserException.class, () -> {
+            try {
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongSpecWhiteBlack),
+                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+            } finally {
+                verify(strictAnalysisEventSink).dependencyViolationsPresent();
+                verify(strictAnalysisEventSink).dependencyViolation("Main", "Facade",
+                        Arrays.asList("Main", "Controller", "Facade"), Collections.emptyList(),
+                        Collections.emptyList());
+            }
+        });
+    }
+
+    @Test
     public void looseAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
         testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpec),
                 AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
         verify(looseAnalysisEventSink).allDependenciesPresent();
         verify(looseAnalysisEventSink).noUndesiredDependencies();
+    }
+
+    @Test
+    @DisplayName("loose analysis should consider white and blacklist")
+    public void testLooseWhiteBlack() {
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpecWhiteBlack),
+                AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
+        verify(looseAnalysisEventSink).allDependenciesPresent();
+        verify(looseAnalysisEventSink).noUndesiredDependencies();
+    }
+
+    @Test
+    @DisplayName("loose analysis should fail with white and blacklist")
+    public void testWrongLooseWhiteBlack() {
+        assertThrows(AnalyserException.class, () -> {
+            try {
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wronglooseSpecWhiteBlack),
+                        AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
+            } finally {
+                verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
+                verify(looseAnalysisEventSink).absentDependencyViolation("Main", "Controller");
+            }
+        });
     }
 
     @Test

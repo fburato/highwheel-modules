@@ -1,0 +1,19 @@
+whitelist: "org.example.*"
+blacklist: "org.example.Main", "org.example.commons.*"
+modules:
+    Main = "org.example.Main"
+    Controller = "org.example.controller.*"
+    Facade = "org.example.core.CoreFacade"
+    CoreInternals = "org.example.core.internals.*"
+    CoreApi = "org.example.core.api.*"
+    Model = "org.example.core.model.*"
+    IO = "org.example.io.*"
+    Utils = "org.example.commons.*"
+rules:
+    Controller -> Facade
+    Facade -> CoreInternals -> Model
+    CoreApi -> Model
+    IO -> CoreApi
+    IO -> Model
+    IO -/-> CoreInternals
+    Utils -/-> Main

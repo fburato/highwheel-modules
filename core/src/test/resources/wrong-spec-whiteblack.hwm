@@ -1,0 +1,24 @@
+prefix: "org.example."
+whitelist: "org.example.*"
+blacklist: "org.example.Main", "org.example.commons.*"
+modules:
+    Main = "Main"
+    Controller = "controller.*"
+    Facade = "core.CoreFacade"
+    CoreInternals = "core.internals.*"
+    CoreApi = "core.api.*", "core.otherapi.*"
+    Model = "core.model.*"
+    IO = "io.*"
+    Utils = "commons.*"
+rules:
+    Main -> Controller -> Facade // Wrong MAIN is in the blacklist
+    Controller -/-> CoreInternals
+    Controller -> Facade
+    CoreInternals -> Model
+    Facade -> CoreInternals -> CoreApi
+    Facade -> CoreApi
+    Facade -> Model
+    CoreApi -> Model
+    IO -> CoreApi
+    IO -> Model
+    IO -/-> CoreInternals
