@@ -1,128 +1,126 @@
 package com.github.fburato.highwheelmodules.model.bytecode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ElementNameTest {
-  
-  @Test
-  public void shouldObeyHashcodeEqualsContract() {
-    EqualsVerifier.forClass(ElementName.class).verify();
-  }
 
-  @Test
-  public void shouldConvertJavaNamesToInternalNames() {
-    final ElementName testee = new ElementName("com.foo.bar");
-    assertEquals("com/foo/bar", testee.asInternalName());
-  }
+    @Test
+    public void shouldObeyHashcodeEqualsContract() {
+        EqualsVerifier.forClass(ElementName.class).verify();
+    }
 
-  @Test
-  public void shouldConvertInternalNamesToJavaNames() {
-    final ElementName testee = new ElementName("com/foo/bar");
-    assertEquals("com.foo.bar", testee.asJavaName());
-  }
+    @Test
+    public void shouldConvertJavaNamesToInternalNames() {
+        final ElementName testee = new ElementName("com.foo.bar");
+        assertThat("com/foo/bar").isEqualTo(testee.asInternalName());
+    }
 
-  @Test
-  public void shouldTreatSameClassNameAsEqual() {
-    final ElementName left = new ElementName("com/foo/bar");
-    final ElementName right = new ElementName("com.foo.bar");
-    assertTrue(left.equals(right));
-    assertTrue(right.equals(left));
-  }
+    @Test
+    public void shouldConvertInternalNamesToJavaNames() {
+        final ElementName testee = new ElementName("com/foo/bar");
+        assertThat("com.foo.bar").isEqualTo(testee.asJavaName());
+    }
 
-  @Test
-  public void shouldDisplayJavaNameInToString() {
-    final ElementName testee = new ElementName("com/foo/bar");
-    assertEquals("com.foo.bar", testee.toString());
-  }
+    @Test
+    public void shouldTreatSameClassNameAsEqual() {
+        final ElementName left = new ElementName("com/foo/bar");
+        final ElementName right = new ElementName("com.foo.bar");
+        assertThat(left.equals(right)).isTrue();
+        assertThat(right.equals(left)).isTrue();
+    }
 
-  @Test
-  public void getNameWithoutPackageShouldReturnNameOnlyWhenClassIsOuterClass() {
-    assertEquals(new ElementName("String"),
-        new ElementName(String.class).getNameWithoutPackage());
-  }
+    @Test
+    public void shouldDisplayJavaNameInToString() {
+        final ElementName testee = new ElementName("com/foo/bar");
+        assertThat("com.foo.bar").isEqualTo(testee.toString());
+    }
 
-  static class Foo {
+    @Test
+    public void getNameWithoutPackageShouldReturnNameOnlyWhenClassIsOuterClass() {
+        assertThat(new ElementName("String")).isEqualTo(
+                new ElementName(String.class).getNameWithoutPackage());
+    }
 
-  }
+    static class Foo {
 
-  @Test
-  public void getNameWithoutPackageShouldReturnNameWhenClassIsInnerClass() {
-    assertEquals(new ElementName("ElementNameTest$Foo"), new ElementName(
-        Foo.class).getNameWithoutPackage());
-  }
+    }
 
-  @Test
-  public void getNameWithoutPackageShouldReturnNameWhenClassInPackageDefault() {
-    assertEquals(new ElementName("Foo"),
-        new ElementName("Foo").getNameWithoutPackage());
-  }
+    @Test
+    public void getNameWithoutPackageShouldReturnNameWhenClassIsInnerClass() {
+        assertThat(new ElementName("ElementNameTest$Foo")).isEqualTo(new ElementName(
+                Foo.class).getNameWithoutPackage());
+    }
 
-  @Test
-  public void getPackageShouldReturnEmptyPackageWhenClassInPackageDefault() {
-    assertEquals(new ElementName(""), new ElementName("Foo").getParent());
-  }
+    @Test
+    public void getNameWithoutPackageShouldReturnNameWhenClassInPackageDefault() {
+        assertThat(new ElementName("Foo")).isEqualTo(
+                new ElementName("Foo").getNameWithoutPackage());
+    }
 
-  @Test
-  public void getPackageShouldReturnPackageWhenClassWithinAPackage() {
-    assertEquals(new ElementName("com.github.fburato.highwheelmodules.model.bytecode"),
-        new ElementName(ElementNameTest.class).getParent());
-  }
+    @Test
+    public void getPackageShouldReturnEmptyPackageWhenClassInPackageDefault() {
+        assertThat(new ElementName("")).isEqualTo(new ElementName("Foo").getParent());
+    }
 
-  @Test
-  public void withoutSuffixCharsShouldReturnPacakgeAndClassWithoutSuffixChars() {
-    assertEquals(new ElementName("com.example.Foo"), new ElementName(
-        "com.example.FooTest").withoutSuffixChars(4));
-  }
+    @Test
+    public void getPackageShouldReturnPackageWhenClassWithinAPackage() {
+        assertThat(new ElementName("com.github.fburato.highwheelmodules.model.bytecode")).isEqualTo(
+                new ElementName(ElementNameTest.class).getParent());
+    }
 
-  @Test
-  public void withoutPrefeixCharsShouldReturnPacakgeAndClassWithoutPrefixChars() {
-    assertEquals(new ElementName("com.example.Foo"), new ElementName(
-        "com.example.TestFoo").withoutPrefixChars(4));
-  }
+    @Test
+    public void withoutSuffixCharsShouldReturnPacakgeAndClassWithoutSuffixChars() {
+        assertThat(new ElementName("com.example.Foo")).isEqualTo(new ElementName(
+                "com.example.FooTest").withoutSuffixChars(4));
+    }
 
-  @Test
-  public void shouldSortByName() {
-    final ElementName a = ElementName.fromString("a.a.c");
-    final ElementName b = ElementName.fromString("a.b.c");
-    final ElementName c = ElementName.fromString("b.a.c");
+    @Test
+    public void withoutPrefeixCharsShouldReturnPacakgeAndClassWithoutPrefixChars() {
+        assertThat(new ElementName("com.example.Foo")).isEqualTo(new ElementName(
+                "com.example.TestFoo").withoutPrefixChars(4));
+    }
 
-    final List<ElementName> actual = Arrays.asList(b, c, a);
-    Collections.sort(actual);
-    assertEquals(Arrays.asList(a, b, c), actual);
-  }
+    @Test
+    public void shouldSortByName() {
+        final ElementName a = ElementName.fromString("a.a.c");
+        final ElementName b = ElementName.fromString("a.b.c");
+        final ElementName c = ElementName.fromString("b.a.c");
 
-  @Test
-  public void shouldProduceSameHashCodeForSameClass() {
-    assertEquals(ElementName.fromString("org/example/Foo").hashCode(),
-        ElementName.fromString("org.example.Foo").hashCode());
-  }
+        final List<ElementName> actual = Arrays.asList(b, c, a);
+        assertThat(actual).containsExactlyInAnyOrder(a, b, c);
+    }
 
-  @Test
-  public void shouldProduceDifferentHashCodeForDifferentClasses() {
-    assertFalse(ElementName.fromString("org/example/Foo").hashCode() == ElementName
-        .fromString("org.example.Bar").hashCode());
-  }
+    @Test
+    public void shouldProduceSameHashCodeForSameClass() {
+        assertThat(ElementName.fromString("org/example/Foo").hashCode()).isEqualTo(
+                ElementName.fromString("org.example.Foo").hashCode());
+    }
 
-  @Test
-  public void shouldTreatSameClassAsEqual() {
-    assertEquals(ElementName.fromString("org/example/Foo"),
-        ElementName.fromString("org.example.Foo"));
-  }
+    @Test
+    public void shouldProduceDifferentHashCodeForDifferentClasses() {
+        assertThat(ElementName.fromString("org/example/Foo").hashCode())
+                .isNotEqualTo(ElementName
+                        .fromString("org.example.Bar").hashCode());
+    }
 
-  @Test
-  public void shouldTreatDifferentClassesAsNotEqual() {
-    assertFalse(ElementName.fromString("org/example/Foo").equals(
-        ElementName.fromString("org.example.Bar")));
-  }
+    @Test
+    public void shouldTreatSameClassAsEqual() {
+        assertThat(ElementName.fromString("org/example/Foo")).isEqualTo(
+                ElementName.fromString("org.example.Foo"));
+    }
+
+    @Test
+    public void shouldTreatDifferentClassesAsNotEqual() {
+        assertThat(ElementName.fromString("org/example/Foo")).isNotEqualTo(
+                ElementName.fromString("org.example.Bar"));
+    }
 
 }

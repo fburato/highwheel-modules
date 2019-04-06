@@ -8,8 +8,8 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.function.Predicate;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -30,7 +30,7 @@ public class ClassPathParserTest {
   @Mock
   private AccessVisitor   v;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     this.testee = new ClassPathParser(this.filter);

@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.model.modules;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,10 +1,10 @@
 package com.github.fburato.highwheelmodules.model.bytecode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AccessPointTest {
 
@@ -17,15 +17,15 @@ public class AccessPointTest {
 
   @Test
   public void shouldCreateAnAccessPoint() {
-    assertNotNull(AccessPoint.create(foo, AccessPointName.create("foo", "desc")));
+    assertThat(AccessPoint.create(foo, AccessPointName.create("foo", "desc"))).isNotNull();
   }
 
   @Test
   public void shouldCreateMethodAccessWithinSuppliedType() {
     AccessPoint testee = AccessPoint.create(foo);
     AccessPoint actual = testee.methodAccess(AccessPointName.create("bar", "()V"));
-    assertEquals(foo, actual.getElementName());
-    assertEquals(AccessPointName.create("bar", "()V"), actual.getAttribute());
+    assertThat(foo).isEqualTo(actual.getElementName());
+    assertThat(AccessPointName.create("bar", "()V")).isEqualTo(actual.getAttribute());
   }
 
 }

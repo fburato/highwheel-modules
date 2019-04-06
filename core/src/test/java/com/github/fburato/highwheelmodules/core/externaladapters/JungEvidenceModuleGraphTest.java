@@ -6,7 +6,7 @@ import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
 import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependency;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 

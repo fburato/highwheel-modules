@@ -4,8 +4,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
@@ -35,7 +35,7 @@ public class FilteringDecoratorTest {
   private final AccessPoint  bar        =  AccessPoint.create(this.barElement,
       AccessPointName.create("bar", "()V"));
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     this.testee = new FilteringDecorator(this.child, this.filter);

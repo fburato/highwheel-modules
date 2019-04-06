@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 import com.example.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.objectweb.asm.Type;
@@ -47,7 +47,7 @@ public class ClassPathParserSystemTest {
   @Mock
   private AccessVisitor   v;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
   }

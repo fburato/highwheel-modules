@@ -1,9 +1,9 @@
 package com.github.fburato.highwheelmodules.model.bytecode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DependencyTest {
   
@@ -11,8 +11,8 @@ public class DependencyTest {
   public void shouldTreatNonSameInstacesAsNonEqual() {
     Dependency a = new Dependency();
     Dependency b = new Dependency();
-    assertFalse(a.equals(b));
-    assertFalse(b.equals(a));    
+    assertThat(a.equals(b)).isFalse();
+    assertThat(b.equals(a)).isFalse();
   }
   
   @Test
@@ -22,7 +22,7 @@ public class DependencyTest {
     AccessPoint dest = AccessPoint.create(ElementName.fromString("foo"));
     testee.addDependency(source, dest, AccessType.COMPOSED);
     testee.addDependency(source, dest, AccessType.USES);
-    assertEquals(AccessType.COMPOSED.getStrength() + AccessType.USES.getStrength(), testee.getStrength());
+    assertThat(AccessType.COMPOSED.getStrength() + AccessType.USES.getStrength()).isEqualTo(testee.getStrength());
   }
 
 }

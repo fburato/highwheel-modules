@@ -4,7 +4,7 @@ import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 

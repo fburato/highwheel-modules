@@ -9,8 +9,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -27,7 +27,7 @@ public class CompoundClassPathRootTest {
   @Mock
   private ClasspathRoot         child2;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     this.testee = new CompoundClassPathRoot(Arrays.asList(this.child1,

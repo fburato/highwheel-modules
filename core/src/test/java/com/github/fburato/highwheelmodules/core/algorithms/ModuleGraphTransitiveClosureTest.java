@@ -4,8 +4,8 @@ import com.github.fburato.highwheelmodules.core.externaladapters.JungModuleGraph
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleDependency;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +26,7 @@ public class ModuleGraphTransitiveClosureTest {
   private final JungModuleGraph moduleGraph = new JungModuleGraph(graph);
   private ModuleGraphTransitiveClosure testee;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     for (HWModule module : modules) {
       moduleGraph.addModule(module);

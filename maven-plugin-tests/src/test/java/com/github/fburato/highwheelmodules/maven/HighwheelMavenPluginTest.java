@@ -1,8 +1,8 @@
 package com.github.fburato.highwheelmodules.maven;
 
 import org.apache.maven.it.Verifier;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ public class HighwheelMavenPluginTest {
   private final String analyseGoal = "com.github.fburato:highwheel-modules-maven-plugin:analyse";
   private final List<String> analysisGoals = Arrays.asList("compile", analyseGoal);
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     verifier = new Verifier(Paths
         .get("target", "test-classes", "test-example")

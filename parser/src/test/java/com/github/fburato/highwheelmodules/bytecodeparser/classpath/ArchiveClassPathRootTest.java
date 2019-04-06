@@ -1,9 +1,5 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,15 +7,18 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.*;
 
 public class ArchiveClassPathRootTest {
 
   private ArchiveClassPathRoot testee;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     // note mytests.jar is taken from
     // http://johanneslink.net/projects/cpsuite.jsp
@@ -35,18 +34,18 @@ public class ArchiveClassPathRootTest {
         ElementName.fromString("injar.p1.P1NoTest"),
         ElementName.fromString("injar.p1.P1Test"),
         ElementName.fromString("injar.p2.P2Test"));
-    assertEquals(expected, this.testee.classNames());
+    assertThat(expected).isEqualTo(this.testee.classNames());
   }
 
   @Test
   public void getDataShouldReturnNullForUnknownClass() throws Exception {
-    assertNull(this.testee.getData(ElementName.fromString("bar")));
+    assertThat(this.testee.getData(ElementName.fromString("bar"))).isNull();
   }
 
   @Test
   public void getDataShouldReturnInputStreamForAKnownClass() throws Exception {
-    assertNotNull(this.testee
-        .getData(ElementName.fromString("injar.p1.P1Test")));
+    assertThat(this.testee
+        .getData(ElementName.fromString("injar.p1.P1Test"))).isNotNull();
   }
 
   @Test
@@ -57,7 +56,7 @@ public class ArchiveClassPathRootTest {
           .fromString("injar.p1.P1Test"));
       actual.read(b);
     } catch (final IOException ex) {
-      fail();
+      fail("IO Exception should not be thrown");
     }
   }
 

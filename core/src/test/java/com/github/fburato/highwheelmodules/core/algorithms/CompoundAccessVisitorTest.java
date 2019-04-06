@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.algorithms;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;

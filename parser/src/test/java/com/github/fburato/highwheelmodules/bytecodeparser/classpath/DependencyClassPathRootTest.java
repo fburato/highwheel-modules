@@ -1,15 +1,14 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath;
 
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -23,7 +22,7 @@ public class DependencyClassPathRootTest {
   @Mock
   private ClasspathRoot           child;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
     this.testee = new DependencyClassPathRoot(this.child);
@@ -33,14 +32,14 @@ public class DependencyClassPathRootTest {
   public void shouldNotReturnClassNames() {
     when(this.child.classNames()).thenReturn(
         Arrays.asList(ElementName.fromString("foo")));
-    assertTrue(this.testee.classNames().isEmpty());
+    assertThat(this.testee.classNames()).isEmpty();
   }
 
   @Test
   public void shouldReturnResourcesFromChild() throws IOException {
     final InputStream is = Mockito.mock(InputStream.class);
     when(this.child.getResource("foo")).thenReturn(is);
-    assertSame(is, this.testee.getResource("foo"));
+    assertThat(is).isSameAs(this.testee.getResource("foo"));
   }
 
   @Test
@@ -48,7 +47,7 @@ public class DependencyClassPathRootTest {
     final ElementName cn = ElementName.fromString("foo");
     final InputStream is = Mockito.mock(InputStream.class);
     when(this.child.getData(cn)).thenReturn(is);
-    assertSame(is, this.testee.getData(cn));
+    assertThat(is).isSameAs(this.testee.getData(cn));
   }
 
 }
