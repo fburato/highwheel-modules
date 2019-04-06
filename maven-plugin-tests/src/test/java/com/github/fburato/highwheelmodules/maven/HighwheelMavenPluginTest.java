@@ -53,6 +53,13 @@ public class HighwheelMavenPluginTest {
     }
 
     @Test
+    public void shouldSucceedOnStrictBlackAndWhite() {
+        verifier.getCliOptions().add("-DhwmSpecFiles=spec-whiteblack.hwm");
+        final String logFile = runPluginAndReturnLog(false);
+        assertThat(logFile).matches("(?s).*Utils --> fanIn:     0, fanOut:     0.*");
+    }
+
+    @Test
     public void shouldFailOnNonExistingSpec() {
         verifier.getCliOptions().add("-DhwmSpecFiles=not-a-spec");
         final String logFile = runPluginAndReturnLog(true);
