@@ -40,7 +40,29 @@ public final class DefinitionParser {
             tp.moduleName(), Parsers.or(tp.newLine(), Parsers.EOF),
             (String s, Token token, String s2, Object token2) -> new SyntaxTree.NoDependentRule(s, s2));
 
-    private final Parser<SyntaxTree.Rule> anyRuleParser = Parsers.or(chainDependencyRuleParser, noDependecyRuleParser);
+    private final Parser<String> commaIdentifier = Parsers.sequence(tp.comma(), tp.moduleName(),
+            (Token v, String id) -> id);
+
+    private final Parser<List<String>> identifierList = Parsers.sequence(tp.moduleName(), commaIdentifier.many(),
+            (String id, List<String> ids) -> {
+                final List<String> res = new ArrayList<>(ids.size() + 1);
+                res.add(id);
+                res.addAll(ids);
+                return res;
+            });
+
+    final Parser<SyntaxTree.OneToManyRule> oneToManyRuleParser = Parsers.sequence(tp.moduleName(), tp.arrow(),
+            tp.openParen(), identifierList, tp.closedParen(), Parsers.or(tp.newLine(), Parsers.EOF),
+            (String id, Token arrow, Token oP, List<String> ids, Token cP,
+                    Object end) -> new SyntaxTree.OneToManyRule(id, ids));
+
+    final Parser<SyntaxTree.ManyToOneRule> manyToOneRuleParser = Parsers.sequence(tp.openParen(), identifierList,
+            tp.closedParen(), tp.arrow(), tp.moduleName(), Parsers.or(tp.newLine(), Parsers.EOF),
+            (Token op, List<String> ids, Token cP, Token arrow, String id,
+                    Object eof) -> new SyntaxTree.ManyToOneRule(ids, id));
+
+    private final Parser<SyntaxTree.Rule> anyRuleParser = Parsers.or(chainDependencyRuleParser, noDependecyRuleParser,
+            oneToManyRuleParser, manyToOneRuleParser);
 
     final Parser<List<SyntaxTree.Rule>> rulesParser = Parsers
             .sequence(anyRuleParser, tp.newLine().many(), (SyntaxTree.Rule rule, List<Token> tokens) -> rule).many();

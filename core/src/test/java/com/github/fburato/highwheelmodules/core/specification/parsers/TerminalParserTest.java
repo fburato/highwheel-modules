@@ -14,13 +14,16 @@ public class TerminalParserTest {
     private final Parser<?> parser = testee.tokeniser();
 
     @Test
-    public void operatorsShouldBeTokenised() {
+    @DisplayName("operators should be tokenised")
+    public void testOperatorsTokenised() {
         parser.parse("=");
         parser.parse("->");
         parser.parse("-/->");
         parser.parse("\n");
         parser.parse(":");
         parser.parse(",");
+        parser.parse(")");
+        parser.parse("(");
     }
 
     @Test
@@ -82,6 +85,18 @@ public class TerminalParserTest {
     @Test
     public void definedAsShouldParseColumn() {
         assertParse(testee.definedAs(), ":");
+    }
+
+    @Test
+    @DisplayName("openParen should parse '('")
+    void testOpenParenParse() {
+        assertParse(testee.openParen(), "(");
+    }
+
+    @Test
+    @DisplayName("closedParen should parse ')'")
+    void testClosedParenParse() {
+        assertParse(testee.closedParen(), ")");
     }
 
     @Test

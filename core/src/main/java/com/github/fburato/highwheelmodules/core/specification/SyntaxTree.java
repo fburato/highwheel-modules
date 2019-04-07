@@ -97,6 +97,66 @@ public interface SyntaxTree {
         }
     }
 
+    final class OneToManyRule implements Rule {
+        public final String one;
+        public final List<String> many;
+
+        public OneToManyRule(String one, List<String> many) {
+            this.one = one;
+            this.many = many;
+        }
+
+        @Override
+        public String toString() {
+            return "OneToManyRule{" + "one='" + one + '\'' + ", many=" + many + '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            OneToManyRule that = (OneToManyRule) o;
+            return Objects.equals(one, that.one) && Objects.equals(many, that.many);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(one, many);
+        }
+    }
+
+    final class ManyToOneRule implements Rule {
+        public final List<String> many;
+        public final String one;
+
+        public ManyToOneRule(List<String> many, String one) {
+            this.many = many;
+            this.one = one;
+        }
+
+        @Override
+        public String toString() {
+            return "ManyToOneRule{" + "many=" + many + ", one='" + one + '\'' + '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            ManyToOneRule that = (ManyToOneRule) o;
+            return Objects.equals(many, that.many) && Objects.equals(one, that.one);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(many, one);
+        }
+    }
+
     class Definition {
         public final Optional<String> prefix;
         public final Optional<List<String>> whiteList;
@@ -119,6 +179,12 @@ public interface SyntaxTree {
             this.blackList = blackList;
             this.moduleDefinitions = moduleDefinitions;
             this.rules = rules;
+        }
+
+        @Override
+        public String toString() {
+            return "Definition{" + "prefix=" + prefix + ", whiteList=" + whiteList + ", blackList=" + blackList
+                    + ", moduleDefinitions=" + moduleDefinitions + ", rules=" + rules + '}';
         }
 
         @Override

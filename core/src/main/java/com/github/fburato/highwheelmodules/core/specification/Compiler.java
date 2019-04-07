@@ -7,6 +7,7 @@ import com.github.fburato.highwheelmodules.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
@@ -69,11 +70,17 @@ public class Compiler {
         final List<NoStrictDependency> noDirectDependencies = new ArrayList<>();
         for (SyntaxTree.Rule ruleDefinition : rulesDefinition) {
             if (ruleDefinition instanceof SyntaxTree.ChainDependencyRule) {
-                SyntaxTree.ChainDependencyRule chainDependencyRule = (SyntaxTree.ChainDependencyRule) ruleDefinition;
+                final SyntaxTree.ChainDependencyRule chainDependencyRule = (SyntaxTree.ChainDependencyRule) ruleDefinition;
                 dependencies.addAll(compileChainDependencies(chainDependencyRule.moduleNameChain, modules));
             } else if (ruleDefinition instanceof SyntaxTree.NoDependentRule) {
-                SyntaxTree.NoDependentRule noDependentRule = (SyntaxTree.NoDependentRule) ruleDefinition;
+                final SyntaxTree.NoDependentRule noDependentRule = (SyntaxTree.NoDependentRule) ruleDefinition;
                 noDirectDependencies.add(compileNoDependency(noDependentRule, modules));
+            } else if (ruleDefinition instanceof SyntaxTree.OneToManyRule) {
+                final SyntaxTree.OneToManyRule rule = (SyntaxTree.OneToManyRule) ruleDefinition;
+                dependencies.addAll(compileOneToMany(rule, modules));
+            } else if (ruleDefinition instanceof SyntaxTree.ManyToOneRule) {
+                final SyntaxTree.ManyToOneRule rule = (SyntaxTree.ManyToOneRule) ruleDefinition;
+                dependencies.addAll(compileManyToOne(rule, modules));
             }
         }
         return new Pair<>(dependencies, noDirectDependencies);
@@ -95,6 +102,38 @@ public class Compiler {
             }
         }
         return result;
+    }
+
+    private List<Dependency> compileOneToMany(SyntaxTree.OneToManyRule oneToManyRule, Map<String, HWModule> modules) {
+        final Function<String, CompilerException> makeCompilerException = module -> new CompilerException(
+                String.format(MODULE_HAS_NOT_BEEN_DEFINED, module,
+                        String.format("%s -> (%s)", oneToManyRule.one, join(", ", oneToManyRule.many))));
+        if (modules.get(oneToManyRule.one) == null) {
+            throw makeCompilerException.apply(oneToManyRule.one);
+        }
+        return oneToManyRule.many.stream().map(dest -> {
+            if (modules.get(dest) == null) {
+                throw makeCompilerException.apply(dest);
+            } else {
+                return new Dependency(modules.get(oneToManyRule.one), modules.get(dest));
+            }
+        }).collect(Collectors.toList());
+    }
+
+    private List<Dependency> compileManyToOne(SyntaxTree.ManyToOneRule manyToOneRule, Map<String, HWModule> modules) {
+        final Function<String, CompilerException> makeCompilerException = module -> new CompilerException(
+                String.format(MODULE_HAS_NOT_BEEN_DEFINED, module,
+                        String.format("(%s) -> %s", join(", ", manyToOneRule.many), manyToOneRule.one)));
+        if (modules.get(manyToOneRule.one) == null) {
+            throw makeCompilerException.apply(manyToOneRule.one);
+        }
+        return manyToOneRule.many.stream().map(dest -> {
+            if (modules.get(dest) == null) {
+                throw makeCompilerException.apply(dest);
+            } else {
+                return new Dependency(modules.get(dest), modules.get(manyToOneRule.one));
+            }
+        }).collect(Collectors.toList());
     }
 
     private NoStrictDependency compileNoDependency(SyntaxTree.NoDependentRule noDependentRule,
