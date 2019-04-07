@@ -14,11 +14,9 @@ rules:
     Controller -> Facade
     Controller -/-> CoreInternals
     Controller -> Facade
-    CoreInternals -> Model
+    (CoreInternals, CoreApi) -> Model
     Facade -> CoreInternals -> CoreApi
-    Facade -> CoreApi
-    Facade -> Model
-    CoreApi -> Model
+    Facade -> (CoreApi, Model)
     IO -> CoreApi
     IO -> Model
     IO -/-> CoreInternals

@@ -113,6 +113,86 @@ public class CompilerTest {
     }
 
     @Test
+    @DisplayName("should convert one to many dependency in two by two dependencies")
+    void testOneToManyCompile() {
+        final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
+                        new SyntaxTree.ModuleDefinition("commons", "commons"),
+                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
+                Collections.<SyntaxTree.Rule> singletonList(
+                        new SyntaxTree.OneToManyRule("main", Arrays.asList("core", "commons"))));
+        Definition actual = testee.compile(definition);
+        assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(MAIN, CORE),
+                new Dependency(MAIN, COMMONS));
+    }
+
+    @Test
+    @DisplayName("should fail to compile one to many if starting module does not exist")
+    void testOneToManyFailOnStarting() {
+        assertThrows(CompilerException.class, () -> {
+            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("a", "regex1"),
+                            new SyntaxTree.ModuleDefinition("b", "regex2")),
+                    Collections.<SyntaxTree.Rule> singletonList(
+                            new SyntaxTree.OneToManyRule("c", Arrays.asList("a", "b"))));
+            testee.compile(definition);
+        });
+    }
+
+    @Test
+    @DisplayName("should fail to compile one to many if any ending module does not exist")
+    void testOneToManyFailOnEnding() {
+        assertThrows(CompilerException.class, () -> {
+            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("a", "regex1"),
+                            new SyntaxTree.ModuleDefinition("b", "regex2")),
+                    Collections.<SyntaxTree.Rule> singletonList(
+                            new SyntaxTree.OneToManyRule("a", Arrays.asList("b", "c"))));
+            testee.compile(definition);
+        });
+    }
+
+    @Test
+    @DisplayName("should convert many to one dependency in two by two dependencies")
+    void testManyToManyCompile() {
+        final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
+                        new SyntaxTree.ModuleDefinition("commons", "commons"),
+                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
+                Collections.<SyntaxTree.Rule> singletonList(
+                        new SyntaxTree.ManyToOneRule(Arrays.asList("core", "commons"), "io")));
+        Definition actual = testee.compile(definition);
+        assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(CORE, IO),
+                new Dependency(COMMONS, IO));
+    }
+
+    @Test
+    @DisplayName("should fail to compile many to one if any starting module does not exist")
+    void testManyToOneFailOnStarting() {
+        assertThrows(CompilerException.class, () -> {
+            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("a", "regex1"),
+                            new SyntaxTree.ModuleDefinition("b", "regex2")),
+                    Collections.<SyntaxTree.Rule> singletonList(
+                            new SyntaxTree.ManyToOneRule(Arrays.asList("b", "c"), "a")));
+            testee.compile(definition);
+        });
+    }
+
+    @Test
+    @DisplayName("should fail to compile many to one if any ending module does not exist")
+    void testManyToOneFailOnEnding() {
+        assertThrows(CompilerException.class, () -> {
+            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
+                    Arrays.asList(new SyntaxTree.ModuleDefinition("a", "regex1"),
+                            new SyntaxTree.ModuleDefinition("b", "regex2")),
+                    Collections.<SyntaxTree.Rule> singletonList(
+                            new SyntaxTree.ManyToOneRule(Arrays.asList("a", "b"), "c")));
+            testee.compile(definition);
+        });
+    }
+
+    @Test
     public void shouldConvertNoDependencyRulesAppropriately() {
         final SyntaxTree.Definition definition = new SyntaxTree.Definition(
                 Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),

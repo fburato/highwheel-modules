@@ -12,12 +12,9 @@ rules:
     Controller -> Facade
     Controller -/-> CoreInternals
     Controller -> Facade
-    CoreInternals -> Model
     Facade -> CoreInternals -> CoreApi
     Facade -> CoreApi
-    Facade -> Model
-    CoreApi -> Model
-    IO -> CoreApi
-    IO -> Model
+    (Facade, CoreInternals, CoreApi) -> Model
+    IO -> (CoreApi, Model)
     IO -/-> CoreInternals
     
