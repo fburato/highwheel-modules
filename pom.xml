@@ -4,7 +4,7 @@
     <groupId>com.github.fburato</groupId>
     <artifactId>highwheel-modules-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.0</version>
+    <version>1.5.1-SNAPSHOT</version>
     <name>parent</name>
     <url>https://github.com/fburato/highwheel-modules</url>
     <description>Enforce dependencies modules dependencies on Java project</description>
@@ -12,7 +12,7 @@
         <connection>scm:git:git@github.com:fburato/highwheel-modules.git</connection>
         <developerConnection>scm:git:git@github.com:fburato/highwheel-modules.git</developerConnection>
         <url>https://github.com/fburato/highwheel-modules</url>
-        <tag>highwheel-modules-parent-1.5.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
