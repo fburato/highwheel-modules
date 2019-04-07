@@ -4,6 +4,7 @@ import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
 import org.jparsec.Parser;
 import org.jparsec.Parsers;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;
@@ -119,12 +120,94 @@ public class DefinitionParserTest {
         assertParse(testee.noDependecyRuleParser, "id1-/->id2\n", new SyntaxTree.NoDependentRule("id1", "id2"));
     }
 
+    @Nested
+    @DisplayName("oneToManyRuleParser should")
+    class OneToManyRuleParserTests {
+        @Test
+        @DisplayName("fail on empty many")
+        void testFailEmptyMany() {
+            assertThrows(RuntimeException.class, () -> assertParse(testee.oneToManyRuleParser, "id1->()\n", null));
+        }
+
+        @Test
+        @DisplayName("fail on chained arrow operators")
+        void testFailChain() {
+            assertThrows(RuntimeException.class,
+                    () -> assertParse(testee.oneToManyRuleParser, "id1->(id2,id3)->id4", null));
+            assertThrows(RuntimeException.class,
+                    () -> assertParse(testee.oneToManyRuleParser, "id0->id1->(id2,id3)", null));
+        }
+
+        @Test
+        @DisplayName("parse definition with newline")
+        void testNewLine() {
+            assertParse(testee.oneToManyRuleParser, "id0->(id1,id2)\n",
+                    new SyntaxTree.OneToManyRule("id0", Arrays.asList("id1", "id2")));
+        }
+
+        @Test
+        @DisplayName("parse definition without newline")
+        void testNoNewLine() {
+            assertParse(testee.oneToManyRuleParser, "id1->(id2,id3)",
+                    new SyntaxTree.OneToManyRule("id1", Arrays.asList("id2", "id3")));
+        }
+
+        @Test
+        @DisplayName("parse definition with singleton")
+        void testSingleton() {
+            assertParse(testee.oneToManyRuleParser, "id2->(id3)",
+                    new SyntaxTree.OneToManyRule("id2", Collections.singletonList("id3")));
+        }
+    }
+
+    @Nested
+    @DisplayName("manyToOneRuleParser should")
+    class ManyToOneRuleParserTests {
+        @Test
+        @DisplayName("fail on empty many")
+        void testFailEmptyMany() {
+            assertThrows(RuntimeException.class, () -> assertParse(testee.manyToOneRuleParser, "()->id1\n", null));
+        }
+
+        @Test
+        @DisplayName("fail on chained arrow operators")
+        void testFailChain() {
+            assertThrows(RuntimeException.class,
+                    () -> assertParse(testee.manyToOneRuleParser, "(id1,id2)->id3->id4\n", null));
+            assertThrows(RuntimeException.class,
+                    () -> assertParse(testee.manyToOneRuleParser, "id1->(id2,id3)->id4\n", null));
+        }
+
+        @Test
+        @DisplayName("parse definition with newline")
+        void testNewLine() {
+            assertParse(testee.manyToOneRuleParser, "(id1,id2)->id3\n",
+                    new SyntaxTree.ManyToOneRule(Arrays.asList("id1", "id2"), "id3"));
+        }
+
+        @Test
+        @DisplayName("parse definition without newline")
+        void testNoNewLine() {
+            assertParse(testee.manyToOneRuleParser, "(id2,id3)->id4",
+                    new SyntaxTree.ManyToOneRule(Arrays.asList("id2", "id3"), "id4"));
+        }
+
+        @Test
+        @DisplayName("parse definition with singleton")
+        void testSingleton() {
+            assertParse(testee.manyToOneRuleParser, "(id3)->id4",
+                    new SyntaxTree.ManyToOneRule(Collections.singletonList("id3"), "id4"));
+        }
+    }
+
     @Test
+    @DisplayName("rules parser should return all expected rules")
     public void rulesParserShouldReturnExpectedRules() {
-        assertParse(testee.rulesParser, "id1->id2->id3\nid4-/->id5\nid6->id7\n",
+        assertParse(testee.rulesParser, "id1->id2->id3\nid4-/->id5\nid6->id7\nid8->(id9,id10)\n(id11,id12)->id13",
                 Arrays.asList(new SyntaxTree.ChainDependencyRule("id1", "id2", "id3"),
-                        new SyntaxTree.NoDependentRule("id4", "id5"),
-                        new SyntaxTree.ChainDependencyRule("id6", "id7")));
+                        new SyntaxTree.NoDependentRule("id4", "id5"), new SyntaxTree.ChainDependencyRule("id6", "id7"),
+                        new SyntaxTree.OneToManyRule("id8", Arrays.asList("id9", "id10")),
+                        new SyntaxTree.ManyToOneRule(Arrays.asList("id11", "id12"), "id13")));
     }
 
     @Test
@@ -212,10 +295,12 @@ public class DefinitionParserTest {
 
     @Test
     public void rulesSectionShouldParsePreambleAndRuleDefinitions() {
-        assertParse(testee.rulesSection, "rules:\n\n\n\nid1->id2->id3\n\n\nid6-/->id7\n\nid8->id9\n",
+        assertParse(testee.rulesSection,
+                "rules:\n\n\n\nid1->id2->id3\n\n\nid6-/->id7\n\nid8->id9\nid8->(id9,id10)\n(id11,id12)->id13\n",
                 Arrays.asList(new SyntaxTree.ChainDependencyRule("id1", "id2", "id3"),
-                        new SyntaxTree.NoDependentRule("id6", "id7"),
-                        new SyntaxTree.ChainDependencyRule("id8", "id9")));
+                        new SyntaxTree.NoDependentRule("id6", "id7"), new SyntaxTree.ChainDependencyRule("id8", "id9"),
+                        new SyntaxTree.OneToManyRule("id8", Arrays.asList("id9", "id10")),
+                        new SyntaxTree.ManyToOneRule(Arrays.asList("id11", "id12"), "id13")));
     }
 
     @Test
@@ -231,15 +316,31 @@ public class DefinitionParserTest {
     }
 
     @Test
+    @DisplayName("rulesSection should parse preamble and one to many with end of file")
+    public void testOneToManyEOF() {
+        assertParse(testee.rulesSection, "rules:\n\n\nida->(idb)",
+                Collections.singletonList(new SyntaxTree.OneToManyRule("ida", Collections.singletonList("idb"))));
+    }
+
+    @Test
+    @DisplayName("rulesSection should parse preamble and many to one with end of file")
+    public void testManyToOneEOF() {
+        assertParse(testee.rulesSection, "rules:\n\n\n(id9)->id10",
+                Collections.singletonList(new SyntaxTree.ManyToOneRule(Collections.singletonList("id9"), "id10")));
+    }
+
+    @Test
     @DisplayName("grammar should parse module and rules without prefix, whitelist and blacklist")
     public void testGrammarParseNoPrefixNoWhiteListNoBlackList() {
         assertParse(testee.grammar,
-                "modules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid1->id2->id3\nid6-/->id7\nid8->id9\n",
+                "modules:\nm1=\"regex1.*\"\nm2=\"regex2+\"\nrules:\nid8->(id9,id10)\nid1->id2->id3\nid6-/->id7\n(id11,id12)->id13\nid8->id9\n",
                 new SyntaxTree.Definition(
                         Arrays.asList(new SyntaxTree.ModuleDefinition("m1", "regex1.*"),
                                 new SyntaxTree.ModuleDefinition("m2", "regex2+")),
-                        Arrays.asList(new SyntaxTree.ChainDependencyRule("id1", "id2", "id3"),
+                        Arrays.asList(new SyntaxTree.OneToManyRule("id8", Arrays.asList("id9", "id10")),
+                                new SyntaxTree.ChainDependencyRule("id1", "id2", "id3"),
                                 new SyntaxTree.NoDependentRule("id6", "id7"),
+                                new SyntaxTree.ManyToOneRule(Arrays.asList("id11", "id12"), "id13"),
                                 new SyntaxTree.ChainDependencyRule("id8", "id9"))));
     }
 
@@ -317,7 +418,9 @@ public class DefinitionParserTest {
                                         new SyntaxTree.NoDependentRule("Utils", "Core"),
                                         new SyntaxTree.NoDependentRule("Utils", "Parser"),
                                         new SyntaxTree.ChainDependencyRule("Modules", "Core"),
-                                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"))));
+                                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"),
+                                        new SyntaxTree.OneToManyRule("Modules", Arrays.asList("Core", "Utils")),
+                                        new SyntaxTree.ManyToOneRule(Arrays.asList("Modules", "Core"), "Utils"))));
     }
 
     @Test
@@ -334,7 +437,9 @@ public class DefinitionParserTest {
                         new SyntaxTree.NoDependentRule("Utils", "Core"),
                         new SyntaxTree.NoDependentRule("Utils", "Parser"),
                         new SyntaxTree.ChainDependencyRule("Modules", "Core"),
-                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"))));
+                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"),
+                        new SyntaxTree.OneToManyRule("Modules", Arrays.asList("Core", "Utils")),
+                        new SyntaxTree.ManyToOneRule(Arrays.asList("Modules", "Core"), "Utils"))));
     }
 
     @Test
@@ -352,7 +457,9 @@ public class DefinitionParserTest {
                         new SyntaxTree.NoDependentRule("Utils", "Core"),
                         new SyntaxTree.NoDependentRule("Utils", "Parser"),
                         new SyntaxTree.ChainDependencyRule("Modules", "Core"),
-                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"))));
+                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"),
+                        new SyntaxTree.OneToManyRule("Modules", Arrays.asList("Core", "Utils")),
+                        new SyntaxTree.ManyToOneRule(Arrays.asList("Modules", "Core"), "Utils"))));
     }
 
     @Test
@@ -370,7 +477,9 @@ public class DefinitionParserTest {
                         new SyntaxTree.NoDependentRule("Utils", "Core"),
                         new SyntaxTree.NoDependentRule("Utils", "Parser"),
                         new SyntaxTree.ChainDependencyRule("Modules", "Core"),
-                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"))));
+                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"),
+                        new SyntaxTree.OneToManyRule("Modules", Arrays.asList("Core", "Utils")),
+                        new SyntaxTree.ManyToOneRule(Arrays.asList("Modules", "Core"), "Utils"))));
     }
 
     @Test
@@ -389,7 +498,9 @@ public class DefinitionParserTest {
                         new SyntaxTree.NoDependentRule("Utils", "Core"),
                         new SyntaxTree.NoDependentRule("Utils", "Parser"),
                         new SyntaxTree.ChainDependencyRule("Modules", "Core"),
-                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"))));
+                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"),
+                        new SyntaxTree.OneToManyRule("Modules", Arrays.asList("Core", "Utils")),
+                        new SyntaxTree.ManyToOneRule(Arrays.asList("Modules", "Core"), "Utils"))));
     }
 
     private <T> void assertParse(Parser<T> parser, String source, T expected) {

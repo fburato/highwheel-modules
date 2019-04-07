@@ -16,4 +16,6 @@ rules:
     Utils -/-> Parser
     Modules -> Core
     Modules -> Utils // -> Core
+    Modules -> (Core, Utils)
+    (Modules, Core) -> Utils
     // Modules -/-> Parser
