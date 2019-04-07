@@ -52,22 +52,43 @@ public final class DefinitionParser {
     final Parser<Void> prefixPreamble = Parsers.sequence(tp.prefixPreamble(), tp.definedAs(), tp.newLine().many(),
             (Token t1, Token t2, List<Token> nl) -> null);
 
+    final Parser<Void> whiteListPreamble = Parsers.sequence(tp.whiteListPreamble(), tp.definedAs(), tp.newLine().many(),
+            (Token t1, Token t2, List<Token> nl) -> null);
+
+    final Parser<Void> blackListPreamble = Parsers.sequence(tp.blackListPreamble(), tp.definedAs(), tp.newLine().many(),
+            (Token t1, Token t2, List<Token> nl) -> null);
+
     final Parser<Void> modulesPreamble = Parsers.sequence(tp.modulesPreamble(), tp.definedAs(), tp.newLine().many(),
             (Token token, Token token2, List<Token> d) -> null);
 
     final Parser<Void> rulesPreamble = Parsers.sequence(tp.rulesPreamble(), tp.definedAs(), tp.newLine().many(),
             (Token token, Token token2, List<Token> d) -> null);
 
-    final Parser<Optional<String>> prefixSection = Parsers.sequence(prefixPreamble, tp.stringLiteral(),
-            tp.newLine().many(), (Void preamble, String literal, List<Token> d) -> Optional.of(literal));
+    final Parser<String> prefixSection = Parsers.sequence(prefixPreamble, tp.stringLiteral(), tp.newLine().many(),
+            (Void preamble, String literal, List<Token> d) -> literal);
+
+    private final Parser<List<String>> stringLiteralsList = Parsers.sequence(tp.stringLiteral(), commaRegex.many(),
+            (String l, List<String> ls) -> {
+                final List<String> list = new ArrayList<>();
+                list.add(l);
+                list.addAll(ls);
+                return list;
+            });
+
+    final Parser<List<String>> whiteListSection = Parsers.sequence(whiteListPreamble, stringLiteralsList,
+            tp.newLine().many(), (Void preamble, List<String> rs, List<Token> d) -> rs);
+
+    final Parser<List<String>> blackListSection = Parsers.sequence(blackListPreamble, stringLiteralsList,
+            tp.newLine().many(), (Void preamble, List<String> rs, List<Token> d) -> rs);
 
     final Parser<List<SyntaxTree.ModuleDefinition>> modulesSection = Parsers.sequence(modulesPreamble,
             moduleDefinitions);
 
     final Parser<List<SyntaxTree.Rule>> rulesSection = Parsers.sequence(rulesPreamble, rulesParser);
 
-    final Parser<SyntaxTree.Definition> grammar = Parsers.sequence(prefixSection.optional(Optional.empty()),
-            modulesSection, rulesSection, SyntaxTree.Definition::new);
+    final Parser<SyntaxTree.Definition> grammar = Parsers.sequence(prefixSection.asOptional(),
+            whiteListSection.asOptional(), blackListSection.asOptional(), modulesSection, rulesSection,
+            SyntaxTree.Definition::new);
 
     private static Parser<Void> javacomment = Scanners.JAVA_LINE_COMMENT;
 

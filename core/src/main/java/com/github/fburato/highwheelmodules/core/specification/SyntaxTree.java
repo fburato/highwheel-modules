@@ -99,15 +99,24 @@ public interface SyntaxTree {
 
     class Definition {
         public final Optional<String> prefix;
+        public final Optional<List<String>> whiteList;
+        public final Optional<List<String>> blackList;
         public final List<ModuleDefinition> moduleDefinitions;
         public final List<Rule> rules;
 
         public Definition(List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
-            this(Optional.empty(), moduleDefinitions, rules);
+            this(Optional.empty(), Optional.empty(), Optional.empty(), moduleDefinitions, rules);
         }
 
         public Definition(Optional<String> prefix, List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
+            this(prefix, Optional.empty(), Optional.empty(), moduleDefinitions, rules);
+        }
+
+        public Definition(Optional<String> prefix, Optional<List<String>> whiteList, Optional<List<String>> blackList,
+                List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
             this.prefix = prefix;
+            this.whiteList = whiteList;
+            this.blackList = blackList;
             this.moduleDefinitions = moduleDefinitions;
             this.rules = rules;
         }
@@ -116,16 +125,17 @@ public interface SyntaxTree {
         public boolean equals(Object o) {
             if (this == o)
                 return true;
-            if (!(o instanceof Definition))
+            if (o == null || getClass() != o.getClass())
                 return false;
             Definition that = (Definition) o;
-            return Objects.equals(prefix, that.prefix) && Objects.equals(moduleDefinitions, that.moduleDefinitions)
-                    && Objects.equals(rules, that.rules);
+            return Objects.equals(prefix, that.prefix) && Objects.equals(whiteList, that.whiteList)
+                    && Objects.equals(blackList, that.blackList)
+                    && Objects.equals(moduleDefinitions, that.moduleDefinitions) && Objects.equals(rules, that.rules);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(prefix, moduleDefinitions, rules);
+            return Objects.hash(prefix, whiteList, blackList, moduleDefinitions, rules);
         }
     }
 }

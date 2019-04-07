@@ -1,5 +1,6 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
+import com.github.fburato.highwheelmodules.model.modules.AnonymousModule;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.rules.Dependency;
@@ -30,8 +31,17 @@ public class Compiler {
         final String prefix = definition.prefix.orElse("");
         final Map<String, HWModule> modules = compileModules(definition.moduleDefinitions, prefix);
         final Pair<List<Dependency>, List<NoStrictDependency>> rules = compileRules(definition.rules, modules);
+        final Optional<AnonymousModule> whitelist = compileRegexesOrFail(definition.whiteList,
+                "Some of the whitelist regular expressions are malformed");
+        final Optional<AnonymousModule> blacklist = compileRegexesOrFail(definition.blackList,
+                "Some of the blacklist regular expressions are malformed");
 
-        return new Definition(modules.values(), rules.first, rules.second);
+        return new Definition(whitelist, blacklist, modules.values(), rules.first, rules.second);
+    }
+
+    private Optional<AnonymousModule> compileRegexesOrFail(Optional<List<String>> blackList, String failureMessage) {
+        return blackList
+                .map(regexes -> AnonymousModule.make(regexes).orElseThrow(() -> new CompilerException(failureMessage)));
     }
 
     private Map<String, HWModule> compileModules(List<SyntaxTree.ModuleDefinition> definitions, String prefix) {
