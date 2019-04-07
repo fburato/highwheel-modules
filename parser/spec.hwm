@@ -1,0 +1,6 @@
+prefix: "com.github.fburato.highwheelmodules."
+whitelist: "com.github.fburato.highwheelmodules.bytecodeparser.*"
+modules:
+    Classpath = "classpath.*"
+    Others = "[A-Z]*"
+rules:

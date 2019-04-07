@@ -1,0 +1,8 @@
+prefix: "com.github.fburato.highwheelmodules."
+whitelist: "com.github.fburato.highwheelmodules.model.*"
+modules:
+    Bytecode = "bytecode.*"
+    Classpath = "classpath.*"
+    Modules = "modules.*"
+    Rules = "rules.*"
+rules:

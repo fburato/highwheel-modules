@@ -4,24 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-Getting ready for the release of the project for Java 11.
+## [1.5.0] - 2019-04-07
+`1.5.0` is the biggest release of HWM so far. More importantly, the release is completely backward compatible,
+but huge improvements have been made to the specification grammar! The more important changes are:
 
-### Changed
-- **Isolation of Jung graph library**. By experimenting with the introduction of new the `module-info`s, I've noticed
-that the Jung graph library has what is called `split-package` problem, i.e. it has two artifacts that define classes
-in the same package. This doesn't work well with Jigsaw's module system because it is required for every package to be
-exported and provided by one module and one module only. I plan on changing the implementation to another library in
-the feature (because it seems like the project is not going to be maintained in the current state) and in preparation
-for that I've isolated Jung in one package and left everything else to use an internal interface.
-
-### Removed
-- **Dependency from highwheel**. I've included in the project the modules that I was importing from highwheels by
+- **New rules syntax**. While using HWM I've realised that the specification can become very verbose for very specific
+modules. For example, if you have the "end of the world" main module that just performs the necessary application 
+wiring, that module will depend on every other module. Until `1.4.0` you could add one dependency per line and you could
+chain dependencies together, but with `1.5.0` new rules allow to quickly create many dependencies in one line in the
+form `(A,B,C) -> D` and `A -> (B,C,D)`.
+- **Whitelisting and blacklisting**. Another limitation I've noticed while using the plugins is that although the 
+multiple analysis at once feature is incredibly cool (if I may say so `:P`), it is limited by the fact that since
+the classpath is shared across the all analysis, then you have to introduce top-level packages to sub-modules, which makes
+the specification weird. The solution to this problem I've come up with is "whitelisting" and "blacklisting". Basically,
+every specification includes a list of regexes that can be used to limit the analyser to focus only on certain
+packages or to ignore specific packages. Multi-spec analysis becomes significantly more ergonomic and the specifications
+can be made "fractal" (i.e. you can create many spec file for the same codebase and define the architectural specs
+for internal pacakges). Word of caution: **introducing whitelisting has some risks**. One of the most powerful features
+of HWM is the detection of transitive dependencies through modules that are not explicitly part of the module specification.
+By whitelisting only certain packages you are losing this safety-net, so, be cautious.
+- **Support for Java 12 bytecode**. The new ASM library has been added, hence all bytecode until Java 12 can be parsed.
+- **Dependency from highwheel removed**. I've included in the project the modules that I was importing from highwheels by
 copying over the source code and the tests. Given the new release train for Java I want to get more control over the
 release of the necessary components, and considering the dependency on ASM is the main reason why I included highwheels
 in the first place and Henry is not particularly interested in maintaining the library, I just moved the code here.
 I'll always maintain the reference to the original project in the documentation, but the time has come to HWM to be
-more independent. This resulted in the limitation of the dependencies to `jparsec` and `jung`, which is great.
+more independent. This resulted in the limitation of the dependencies to `jparsec` and `guava`, which is great.
+
+### Changed
+- **Changed graph library implementation**. By experimenting with the introduction of new the `module-info`s, I've noticed
+that the Jung graph library has what is called `split-package` problem, i.e. it has two artifacts that define classes
+in the same package. This doesn't work well with Jigsaw's module system because it is required for every package to be
+exported and provided by one module and one module only. To solve the issue, I've changed the library for graph processing
+to Guava, which has the non-trivial advantage of being actively developed.
 
 ## [1.4.0] - 2018-10-03
 

@@ -1,11 +1,14 @@
+prefix: "com.github.fburato.highwheelmodules."
+
 modules:
-    Utils = "com.github.fburato.highwheelmodules.utils.*"
-    Core = "com.github.fburato.highwheelmodules.core.*"
-    Cli = "com.github.fburato.highwheelmodules.cli.*"
-    MavenPlugin = "com.github.fburato.highwheelmodules.maven.*"
+    Utils = "utils.*"
+    Core = "core.*"
+    Cli = "cli.*"
+    MavenPlugin = "maven.*"
+    Parser = "bytecodeparser.*"
+    Model = "model.*"
 rules:
-    MavenPlugin -> Core
-    Cli -> Core
-    Core -> Utils
-    MavenPlugin -> Utils
-    Cli -> Utils
+    (MavenPlugin, Cli) -> Core
+    Core -> Parser
+    (Core, MavenPlugin, Cli, Parser, Model) -> Utils
+    (Core, Parser) -> Model

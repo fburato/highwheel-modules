@@ -21,22 +21,28 @@ Highwheel-module specification language can be described by the following gramma
 
 ```
 Modules ::= ["prefix:" RegexLiteral "\n"]
+            ["whitelist:" RegexLiteral{, RegexLiteral} "\n"]
+            ["blacklist:" RegexLiteral{, RegexLiteral} "\n"]
             "modules:" "\n"
               { ModuleDefinition }
             "rules:" "\n"
               { RuleDefinition } 
 
-ModuleDefinition ::= ModuleIdentifier = ModuleRegex{ , RegexLiteral } "\n"
+ModuleDefinition ::= ModuleIdentifier = RegexLiteral{ , RegexLiteral } "\n"
 
 ModuleIdentifier ::= <java identifier>
 
 RegexLiteral ::= "<glob regex>"
 
-RuleDefinition ::= DependencyRule | NoDependencyRule
+RuleDefinition ::= DependencyRule | NoDependencyRule | OneToManyRule | ManyToOneRule
 
 DependencyRule ::= <java identifier> "->" <java identifier> { "->" <java identifier> } "\n"
 
 NoDependencyRule ::= <java identifier> "-/->" <java identifier>
+
+OneToManyRule ::= <java identifier> "->" "(" <java identifier> {"," <java identifier>} ")"
+
+ManyToOneRule ::= "(" <java identifier> {"," <java identifier>} ")" "->" <java identifier>
 ```
 
 In order for a specification to be compiled correctly:
@@ -49,17 +55,20 @@ An example of specification can be found in this project in the `spec.hwm` files
 like this:
 
 ```
+prefix: "com.github.fburato.highwheelmodules."
+
 modules:
-    Utils = "com.github.fburato.highwheelmodules.utils.*"
-    Core = "com.github.fburato.highwheelmodules.core.*"
-    Cli = "com.github.fburato.highwheelmodules.cli.*"
-    MavenPlugin = "com.github.fburato.highwheelmodules.maven.*"
+    Utils = "utils.*"
+    Core = "core.*"
+    Cli = "cli.*"
+    MavenPlugin = "maven.*"
+    Parser = "bytecodeparser.*"
+    Model = "model.*"
 rules:
-    MavenPlugin -> Core
-    Cli -> Core
-    Core -> Utils
-    MavenPlugin -> Utils
-    Cli -> Utils
+    (MavenPlugin, Cli) -> Core
+    Core -> Parser
+    (Core, MavenPlugin, Cli, Parser, Model) -> Utils
+    (Core, Parser) -> Model
 ```
 
 An equivalent way of providing the specification is to use the `prefix` preamble, which allows to automatically
@@ -68,27 +77,17 @@ add to all module specification a prefix to compact the definition.
 With the usage of prefix, the following definition:
 
 ```
-prefix: "com.github.fburato.highwheelmodules."
-
 modules:
     Algorithms = "com.github.fburato.highwheelmodules.core.algorithms.*"
     ExternalAdapters = "com.github.fburato.highwheelmodules.core.externaladapters.*"
-    Model = "com.github.fburato.highwheelmodules.core.model.*"
     Specification = "com.github.fburato.highwheelmodules.core.specification.*"
     ModuleAnalyser = "com.github.fburato.highwheelmodules.core.analysis.*"
     Facade = "com.github.fburato.highwheelmodules.core.AnalyserFacade"
 
 rules:
-    Algorithms -> Model
-    ExternalAdapters -> Model
-    Specification -> Model
+    Facade -> (ModuleAnalyser, Specification, ExternalAdapters)
     ModuleAnalyser -> Algorithms
-    ModuleAnalyser -> Model
-    ModuleAnalyser -> ExternalAdapters
-    Facade -> ModuleAnalyser
-    Facade -> Model
     Facade -/-> Algorithms
-    Facade -> Specification
 ```
 
 is equivalent to
@@ -99,24 +98,25 @@ prefix: "com.github.fburato.highwheelmodules.core."
 modules:
     Algorithms = "algorithms.*"
     ExternalAdapters = "externaladapters.*"
-    Model = "model.*"
     Specification = "specification.*"
     ModuleAnalyser = "analysis.*"
     Facade = "AnalyserFacade"
 
 rules:
-    Algorithms -> Model
-    ExternalAdapters -> Model
-    Specification -> Model
+    Facade -> (ModuleAnalyser, Specification, ExternalAdapters)
     ModuleAnalyser -> Algorithms
-    ModuleAnalyser -> Model
-    ModuleAnalyser -> ExternalAdapters
-    Facade -> ModuleAnalyser
-    Facade -> Model
     Facade -/-> Algorithms
-    Facade -> Specification
 ```
 
+Whitelisting and blacklisting of modules is also supported (as of `1.5.0`). By specifying whitelist and blacklists
+in the specification, you can force Highwheel modules to focus only on certain classes or exclude certain classes from 
+analysis respectively. 
+
+By whitelisting you are forcing the bytecode analyser to consider elements identified to be added to the dependency 
+graph building algorithm only if they match any of the regexes in the whitelist.
+
+By blacklisting, you are forcing the bytecode analyser to ignore elements identified to be added to the dependency
+graph building algorithm if they match any of the regexes in the blacklist.
 ## Modes of operation
 
 Highwheel modules supports two modes of operation: **strict** and **loose**.
@@ -197,6 +197,12 @@ In order to run the plugin on a project execute:
 ```
 mvn com.github.fburato:highwheel-modules-maven-plugin:analyse
 ```
+
+You can also run a specific version of the plugin without including it in your build with:
+
+```
+mvn com.github.fburato:highwheel-modules-maven-plugin:1.5.0:analyse
+```
 The plugin will:
 
 * Read a module specification file named `spec.hwm` in the project base-directory and compile it, reporting any 
@@ -225,7 +231,7 @@ Add the following dependency to your build/plugins section:
 <dependency>
     <groupId>com.github.fburato</groupId>
     <artifactId>highwheel-modules-maven-plugin</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
 </dependency>
 ```
 

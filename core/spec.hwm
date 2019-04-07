@@ -1,21 +1,13 @@
 prefix: "com.github.fburato.highwheelmodules.core."
-
+whitelist: "com.github.fburato.highwheelmodules.core.*"
 modules:
     Algorithms = "algorithms.*"
     ExternalAdapters = "externaladapters.*"
-    Model = "model.*"
     Specification = "specification.*"
     ModuleAnalyser = "analysis.*"
     Facade = "AnalyserFacade"
 
 rules:
-    Algorithms -> Model
-    ExternalAdapters -> Model
-    Specification -> Model
+    Facade -> (ModuleAnalyser, Specification, ExternalAdapters)
     ModuleAnalyser -> Algorithms
-    ModuleAnalyser -> Model
-    ModuleAnalyser -> ExternalAdapters
-    Facade -> ModuleAnalyser
-    Facade -> Model
     Facade -/-> Algorithms
-    Facade -> Specification
