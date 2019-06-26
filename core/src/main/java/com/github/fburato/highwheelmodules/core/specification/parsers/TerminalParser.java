@@ -10,9 +10,12 @@ final class TerminalParser {
     private final String PREFIX_KEYWORD = "prefix";
     private final String WHITELIST_KEYWORD = "whitelist";
     private final String BLACKLIST_KEWYWORD = "blacklist";
+    private final String MODE_KEYWORD = "mode";
 
     private final Terminals terminals = Terminals.operators(operators).words(Scanners.IDENTIFIER)
-            .keywords(MODULES_KEYWORD, RULES_KEYWORD, PREFIX_KEYWORD, WHITELIST_KEYWORD, BLACKLIST_KEWYWORD).build();
+            .keywords(MODULES_KEYWORD, RULES_KEYWORD, PREFIX_KEYWORD, WHITELIST_KEYWORD, BLACKLIST_KEWYWORD,
+                    MODE_KEYWORD)
+            .build();
 
     private final Parser<?> tokeniser = Parsers.or(terminals.tokenizer(),
             Terminals.StringLiteral.DOUBLE_QUOTE_TOKENIZER);
@@ -63,7 +66,7 @@ final class TerminalParser {
         return closedParen;
     }
 
-    private final Parser<Token> newLine = term("\n");
+    private final Parser<Token> newLine = term("\n").label("\\n (newline)");
 
     public Parser<Token> newLine() {
         return this.newLine;
@@ -87,6 +90,16 @@ final class TerminalParser {
         return blackListPreamble;
     }
 
+    private final Parser<Token> modePreamble = term(MODE_KEYWORD);
+
+    public Parser<Token> modePreamble() {
+        return modePreamble;
+    }
+
+    public Parser<String> mode() {
+        return Terminals.Identifier.PARSER;
+    }
+
     private final Parser<Token> modulesPreamble = term(MODULES_KEYWORD);
 
     public Parser<Token> modulesPreamble() {
@@ -99,10 +112,8 @@ final class TerminalParser {
         return this.rulesPreamble;
     }
 
-    private final Parser<String> moduleName = Terminals.Identifier.PARSER;
-
     public Parser<String> moduleName() {
-        return this.moduleName;
+        return Terminals.Identifier.PARSER;
     }
 
     private final Parser<String> moduleRegex = Terminals.StringLiteral.PARSER;

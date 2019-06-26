@@ -161,30 +161,31 @@ public interface SyntaxTree {
         public final Optional<String> prefix;
         public final Optional<List<String>> whiteList;
         public final Optional<List<String>> blackList;
+        public final Optional<String> mode;
         public final List<ModuleDefinition> moduleDefinitions;
         public final List<Rule> rules;
 
         public Definition(List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
-            this(Optional.empty(), Optional.empty(), Optional.empty(), moduleDefinitions, rules);
+            this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), moduleDefinitions, rules);
         }
 
         public Definition(Optional<String> prefix, List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
-            this(prefix, Optional.empty(), Optional.empty(), moduleDefinitions, rules);
+            this(prefix, Optional.empty(), Optional.empty(), Optional.empty(), moduleDefinitions, rules);
         }
 
         public Definition(Optional<String> prefix, Optional<List<String>> whiteList, Optional<List<String>> blackList,
                 List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
+            this(prefix, whiteList, blackList, Optional.empty(), moduleDefinitions, rules);
+        }
+
+        public Definition(Optional<String> prefix, Optional<List<String>> whiteList, Optional<List<String>> blackList,
+                Optional<String> mode, List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
             this.prefix = prefix;
             this.whiteList = whiteList;
             this.blackList = blackList;
+            this.mode = mode;
             this.moduleDefinitions = moduleDefinitions;
             this.rules = rules;
-        }
-
-        @Override
-        public String toString() {
-            return "Definition{" + "prefix=" + prefix + ", whiteList=" + whiteList + ", blackList=" + blackList
-                    + ", moduleDefinitions=" + moduleDefinitions + ", rules=" + rules + '}';
         }
 
         @Override
@@ -195,13 +196,19 @@ public interface SyntaxTree {
                 return false;
             Definition that = (Definition) o;
             return Objects.equals(prefix, that.prefix) && Objects.equals(whiteList, that.whiteList)
-                    && Objects.equals(blackList, that.blackList)
+                    && Objects.equals(blackList, that.blackList) && Objects.equals(mode, that.mode)
                     && Objects.equals(moduleDefinitions, that.moduleDefinitions) && Objects.equals(rules, that.rules);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(prefix, whiteList, blackList, moduleDefinitions, rules);
+            return Objects.hash(prefix, whiteList, blackList, mode, moduleDefinitions, rules);
+        }
+
+        @Override
+        public String toString() {
+            return "Definition{" + "prefix=" + prefix + ", whiteList=" + whiteList + ", blackList=" + blackList
+                    + ", mode=" + mode + ", moduleDefinitions=" + moduleDefinitions + ", rules=" + rules + '}';
         }
     }
 }

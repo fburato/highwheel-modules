@@ -1,0 +1,23 @@
+prefix:
+    "com.pitest.highwheel."
+whitelist:
+        "com.pitest.highwheel.", "foo"
+blacklist:
+    "com.pitest.highwheel.", "bar"
+
+mode: SOMETHING
+
+modules:
+    Core = "core.*" , "core2.*"
+    Utils = "utils.*"
+    Modules = "modules.*"
+    Parser = "parser.*"
+rules:
+    Parser -> Core -> Utils
+    Utils -/-> Core
+    Utils -/-> Parser
+    Modules -> Core
+    Modules -> Utils // -> Core
+    Modules -> (Core, Utils)
+    (Modules, Core) -> Utils
+    // Modules -/-> Parser

@@ -80,6 +80,9 @@ public final class DefinitionParser {
     final Parser<Void> blackListPreamble = Parsers.sequence(tp.blackListPreamble(), tp.definedAs(), tp.newLine().many(),
             (Token t1, Token t2, List<Token> nl) -> null);
 
+    final Parser<Void> modePreamble = Parsers.sequence(tp.modePreamble(), tp.definedAs(), tp.newLine().many(),
+            (Token t1, Token t2, List<Token> nl) -> null);
+
     final Parser<Void> modulesPreamble = Parsers.sequence(tp.modulesPreamble(), tp.definedAs(), tp.newLine().many(),
             (Token token, Token token2, List<Token> d) -> null);
 
@@ -103,14 +106,17 @@ public final class DefinitionParser {
     final Parser<List<String>> blackListSection = Parsers.sequence(blackListPreamble, stringLiteralsList,
             tp.newLine().many(), (Void preamble, List<String> rs, List<Token> d) -> rs);
 
+    final Parser<String> modeSection = Parsers.sequence(modePreamble, tp.mode(), tp.newLine().many(),
+            (Void t, String s, List<Token> d) -> s);
+
     final Parser<List<SyntaxTree.ModuleDefinition>> modulesSection = Parsers.sequence(modulesPreamble,
             moduleDefinitions);
 
     final Parser<List<SyntaxTree.Rule>> rulesSection = Parsers.sequence(rulesPreamble, rulesParser);
 
     final Parser<SyntaxTree.Definition> grammar = Parsers.sequence(prefixSection.asOptional(),
-            whiteListSection.asOptional(), blackListSection.asOptional(), modulesSection, rulesSection,
-            SyntaxTree.Definition::new);
+            whiteListSection.asOptional(), blackListSection.asOptional(), modeSection.asOptional(), modulesSection,
+            rulesSection, SyntaxTree.Definition::new);
 
     private static Parser<Void> javacomment = Scanners.JAVA_LINE_COMMENT;
 

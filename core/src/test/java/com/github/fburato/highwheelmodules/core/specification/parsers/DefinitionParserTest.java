@@ -3,6 +3,7 @@ package com.github.fburato.highwheelmodules.core.specification.parsers;
 import com.github.fburato.highwheelmodules.core.specification.SyntaxTree;
 import org.jparsec.Parser;
 import org.jparsec.Parsers;
+import org.jparsec.error.ParserException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -249,6 +250,12 @@ public class DefinitionParserTest {
     }
 
     @Test
+    @DisplayName("modes preamble should parse 'modes:' followed by newlines")
+    void testModesPreambleNewLines() {
+        assertParse(testee.modePreamble, "mode:\n\n\n", null);
+    }
+
+    @Test
     public void modulesPreambleShouldParseModulesColumnNewLineAndParseAdditionalNewLines() {
         assertParse(testee.modulesPreamble, "modules:\n\n\n", null);
     }
@@ -285,6 +292,19 @@ public class DefinitionParserTest {
     @DisplayName("blackListSection should parse preamble and list of regexes")
     void testBlackListSectionOne() {
         assertParse(testee.blackListSection, "blacklist:\n\n\n\"c\"\n\n\n\n", Arrays.asList("c"));
+    }
+
+    @Test
+    @DisplayName("modeSection should parse modes preamble and an identifier")
+    void testModeSectionIdentifier() {
+        assertParse(testee.modeSection, "mode:\n\n\n\nIDENTIFIER\n\n\n\n", "IDENTIFIER");
+    }
+
+    @Test
+    @DisplayName("modeSection should fail to parse string literal")
+    void testModeSectionFailOnStringLiterals() {
+        assertThrows(ParserException.class,
+                () -> assertParse(testee.modeSection, "mode:\n\n\n\n\"IDENTIFIER\"\n\n\n\n", null));
     }
 
     @Test
@@ -483,13 +503,34 @@ public class DefinitionParserTest {
     }
 
     @Test
-    @DisplayName("parser should parse complete definition (prefix, whitelist blacklist, modules, rules) ignoring spaces and java comments")
-    public void testCompleteBaseParserIgnore() {
+    @DisplayName("parser should parse definition (prefix, whitelist blacklist, modules, rules) ignoring spaces and java comments")
+    public void testNoModeParserIgnore() {
         final InputStreamReader reader = new InputStreamReader(
-                this.getClass().getClassLoader().getResourceAsStream("./example-def-with-alloptionals.txt"));
+                this.getClass().getClassLoader().getResourceAsStream("example-def-with-prefix-wl-bl.txt"));
         assertThat(testee.parse(reader)).isEqualTo(new SyntaxTree.Definition(Optional.of("com.pitest.highwheel."),
                 Optional.of(Arrays.asList("com.pitest.highwheel.", "foo")),
                 Optional.of(Arrays.asList("com.pitest.highwheel.", "bar")),
+                Arrays.asList(new SyntaxTree.ModuleDefinition("Core", Arrays.asList("core.*", "core2.*")),
+                        new SyntaxTree.ModuleDefinition("Utils", "utils.*"),
+                        new SyntaxTree.ModuleDefinition("Modules", "modules.*"),
+                        new SyntaxTree.ModuleDefinition("Parser", "parser.*")),
+                Arrays.asList(new SyntaxTree.ChainDependencyRule("Parser", "Core", "Utils"),
+                        new SyntaxTree.NoDependentRule("Utils", "Core"),
+                        new SyntaxTree.NoDependentRule("Utils", "Parser"),
+                        new SyntaxTree.ChainDependencyRule("Modules", "Core"),
+                        new SyntaxTree.ChainDependencyRule("Modules", "Utils"),
+                        new SyntaxTree.OneToManyRule("Modules", Arrays.asList("Core", "Utils")),
+                        new SyntaxTree.ManyToOneRule(Arrays.asList("Modules", "Core"), "Utils"))));
+    }
+
+    @Test
+    @DisplayName("parser should parse definition (prefix, whitelist blacklist, modules, rules) ignoring spaces and java comments")
+    public void testCompleteBaseParserIgnore() {
+        final InputStreamReader reader = new InputStreamReader(
+                this.getClass().getClassLoader().getResourceAsStream("example-def-with-prefix-wl-bl-mode.txt"));
+        assertThat(testee.parse(reader)).isEqualTo(new SyntaxTree.Definition(Optional.of("com.pitest.highwheel."),
+                Optional.of(Arrays.asList("com.pitest.highwheel.", "foo")),
+                Optional.of(Arrays.asList("com.pitest.highwheel.", "bar")), Optional.of("SOMETHING"),
                 Arrays.asList(new SyntaxTree.ModuleDefinition("Core", Arrays.asList("core.*", "core2.*")),
                         new SyntaxTree.ModuleDefinition("Utils", "utils.*"),
                         new SyntaxTree.ModuleDefinition("Modules", "modules.*"),

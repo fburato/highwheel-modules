@@ -1,5 +1,7 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
+import com.github.fburato.highwheelmodules.core.testutils.SyntaxTreeDefinitionBuilder;
+import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode;
 import com.github.fburato.highwheelmodules.model.modules.AnonymousModule;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
@@ -248,5 +250,45 @@ public class CompilerTest {
         assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(Foo, Bar));
         assertThat(actual.whitelist).contains(AnonymousModule.make(Arrays.asList("a", "b")).get());
         assertThat(actual.blackList).contains(AnonymousModule.make(Arrays.asList("c", "d")).get());
+    }
+
+    private SyntaxTreeDefinitionBuilder minimumDefBuilder = SyntaxTreeDefinitionBuilder.baseBuilder().with($ -> {
+        $.moduleDefinitions = Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
+                new SyntaxTree.ModuleDefinition("commons", "commons"));
+        $.rules = Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("core", "commons"));
+        $.mode = Optional.of("STRICT");
+    });
+
+    @Test
+    @DisplayName("should set mode to strict if specification does not contain mode explicitly")
+    void testDefaultMode() {
+        final SyntaxTree.Definition definition = minimumDefBuilder.build();
+
+        final Definition actual = testee.compile(definition);
+        assertThat(actual.mode).isEqualTo(AnalysisMode.STRICT);
+    }
+
+    @Test
+    @DisplayName("should set mode to STRICT if specification uses STRICT explicit as mode")
+    void testExplicitStrict() {
+        final SyntaxTree.Definition definition = minimumDefBuilder.with($ -> $.mode = Optional.of("STRICT")).build();
+        final Definition actual = testee.compile(definition);
+        assertThat(actual.mode).isEqualTo(AnalysisMode.STRICT);
+    }
+
+    @Test
+    @DisplayName("should set mode to loose if specification uses LOOSE explicitly as mode")
+    void testExplicitLoose() {
+        final SyntaxTree.Definition definition = minimumDefBuilder.with($ -> $.mode = Optional.of("LOOSE")).build();
+        final Definition actual = testee.compile(definition);
+        assertThat(actual.mode).isEqualTo(AnalysisMode.LOOSE);
+    }
+
+    @Test
+    @DisplayName("should fail to compile if mode is not recognised")
+    void testFailMode() {
+        final SyntaxTree.Definition definition = minimumDefBuilder.with($ -> $.mode = Optional.of("NOT_A_MODE"))
+                .build();
+        assertThrows(CompilerException.class, () -> testee.compile(definition));
     }
 }
