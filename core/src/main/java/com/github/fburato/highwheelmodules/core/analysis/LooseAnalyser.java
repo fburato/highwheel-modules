@@ -17,18 +17,18 @@ import static com.github.fburato.highwheelmodules.core.analysis.AnalysisUtils.*;
 
 public class LooseAnalyser {
 
-    public static AnalyserModel.AnalysisResult analyseLoose(Definition definition, AnalysisState analysisState) {
+    public static AnalyserModel.AnalysisResult analyseLoose(AnalysisState analysisState) {
         final ModuleGraphTransitiveClosure actualTransitiveClosure = new ModuleGraphTransitiveClosure(
-                analysisState.actualGraph, append(definition.modules, analysisState.other));
+                analysisState.actualGraph, append(analysisState.modules, analysisState.other));
 
         final List<AnalyserModel.ModuleConnectionViolation> absentDependencyViolations = getAbsentDependencies(
-                actualTransitiveClosure, definition.dependencies, analysisState.other);
+                actualTransitiveClosure, analysisState.dependencies, analysisState.other);
         final List<AnalyserModel.EvidenceBackedViolation> undesiredDependencyViolations = getUndesiredDependecies(
-                actualTransitiveClosure, definition.noStrictDependencies, analysisState.other,
+                actualTransitiveClosure, analysisState.noStrictDependencies, analysisState.other,
                 analysisState.actualTrackingGraph);
 
         return new AnalyserModel.AnalysisResult(undesiredDependencyViolations, absentDependencyViolations, getMetrics(
-                analysisState.actualGraph, definition.modules, analysisState.actualGraph, analysisState.other));
+                analysisState.actualGraph, analysisState.modules, analysisState.actualGraph, analysisState.other));
     }
 
     private static List<AnalyserModel.ModuleConnectionViolation> getAbsentDependencies(

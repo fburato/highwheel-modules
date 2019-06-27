@@ -40,7 +40,8 @@ public class DefinitionVisitor {
         final ModuleDependenciesGraphBuildingVisitor<EvidenceModuleDependency> evidenceGraphVisitor = new ModuleDependenciesGraphBuildingVisitor<>(
                 modules, trackingGraph, other, evidenceGraphBuilder, definition.whitelist, definition.blackList);
         final AccessVisitor accessVisitor = new CompoundAccessVisitor(moduleGraphVisitor, evidenceGraphVisitor);
-        return new AnalysisState(specModuleGraph, actualModuleGraph, auxTrackingBareGraph, accessVisitor, other);
+        return new AnalysisState(definition.modules, definition.dependencies, definition.noStrictDependencies,
+                specModuleGraph, actualModuleGraph, auxTrackingBareGraph, accessVisitor, other);
     }
 
     private MetricModuleGraph<ModuleDependency> initialiseSpecificationGraph(Collection<HWModule> modules,

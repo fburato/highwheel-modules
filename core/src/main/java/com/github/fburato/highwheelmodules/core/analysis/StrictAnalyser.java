@@ -13,19 +13,24 @@ import java.util.List;
 
 import static com.github.fburato.highwheelmodules.core.analysis.AnalysisUtils.*;
 
-public class StrictAnalyser {
+public class StrictAnalyser implements Analyser {
 
-    public static AnalyserModel.AnalysisResult analyseStrict(Definition definition, AnalysisState analysisState) {
+    @Override
+    public AnalyserModel.AnalysisResult analyse(AnalysisState state) {
+        return null;
+    }
+
+    public static AnalyserModel.AnalysisResult analyseStrict(AnalysisState analysisState) {
         final ModuleGraphTransitiveClosure specTransitiveClosure = new ModuleGraphTransitiveClosure(
-                analysisState.specGraph, append(definition.modules, analysisState.other));
+                analysisState.specGraph, append(analysisState.modules, analysisState.other));
         final ModuleGraphTransitiveClosure actualTransitiveClosure = new ModuleGraphTransitiveClosure(
-                analysisState.actualGraph, append(definition.modules, analysisState.other));
+                analysisState.actualGraph, append(analysisState.modules, analysisState.other));
         final List<AnalyserModel.EvidenceBackedViolation> dependencyViolations = getDependenciesViolations(
                 specTransitiveClosure.diffPath(actualTransitiveClosure).get(), analysisState.other,
                 analysisState.actualTrackingGraph);
         final List<AnalyserModel.ModuleConnectionViolation> noStrictDependencyViolations = getNoStrictDependencyViolations(
-                actualTransitiveClosure, definition.noStrictDependencies, analysisState.other);
-        final List<AnalyserModel.Metrics> metrics = getMetrics(analysisState.actualGraph, definition.modules,
+                actualTransitiveClosure, analysisState.noStrictDependencies, analysisState.other);
+        final List<AnalyserModel.Metrics> metrics = getMetrics(analysisState.actualGraph, analysisState.modules,
                 analysisState.actualGraph, analysisState.other);
 
         return new AnalyserModel.AnalysisResult(dependencyViolations, noStrictDependencyViolations, metrics);

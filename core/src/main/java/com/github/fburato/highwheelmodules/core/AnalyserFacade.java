@@ -121,13 +121,12 @@ public class AnalyserFacade {
     }
 
     private <T> void executeGenericAnalysis(List<Pair<String, Definition>> definitions,
-            Function<List<Definition>, List<Pair<Definition, T>>> analyser,
-            Function<Pair<String, T>, Boolean> analysis) {
-        final List<Pair<Definition, T>> analysisResults = analyser
+            Function<List<Definition>, List<T>> analyser, Function<Pair<String, T>, Boolean> analysis) {
+        final List<T> analysisResults = analyser
                 .apply(definitions.stream().map(p -> p.second).collect(Collectors.toList()));
         final AtomicBoolean errorCollector = new AtomicBoolean(false);
         IntStream.range(0, analysisResults.size())
-                .mapToObj(i -> Pair.make(definitions.get(i).first, analysisResults.get(i).second)).map(analysis)
+                .mapToObj(i -> Pair.make(definitions.get(i).first, analysisResults.get(i))).map(analysis)
                 .forEach(p -> errorCollector.set(p || errorCollector.get()));
         if (errorCollector.get()) {
             throw new AnalyserException("Analysis failed");

@@ -1,6 +1,5 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
-import com.github.fburato.highwheelmodules.utils.Builder;
 import com.github.fburato.highwheelmodules.utils.Pair;
 
 import java.util.*;

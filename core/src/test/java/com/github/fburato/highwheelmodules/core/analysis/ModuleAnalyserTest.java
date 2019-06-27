@@ -58,7 +58,7 @@ class ModuleAnalyserTest {
                 Collections.emptyList());
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
@@ -84,8 +84,7 @@ class ModuleAnalyserTest {
         final Definition definition = new Definition(Arrays.asList(MAIN, CONTROLLER),
                 Collections.singletonList(dep(MAIN, CONTROLLER)), Collections.singletonList(noSD(CONTROLLER, MAIN)));
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(one(definition))
-                .get(0).second;
-
+                .get(0);
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual.metrics).isEqualTo(Arrays.asList(met("Main", 0, 1), met("Controllers", 1, 0)));
@@ -98,7 +97,7 @@ class ModuleAnalyserTest {
                 Collections.singletonList(noSD(MAIN, FACADE)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.evidenceBackedViolations).containsAll(
                 Arrays.asList(depV("Main", "Main", Arrays.asList("Controllers", "Main"), Collections.emptyList()),
@@ -114,7 +113,7 @@ class ModuleAnalyserTest {
                 Collections.emptyList());
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.evidenceBackedViolations)
                 .containsAll(Arrays.asList(
@@ -143,7 +142,7 @@ class ModuleAnalyserTest {
                 Collections.emptyList());
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.of(1)).analyseStrict(one(definition))
-                .get(0).second;
+                .get(0);
         final AnalyserModel.EvidenceBackedViolation mainControllers = actual.evidenceBackedViolations.stream()
                 .filter(v -> v.sourceModule.equals("Main") && v.destinationModule.equals("Controllers")).findFirst()
                 .get();
@@ -183,7 +182,7 @@ class ModuleAnalyserTest {
                 Arrays.asList(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(one(definition))
-                .get(0).second;
+                .get(0);
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
@@ -200,7 +199,7 @@ class ModuleAnalyserTest {
                 Collections.singletonList(dep(MAIN, CONTROLLER)), Collections.emptyList());
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
@@ -221,7 +220,7 @@ class ModuleAnalyserTest {
                 Arrays.asList(noSD(CONTROLLER, COREINTERNALS), noSD(IO, COREINTERNALS)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
@@ -242,7 +241,7 @@ class ModuleAnalyserTest {
                 Arrays.asList(noSD(CONTROLLER, COREINTERNALS), noSD(IO, COREINTERNALS)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseStrict(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
@@ -265,12 +264,10 @@ class ModuleAnalyserTest {
                         dep(IO, COREAPI), dep(IO, MODEL), dep(IO, UTILS)),
                 Arrays.asList(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS)));
 
-        final List<Pair<Definition, AnalyserModel.AnalysisResult>> results = testee(orgExamples, Optional.empty())
+        final List<AnalyserModel.AnalysisResult> results = testee(orgExamples, Optional.empty())
                 .analyseStrict(Arrays.asList(definition1, definition2));
-        final AnalyserModel.AnalysisResult actual1 = results.stream().filter(p -> p.first == definition1).findFirst()
-                .get().second;
-        final AnalyserModel.AnalysisResult actual2 = results.stream().filter(p -> p.first == definition2).findFirst()
-                .get().second;
+        final AnalyserModel.AnalysisResult actual1 = results.get(0);
+        final AnalyserModel.AnalysisResult actual2 = results.get(1);
 
         verify(classParser, times(1)).parse(eq(orgExamples), any());
 
@@ -319,7 +316,7 @@ class ModuleAnalyserTest {
                 Collections.emptyList());
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
@@ -341,7 +338,7 @@ class ModuleAnalyserTest {
         final Definition definition = new Definition(Arrays.asList(MAIN, CONTROLLER),
                 Collections.singletonList(dep(MAIN, CONTROLLER)), Collections.singletonList(noSD(CONTROLLER, MAIN)));
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
@@ -355,7 +352,7 @@ class ModuleAnalyserTest {
                 Collections.singletonList(noSD(MAIN, FACADE)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.moduleConnectionViolations)
                 .containsAll(Collections.singletonList(aDep("Controllers", "Main")));
@@ -374,7 +371,7 @@ class ModuleAnalyserTest {
                 Collections.singletonList(noSD(MAIN, CONTROLLER)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
 
         assertThat(actual.evidenceBackedViolations)
                 .contains(unDep("Main", "Controllers", Collections.singletonList("Controllers"),
@@ -390,7 +387,7 @@ class ModuleAnalyserTest {
                 Collections.singletonList(noSD(MAIN, CONTROLLER)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.of(1)).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
 
         final AnalyserModel.EvidenceBackedViolation mainController = actual.evidenceBackedViolations.stream()
                 .filter(v -> v.sourceModule.equals("Main") && v.destinationModule.equals("Controllers")).findFirst()
@@ -423,7 +420,7 @@ class ModuleAnalyserTest {
                 Arrays.asList(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
@@ -442,7 +439,7 @@ class ModuleAnalyserTest {
                 Arrays.asList(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
@@ -461,7 +458,7 @@ class ModuleAnalyserTest {
                 Arrays.asList(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
@@ -480,7 +477,7 @@ class ModuleAnalyserTest {
                 Arrays.asList(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)));
 
         final AnalyserModel.AnalysisResult actual = testee(orgExamples, Optional.empty()).analyseLoose(one(definition))
-                .get(0).second;
+                .get(0);
         assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
@@ -500,12 +497,10 @@ class ModuleAnalyserTest {
                         dep(IO, COREAPI), dep(IO, MODEL)),
                 Arrays.asList(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)));
 
-        final List<Pair<Definition, AnalyserModel.AnalysisResult>> results = testee(orgExamples, Optional.empty())
+        final List<AnalyserModel.AnalysisResult> results = testee(orgExamples, Optional.empty())
                 .analyseLoose(Arrays.asList(definition1, definition2));
-        final AnalyserModel.AnalysisResult actual1 = results.stream().filter(p -> p.first == definition1).findFirst()
-                .get().second;
-        final AnalyserModel.AnalysisResult actual2 = results.stream().filter(p -> p.first == definition2).findFirst()
-                .get().second;
+        final AnalyserModel.AnalysisResult actual1 = results.get(0);
+        final AnalyserModel.AnalysisResult actual2 = results.get(1);
 
         verify(classParser, times(1)).parse(eq(orgExamples), any());
 
