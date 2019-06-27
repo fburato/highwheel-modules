@@ -10,7 +10,7 @@ import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
-public class CompoundAccessVisitorTest {
+class CompoundAccessVisitorTest {
 
     private AccessVisitor av1 = mock(AccessVisitor.class);
     private AccessVisitor av2 = mock(AccessVisitor.class);
@@ -21,7 +21,7 @@ public class CompoundAccessVisitorTest {
     private ElementName en = ElementName.fromString("b");
 
     @Test
-    public void applyShouldCallComposeApplyInOrder() {
+    void applyShouldCallComposeApplyInOrder() {
         testee.apply(ap, ap, at);
 
         inOrder.verify(av1).apply(ap, ap, at);
@@ -29,7 +29,7 @@ public class CompoundAccessVisitorTest {
     }
 
     @Test
-    public void newAccessPointShouldCallComposeApplyInOrder() {
+    void newAccessPointShouldCallComposeApplyInOrder() {
         testee.newAccessPoint(ap);
 
         inOrder.verify(av1).newAccessPoint(ap);
@@ -37,7 +37,7 @@ public class CompoundAccessVisitorTest {
     }
 
     @Test
-    public void newNodePointShouldCallComposeApplyInOrder() {
+    void newNodePointShouldCallComposeApplyInOrder() {
         testee.newNode(en);
 
         inOrder.verify(av1).newNode(en);
@@ -45,7 +45,7 @@ public class CompoundAccessVisitorTest {
     }
 
     @Test
-    public void newEntrytPointShouldCallComposeApplyInOrder() {
+    void newEntrytPointShouldCallComposeApplyInOrder() {
         testee.newEntryPoint(en);
 
         inOrder.verify(av1).newEntryPoint(en);

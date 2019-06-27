@@ -17,7 +17,12 @@ import static com.github.fburato.highwheelmodules.core.analysis.AnalysisUtils.*;
 
 public class LooseAnalyser implements Analyser {
 
-    public static AnalyserModel.AnalysisResult analyseLoose(AnalysisState analysisState) {
+    @Override
+    public AnalyserModel.AnalysisResult analyse(AnalysisState state) {
+        return analyseLoose(state);
+    }
+
+    private AnalyserModel.AnalysisResult analyseLoose(AnalysisState analysisState) {
         final ModuleGraphTransitiveClosure actualTransitiveClosure = new ModuleGraphTransitiveClosure(
                 analysisState.actualGraph, append(analysisState.modules, analysisState.other));
 
@@ -31,7 +36,7 @@ public class LooseAnalyser implements Analyser {
                 analysisState.actualGraph, analysisState.modules, analysisState.actualGraph, analysisState.other));
     }
 
-    private static List<AnalyserModel.ModuleConnectionViolation> getAbsentDependencies(
+    private List<AnalyserModel.ModuleConnectionViolation> getAbsentDependencies(
             ModuleGraphTransitiveClosure transitiveClosure, Collection<Dependency> dependencies, HWModule other) {
         final List<AnalyserModel.ModuleConnectionViolation> dependencyViolations = new ArrayList<>();
         for (Dependency dependency : dependencies) {
@@ -45,7 +50,7 @@ public class LooseAnalyser implements Analyser {
         return dependencyViolations;
     }
 
-    private static List<AnalyserModel.EvidenceBackedViolation> getUndesiredDependecies(
+    private List<AnalyserModel.EvidenceBackedViolation> getUndesiredDependecies(
             ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> noStrictDependencies,
             HWModule other, ModuleGraph<TrackingModuleDependency> trackingGraph) {
         final List<AnalyserModel.EvidenceBackedViolation> undesiredDependencyViolations = new ArrayList<>();
@@ -62,10 +67,5 @@ public class LooseAnalyser implements Analyser {
             }
         }
         return undesiredDependencyViolations;
-    }
-
-    @Override
-    public AnalyserModel.AnalysisResult analyse(AnalysisState state) {
-        return analyseLoose(state);
     }
 }

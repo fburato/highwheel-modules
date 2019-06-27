@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GuavaEvidenceModuleGraphTest {
+class GuavaEvidenceModuleGraphTest {
 
     private final MutableNetwork<HWModule, TrackingModuleDependency> graph = NetworkBuilder.directed()
             .allowsSelfLoops(true).build();
@@ -30,14 +30,14 @@ public class GuavaEvidenceModuleGraphTest {
     private final ModuleDependency dep = new ModuleDependency(m1, m2);
 
     @Test
-    public void addModuleShouldAddVertexToJungGraph() {
+    void addModuleShouldAddVertexToJungGraph() {
         testee.addModule(m1);
 
         assertThat(graph.nodes().contains(m1)).isTrue();
     }
 
     @Test
-    public void addModuleShouldFailIfVertexAlreadyAdded() {
+    void addModuleShouldFailIfVertexAlreadyAdded() {
         testee.addModule(m1);
         testee.addModule(m1);
 
@@ -45,7 +45,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldAddEdgeToJungGraph() {
+    void addDependencyShouldAddEdgeToJungGraph() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -57,7 +57,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldBuildTrackingDependencyWithNoEvidenceLimitIfGraphIsInitialisedWithoutLimit() {
+    void addDependencyShouldBuildTrackingDependencyWithNoEvidenceLimitIfGraphIsInitialisedWithoutLimit() {
         final GuavaEvidenceModuleGraph otherTestee = new GuavaEvidenceModuleGraph(aux, Optional.empty());
         otherTestee.addModule(m1);
         otherTestee.addModule(m2);
@@ -72,7 +72,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldBuildTrackingDependencyWithEvidenceLimitIfGraphIsInitialisedWithLimit() {
+    void addDependencyShouldBuildTrackingDependencyWithEvidenceLimitIfGraphIsInitialisedWithLimit() {
         final GuavaEvidenceModuleGraph otherTestee = new GuavaEvidenceModuleGraph(aux, Optional.of(1));
         otherTestee.addModule(m1);
         otherTestee.addModule(m2);
@@ -87,7 +87,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldKeepTrackOfDependenciesIfLimitOfDependencyIs0() {
+    void addDependencyShouldKeepTrackOfDependenciesIfLimitOfDependencyIs0() {
         final GuavaEvidenceModuleGraph otherTestee = new GuavaEvidenceModuleGraph(aux, Optional.of(0));
         otherTestee.addModule(m1);
         otherTestee.addModule(m2);
@@ -102,7 +102,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void addEdgeShouldFailToAddIfOneVertexDoesNotExist() {
+    void addEdgeShouldFailToAddIfOneVertexDoesNotExist() {
         testee.addModule(m1);
         testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
 
@@ -110,7 +110,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void addEdgeShouldAddEdgeToDestinationMapping() {
+    void addEdgeShouldAddEdgeToDestinationMapping() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -119,7 +119,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void addEdgeShouldAddEvidenceIfMappingAlreadyExistWithDifferentAccessPoint() {
+    void addEdgeShouldAddEvidenceIfMappingAlreadyExistWithDifferentAccessPoint() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -130,7 +130,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void addEdgeShouldSkipIfMappingAlreadyExistWithSameAccessPoint() {
+    void addEdgeShouldSkipIfMappingAlreadyExistWithSameAccessPoint() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -142,7 +142,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void findEdgeShouldFindEdgeInExistingGraph() {
+    void findEdgeShouldFindEdgeInExistingGraph() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -158,7 +158,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void findEdgeShouldReturnEmptyIfEdgeGoesInOppositeDirection() {
+    void findEdgeShouldReturnEmptyIfEdgeGoesInOppositeDirection() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -169,7 +169,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void findEdgeShouldReturnEmptyIfEdgeDoesNotExist() {
+    void findEdgeShouldReturnEmptyIfEdgeDoesNotExist() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new EvidenceModuleDependency(m1, m2, ap1, ap2));
@@ -180,7 +180,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void dependenciesShouldReturnEmptyCollectionIfNothingConnectedToModule() {
+    void dependenciesShouldReturnEmptyCollectionIfNothingConnectedToModule() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -190,7 +190,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void dependenciesShouldReturnEmptyCollectionIfModuleNotPresent() {
+    void dependenciesShouldReturnEmptyCollectionIfModuleNotPresent() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -200,7 +200,7 @@ public class GuavaEvidenceModuleGraphTest {
     }
 
     @Test
-    public void dependenciesShouldReturnCollectionOfDependencies() {
+    void dependenciesShouldReturnCollectionOfDependencies() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addModule(m3);

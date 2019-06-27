@@ -11,14 +11,14 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DisplayName("TerminalParser")
-public class TerminalParserTest {
+class TerminalParserTest {
 
     private final TerminalParser testee = new TerminalParser();
     private final Parser<?> parser = testee.tokeniser();
 
     @Test
     @DisplayName("operators should be tokenised")
-    public void testOperatorsTokenised() {
+    void testOperatorsTokenised() {
         parser.parse("=");
         parser.parse("->");
         parser.parse("-/->");
@@ -31,7 +31,7 @@ public class TerminalParserTest {
 
     @Test
     @DisplayName("should not tokenise other special characters")
-    public void testFailOtherSpecial() {
+    void testFailOtherSpecial() {
         final String[] otherSpecial = new String[] { ">", "<->", ".", ";" };
         for (String other : otherSpecial) {
             boolean exceptionThrown = false;
@@ -46,7 +46,7 @@ public class TerminalParserTest {
 
     @Test
     @DisplayName("should tokenise keywords")
-    public void testTokeniseKeywords() {
+    void testTokeniseKeywords() {
         parser.parse("modules");
         parser.parse("rules");
         parser.parse("prefix");
@@ -57,7 +57,7 @@ public class TerminalParserTest {
 
     @Test
     @DisplayName("should tokenise identifiers")
-    public void testIdentifierTokenise() {
+    void testIdentifierTokenise() {
         parser.parse("foobar");
         parser.parse("_barfoo_");
         parser.parse("A12SDss__sdf");
@@ -65,38 +65,38 @@ public class TerminalParserTest {
 
     @Test
     @DisplayName("should tokenise quoted strings")
-    public void testTokeniseQuotes() {
+    void testTokeniseQuotes() {
         parser.parse("\"asdf\"");
         parser.parse("\"something that would not be normally parsed ---a--cc''..s12312312\\\"\"");
     }
 
     @Test
     @DisplayName("equals should parse '='")
-    public void testEqual() {
+    void testEqual() {
         assertParse(testee.equals(), "=");
     }
 
     @Test
     @DisplayName("comma should parse ','")
-    public void testComma() {
+    void testComma() {
         assertParse(testee.comma(), ",");
     }
 
     @Test
     @DisplayName("arrow should parse '->'")
-    public void testArrow() {
+    void testArrow() {
         assertParse(testee.arrow(), "->");
     }
 
     @Test
     @DisplayName("notArrow should parse '-/->'")
-    public void testNotArrow() {
+    void testNotArrow() {
         assertParse(testee.notArrow(), "-/->");
     }
 
     @Test
     @DisplayName("definedAs should parse ':'")
-    public void testDefinedAs() {
+    void testDefinedAs() {
         assertParse(testee.definedAs(), ":");
     }
 
@@ -114,61 +114,61 @@ public class TerminalParserTest {
 
     @Test
     @DisplayName("modulesPreamble should parse 'modules'")
-    public void testModulesPreamble() {
+    void testModulesPreamble() {
         assertParse(testee.modulesPreamble(), "modules");
     }
 
     @Test
     @DisplayName("rulesPreamble should parse 'rules'")
-    public void testRulesPreamble() {
+    void testRulesPreamble() {
         assertParse(testee.rulesPreamble(), "rules");
     }
 
     @Test
     @DisplayName("prefixPreamble should parse 'prefix'")
-    public void testPrefixPreamble() {
+    void testPrefixPreamble() {
         assertParse(testee.prefixPreamble(), "prefix");
     }
 
     @Test
     @DisplayName("whitelist preamble should parse 'whitelist'")
-    public void testWhiteListPreamble() {
+    void testWhiteListPreamble() {
         assertParse(testee.whiteListPreamble(), "whitelist");
     }
 
     @Test
     @DisplayName("blacklist preamble should parse 'blacklist'")
-    public void testBlackListPreamble() {
+    void testBlackListPreamble() {
         assertParse(testee.blackListPreamble(), "blacklist");
     }
 
     @Test
     @DisplayName("mode preamble should parse 'mode'")
-    public void testModePreamble() {
+    void testModePreamble() {
         assertParse(testee.modePreamble(), "mode");
     }
 
     @Test
     @DisplayName("newLine should parse '\\n'")
-    public void newLineShouldParseNewLine() {
+    void newLineShouldParseNewLine() {
         assertParse(testee.newLine(), "\n");
     }
 
     @Test
     @DisplayName("newline label should be different from literal newline")
-    public void testNewlineLabel() {
+    void testNewlineLabel() {
         assertThatCode(() -> assertParse(testee.newLine(), "")).hasMessageContaining("\\n (newline)");
     }
 
     @Test
     @DisplayName("moduleName should parse identifiers")
-    public void testModuleName() {
+    void testModuleName() {
         assertParse(testee.moduleName(), "_an_identifier");
     }
 
     @Test
     @DisplayName("stringLiteral should parse quoted string")
-    public void testStringLiteral() {
+    void testStringLiteral() {
         assertParse(testee.stringLiteral(), "\"asdfasdf121123  sdfwe{{\"");
     }
 
@@ -186,11 +186,11 @@ public class TerminalParserTest {
 
     @Test
     @DisplayName("stringLiteral should fail to parse not quote terminated string")
-    public void moduleRegexShouldFailOnNotTerminatedDoubleQuotedStringLiteral() {
+    void moduleRegexShouldFailOnNotTerminatedDoubleQuotedStringLiteral() {
         assertThrows(RuntimeException.class, () -> assertParse(testee.stringLiteral(), "\"asdfasdf121123  sdfwe{{"));
     }
 
-    public void assertParse(Parser<?> p, String source) {
+    void assertParse(Parser<?> p, String source) {
         p.from(parser, Parsers.EOF.skipMany()).parse(source);
     }
 }

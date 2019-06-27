@@ -20,7 +20,7 @@ public class StrictAnalyser implements Analyser {
         return analyseStrict(state);
     }
 
-    public static AnalyserModel.AnalysisResult analyseStrict(AnalysisState analysisState) {
+    private AnalyserModel.AnalysisResult analyseStrict(AnalysisState analysisState) {
         final ModuleGraphTransitiveClosure specTransitiveClosure = new ModuleGraphTransitiveClosure(
                 analysisState.specGraph, append(analysisState.modules, analysisState.other));
         final ModuleGraphTransitiveClosure actualTransitiveClosure = new ModuleGraphTransitiveClosure(
@@ -36,7 +36,7 @@ public class StrictAnalyser implements Analyser {
         return new AnalyserModel.AnalysisResult(dependencyViolations, noStrictDependencyViolations, metrics);
     }
 
-    private static List<AnalyserModel.EvidenceBackedViolation> getDependenciesViolations(
+    private List<AnalyserModel.EvidenceBackedViolation> getDependenciesViolations(
             List<ModuleGraphTransitiveClosure.PathDifference> differences, HWModule other,
             ModuleGraph<TrackingModuleDependency> trackingGraph) {
         final List<AnalyserModel.EvidenceBackedViolation> evidenceBackedViolations = new ArrayList<>(
@@ -51,7 +51,7 @@ public class StrictAnalyser implements Analyser {
         return evidenceBackedViolations;
     }
 
-    private static List<AnalyserModel.ModuleConnectionViolation> getNoStrictDependencyViolations(
+    private List<AnalyserModel.ModuleConnectionViolation> getNoStrictDependencyViolations(
             ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> rules, HWModule other) {
         final List<AnalyserModel.ModuleConnectionViolation> noStrictDependencyViolations = new ArrayList<>();
         for (NoStrictDependency rule : rules) {
