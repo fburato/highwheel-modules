@@ -1,7 +1,6 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure;
-import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
 import com.github.fburato.highwheelmodules.model.modules.ModuleGraph;
 import com.github.fburato.highwheelmodules.model.modules.TrackingModuleDependency;
