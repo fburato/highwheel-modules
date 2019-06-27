@@ -2,20 +2,23 @@ package com.github.fburato.highwheelmodules.core.specification.parsers;
 
 import org.jparsec.Parser;
 import org.jparsec.Parsers;
+import org.jparsec.error.ParserException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TerminalParserTest {
+@DisplayName("TerminalParser")
+class TerminalParserTest {
 
     private final TerminalParser testee = new TerminalParser();
     private final Parser<?> parser = testee.tokeniser();
 
     @Test
     @DisplayName("operators should be tokenised")
-    public void testOperatorsTokenised() {
+    void testOperatorsTokenised() {
         parser.parse("=");
         parser.parse("->");
         parser.parse("-/->");
@@ -27,7 +30,8 @@ public class TerminalParserTest {
     }
 
     @Test
-    public void shouldNotTokeniseOtherSpecialCharacters() {
+    @DisplayName("should not tokenise other special characters")
+    void testFailOtherSpecial() {
         final String[] otherSpecial = new String[] { ">", "<->", ".", ";" };
         for (String other : otherSpecial) {
             boolean exceptionThrown = false;
@@ -41,49 +45,58 @@ public class TerminalParserTest {
     }
 
     @Test
-    public void keywordsShouldBeTokenised() {
+    @DisplayName("should tokenise keywords")
+    void testTokeniseKeywords() {
         parser.parse("modules");
         parser.parse("rules");
         parser.parse("prefix");
         parser.parse("whitelist");
         parser.parse("blacklist");
+        parser.parse("mode");
     }
 
     @Test
-    public void identifiersShouldBeTokenised() {
+    @DisplayName("should tokenise identifiers")
+    void testIdentifierTokenise() {
         parser.parse("foobar");
         parser.parse("_barfoo_");
         parser.parse("A12SDss__sdf");
     }
 
     @Test
-    public void doubleQuotedStringsShouldBeTokenised() {
+    @DisplayName("should tokenise quoted strings")
+    void testTokeniseQuotes() {
         parser.parse("\"asdf\"");
         parser.parse("\"something that would not be normally parsed ---a--cc''..s12312312\\\"\"");
     }
 
     @Test
-    public void equalsShouldParseEqual() {
+    @DisplayName("equals should parse '='")
+    void testEqual() {
         assertParse(testee.equals(), "=");
     }
 
     @Test
-    public void commaShouldParseComma() {
+    @DisplayName("comma should parse ','")
+    void testComma() {
         assertParse(testee.comma(), ",");
     }
 
     @Test
-    public void arrowShouldParseArrow() {
+    @DisplayName("arrow should parse '->'")
+    void testArrow() {
         assertParse(testee.arrow(), "->");
     }
 
     @Test
-    public void notArrowShouldParseNotArrow() {
+    @DisplayName("notArrow should parse '-/->'")
+    void testNotArrow() {
         assertParse(testee.notArrow(), "-/->");
     }
 
     @Test
-    public void definedAsShouldParseColumn() {
+    @DisplayName("definedAs should parse ':'")
+    void testDefinedAs() {
         assertParse(testee.definedAs(), ":");
     }
 
@@ -100,53 +113,84 @@ public class TerminalParserTest {
     }
 
     @Test
-    public void modulesPreambleShouldParseModulesKeyword() {
+    @DisplayName("modulesPreamble should parse 'modules'")
+    void testModulesPreamble() {
         assertParse(testee.modulesPreamble(), "modules");
     }
 
     @Test
-    public void rulesPreambleShouldParseRulesKeyword() {
+    @DisplayName("rulesPreamble should parse 'rules'")
+    void testRulesPreamble() {
         assertParse(testee.rulesPreamble(), "rules");
     }
 
     @Test
-    public void prefixPreambleShouldParsePrefixKeyword() {
+    @DisplayName("prefixPreamble should parse 'prefix'")
+    void testPrefixPreamble() {
         assertParse(testee.prefixPreamble(), "prefix");
     }
 
     @Test
-    @DisplayName("whitelist preamble should parse whitelist keyword")
-    public void testWhiteListPreamble() {
+    @DisplayName("whitelist preamble should parse 'whitelist'")
+    void testWhiteListPreamble() {
         assertParse(testee.whiteListPreamble(), "whitelist");
     }
 
     @Test
-    @DisplayName("blacklist preamble should parse blacklist keyword")
-    public void testBlackListPreamble() {
+    @DisplayName("blacklist preamble should parse 'blacklist'")
+    void testBlackListPreamble() {
         assertParse(testee.blackListPreamble(), "blacklist");
     }
 
     @Test
-    public void newLineShouldParseNewLine() {
+    @DisplayName("mode preamble should parse 'mode'")
+    void testModePreamble() {
+        assertParse(testee.modePreamble(), "mode");
+    }
+
+    @Test
+    @DisplayName("newLine should parse '\\n'")
+    void newLineShouldParseNewLine() {
         assertParse(testee.newLine(), "\n");
     }
 
     @Test
-    public void moduleNameShouldParseIdentifiers() {
+    @DisplayName("newline label should be different from literal newline")
+    void testNewlineLabel() {
+        assertThatCode(() -> assertParse(testee.newLine(), "")).hasMessageContaining("\\n (newline)");
+    }
+
+    @Test
+    @DisplayName("moduleName should parse identifiers")
+    void testModuleName() {
         assertParse(testee.moduleName(), "_an_identifier");
     }
 
     @Test
-    public void moduleRegexShouldParseDoubleQuotedStringLiteral() {
+    @DisplayName("stringLiteral should parse quoted string")
+    void testStringLiteral() {
         assertParse(testee.stringLiteral(), "\"asdfasdf121123  sdfwe{{\"");
     }
 
     @Test
-    public void moduleRegexShouldFailOnNotTerminatedDoubleQuotedStringLiteral() {
+    @DisplayName("mode should parse identifier")
+    void testModeIdentifier() {
+        assertParse(testee.mode(), "STRICT");
+    }
+
+    @Test
+    @DisplayName("mode should not parse with spaces")
+    void testModeNoSpaces() {
+        assertThrows(ParserException.class, () -> assertParse(testee.mode(), "test with space"));
+    }
+
+    @Test
+    @DisplayName("stringLiteral should fail to parse not quote terminated string")
+    void moduleRegexShouldFailOnNotTerminatedDoubleQuotedStringLiteral() {
         assertThrows(RuntimeException.class, () -> assertParse(testee.stringLiteral(), "\"asdfasdf121123  sdfwe{{"));
     }
 
-    public void assertParse(Parser<?> p, String source) {
+    void assertParse(Parser<?> p, String source) {
         p.from(parser, Parsers.EOF.skipMany()).parse(source);
     }
 }

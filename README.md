@@ -23,6 +23,7 @@ Highwheel-module specification language can be described by the following gramma
 Modules ::= ["prefix:" RegexLiteral "\n"]
             ["whitelist:" RegexLiteral{, RegexLiteral} "\n"]
             ["blacklist:" RegexLiteral{, RegexLiteral} "\n"]
+            ["mode:" Mode]
             "modules:" "\n"
               { ModuleDefinition }
             "rules:" "\n"
@@ -33,6 +34,8 @@ ModuleDefinition ::= ModuleIdentifier = RegexLiteral{ , RegexLiteral } "\n"
 ModuleIdentifier ::= <java identifier>
 
 RegexLiteral ::= "<glob regex>"
+
+Mode ::= "STRICT" | "LOOSE"
 
 RuleDefinition ::= DependencyRule | NoDependencyRule | OneToManyRule | ManyToOneRule
 
@@ -147,6 +150,27 @@ and certain are not.
 It is an analysis mode suggested to ensure very specific properties in the dependency graph and not the entire
 structure of it.
 
+In order to use the loose analysis mode, specify the mode in the specification file as follows.
+
+
+```
+prefix: "com.github.fburato.highwheelmodules.core."
+mode: LOOSE
+
+modules:
+    Algorithms = "algorithms.*"
+    ExternalAdapters = "externaladapters.*"
+    Specification = "specification.*"
+    ModuleAnalyser = "analysis.*"
+    Facade = "AnalyserFacade"
+
+rules:
+    Facade -> (ModuleAnalyser, Specification, ExternalAdapters)
+    ModuleAnalyser -> Algorithms
+    Facade -/-> Algorithms
+```
+
+The default mode is `STRICT`, but the mode can be explicitly indicated with `mode: STRICT` in the same position.
 
 ## Command line tool
 
@@ -179,7 +203,6 @@ It is possible to change both the specification file and the mode with the follo
 
 * `--spec | -s`: path to the specification file to use. Add multiple of these options to include more specification
 in the analysis.
-* `--mode | -m (strict | loose)`: run strict or loose analysis.
 
 ## Highwheel modules maven plugin
 
@@ -218,7 +241,6 @@ It is possible to change the behaviour of the plugin as follows:
 relative, otherwise use the path as is if the path is absolute.
 * `-DhwmChildOnly=true`: in a multi-module build, run the analysis only on the child modules.
 * `-DhwmParentOnly=true`: in a multi-module build, run the analysis only on the parent.
-* `-DhwmAnalysisMode=(strict|loose)`: run strict or loose analysis.
 * `-DhwmEvidenceLimit=<integer>`: limit the pieces of evidence that are displayed when the analysis fails (i.e. code
 dependencies between the modules that make the dependency hold or not hold). 
 
@@ -231,7 +253,7 @@ Add the following dependency to your build/plugins section:
 <dependency>
     <groupId>com.github.fburato</groupId>
     <artifactId>highwheel-modules-maven-plugin</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.0</version>
 </dependency>
 ```
 

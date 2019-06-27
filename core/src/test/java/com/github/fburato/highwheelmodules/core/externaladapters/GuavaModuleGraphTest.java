@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GuavaModuleGraphTest {
+class GuavaModuleGraphTest {
 
     private final MutableNetwork<HWModule, ModuleDependency> graph = NetworkBuilder.directed().allowsSelfLoops(true)
             .build();
@@ -22,14 +22,14 @@ public class GuavaModuleGraphTest {
     private final ModuleDependency dep = new ModuleDependency(m1, m2);
 
     @Test
-    public void addModuleShouldAddVertexToJungGraph() {
+    void addModuleShouldAddVertexToJungGraph() {
         testee.addModule(m1);
 
         assertThat(graph.nodes()).contains(m1);
     }
 
     @Test
-    public void addModuleShouldFailIfVertexAlreadyAdded() {
+    void addModuleShouldFailIfVertexAlreadyAdded() {
         testee.addModule(m1);
         testee.addModule(m1);
 
@@ -37,7 +37,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldAddEdgeToJungGraph() {
+    void addDependencyShouldAddEdgeToJungGraph() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new ModuleDependency(m1, m2));
@@ -49,7 +49,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void addEdgeShouldFailToAddIfOneVertexDoesNotExist() {
+    void addEdgeShouldFailToAddIfOneVertexDoesNotExist() {
         testee.addModule(m1);
         testee.addDependency(new ModuleDependency(m1, m2));
 
@@ -57,7 +57,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void addEdgeShouldIncreaseCounterIfDependencyAdded() {
+    void addEdgeShouldIncreaseCounterIfDependencyAdded() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new ModuleDependency(m1, m2));
@@ -66,7 +66,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void addEdgeShouldIncreaseCounterIfDependencyAddedMoreTimes() {
+    void addEdgeShouldIncreaseCounterIfDependencyAddedMoreTimes() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new ModuleDependency(m1, m2));
@@ -76,7 +76,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void findEdgeShouldFindEdgeInExistingGraph() {
+    void findEdgeShouldFindEdgeInExistingGraph() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new ModuleDependency(m1, m2));
@@ -90,7 +90,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void findEdgeShouldReturnEmptyIfEdgeGoesInOppositeDirection() {
+    void findEdgeShouldReturnEmptyIfEdgeGoesInOppositeDirection() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new ModuleDependency(m1, m2));
@@ -101,7 +101,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void findEdgeShouldReturnEmptyIfEdgeDoesNotExist() {
+    void findEdgeShouldReturnEmptyIfEdgeDoesNotExist() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addDependency(new ModuleDependency(m1, m2));
@@ -112,7 +112,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void fanInOfModuleNotIntGraphShouldBeEmpty() {
+    void fanInOfModuleNotIntGraphShouldBeEmpty() {
         testee.addModule(m1);
 
         Optional<Integer> fanInM2 = testee.fanInOf(m2);
@@ -121,7 +121,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void fanOutOfModuleNotInGraphShouldBeEmpty() {
+    void fanOutOfModuleNotInGraphShouldBeEmpty() {
         testee.addModule(m1);
 
         Optional<Integer> fanOutM2 = testee.fanInOf(m2);
@@ -130,7 +130,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void fanInOfModuleShouldEqualTheAmountOfIncomingEdges() {
+    void fanInOfModuleShouldEqualTheAmountOfIncomingEdges() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addModule(m3);
@@ -142,7 +142,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void fanOutOfModuleShouldEqualTheAmountOfOutgoingEdges() {
+    void fanOutOfModuleShouldEqualTheAmountOfOutgoingEdges() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addModule(m3);
@@ -154,7 +154,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void fanInOfModuleShouldIgnoreMultipleCounters() {
+    void fanInOfModuleShouldIgnoreMultipleCounters() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -165,7 +165,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void fanInOfModuleShouldIgnoreSelfDependencies() {
+    void fanInOfModuleShouldIgnoreSelfDependencies() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -176,7 +176,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void fanOutOfModuleShouldIgnoreMultipleCounters() {
+    void fanOutOfModuleShouldIgnoreMultipleCounters() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -187,7 +187,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void fanOutOfModuleShouldIgnoreSelfDependencies() {
+    void fanOutOfModuleShouldIgnoreSelfDependencies() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -198,7 +198,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void dependenciesShouldReturnEmptyCollectionIfNothingConnectedToModule() {
+    void dependenciesShouldReturnEmptyCollectionIfNothingConnectedToModule() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -208,7 +208,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void dependenciesShouldReturnEmptyCollectionIfModuleNotPresent() {
+    void dependenciesShouldReturnEmptyCollectionIfModuleNotPresent() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -218,7 +218,7 @@ public class GuavaModuleGraphTest {
     }
 
     @Test
-    public void dendenciesShouldReturnCollectionOfDependencies() {
+    void dendenciesShouldReturnCollectionOfDependencies() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addModule(m3);

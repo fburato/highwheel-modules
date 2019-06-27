@@ -5,11 +5,13 @@ whitelist:
 blacklist:
     "com.pitest.highwheel.", "bar"
 
+mode: SOMETHING
+
 modules:
-    Core = "core.*" , "core2.*"
-    Utils = "utils.*"
-    Modules = "modules.*"
-    Parser = "parser.*"
+    Core = "com.pitest.highwheel.core.*" , "com.pitest.highwheel.core2.*"
+    Utils = "com.pitest.highwheel.utils.*"
+    Modules = "com.pitest.highwheel.modules.*"
+    Parser = "com.pitest.highwheel.parser.*"
 rules:
     Parser -> Core -> Utils
     Utils -/-> Core

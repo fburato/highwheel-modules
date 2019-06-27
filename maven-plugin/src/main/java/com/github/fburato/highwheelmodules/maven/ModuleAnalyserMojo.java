@@ -173,9 +173,6 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     @Parameter(property = "hwmSpecFiles", defaultValue = "spec.hwm")
     private String specFile;
 
-    @Parameter(property = "hwmAnalysisMode", defaultValue = "strict")
-    private String analysisMode;
-
     @Parameter(property = "hwmEvidenceLimit", defaultValue = "5")
     private int evidenceLimit;
 
@@ -202,8 +199,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
             evidenceLimit = Integer.MAX_VALUE;
         }
         final List<String> roots = getRootsForProject(packaging);
-        final AnalyserFacade.ExecutionMode executionMode = getExecutionMode(analysisMode);
-        analyse(roots, executionMode, specFile);
+        analyse(roots, specFile);
     }
 
     private List<String> getRootsForProject(final String packaging) {
@@ -229,24 +225,12 @@ public class ModuleAnalyserMojo extends AbstractMojo {
         return project.getBuild().getOutputDirectory();
     }
 
-    private AnalyserFacade.ExecutionMode getExecutionMode(String analysisMode) throws MojoExecutionException {
-        if (Objects.equals(analysisMode, "strict")) {
-            return AnalyserFacade.ExecutionMode.STRICT;
-        } else if (Objects.equals(analysisMode, "loose")) {
-            return AnalyserFacade.ExecutionMode.LOOSE;
-        } else {
-            throw new MojoExecutionException("Parameter 'analysisMode' needs to be either 'strict' or 'loose''");
-        }
-    }
-
-    private void analyse(List<String> roots, AnalyserFacade.ExecutionMode executionMode, String specFilePath)
-            throws MojoFailureException {
+    private void analyse(List<String> roots, String specFilePath) throws MojoFailureException {
         try {
             final AnalyserFacade.Printer printer = new MavenPrinter();
             final AnalyserFacade facade = new AnalyserFacade(printer, new MavenPathEventSink(), new MavenMeasureSink(),
                     new MavenStrictAnalysisSink(), new MavenLooseAnalysisEventSink());
-            facade.runAnalysis(roots, Arrays.asList(specFilePath.split(",")), executionMode,
-                    Optional.of(evidenceLimit));
+            facade.runAnalysis(roots, Arrays.asList(specFilePath.split(",")), Optional.of(evidenceLimit));
         } catch (Exception e) {
             throw new MojoFailureException("Error during analysis: " + e.getMessage());
         }

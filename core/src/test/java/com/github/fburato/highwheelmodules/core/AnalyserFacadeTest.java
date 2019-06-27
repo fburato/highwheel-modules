@@ -16,9 +16,9 @@ import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-public class AnalyserFacadeTest {
+@DisplayName("AnalyserFacade runAnalysis")
+class AnalyserFacadeTest {
     private final List<String> accumulator = new ArrayList<>();
 
     private AnalyserFacade.Printer printer = spy(new FacadeTestUtils.AccumulatorPrinter(accumulator));
@@ -62,8 +62,7 @@ public class AnalyserFacadeTest {
             Arrays.asList("src", "test", "resources", "wrong-loose-spec.hwm"));
 
     @BeforeEach
-    public void setUp() {
-        initMocks(this);
+    void setUp() {
         testee = new AnalyserFacade(printer, pathEventSink, measureEventSink, strictAnalysisEventSink,
                 looseAnalysisEventSink);
     }
@@ -72,7 +71,7 @@ public class AnalyserFacadeTest {
 
         private final String regex;
 
-        public CollectionContains(String regex) {
+        CollectionContains(String regex) {
             this.regex = regex;
         }
 
@@ -87,11 +86,11 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void shouldPrintAsInfoJarsThatArePassedAsArgument() {
+    @DisplayName("should print as info jars that are passed as argument")
+    void testPrintJar() {
         assertThrows(AnalyserException.class, () -> {
             try {
-                testee.runAnalysis(Collections.singletonList(jarPath), one(defaultSpec),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+                testee.runAnalysis(Collections.singletonList(jarPath), one(defaultSpec), Optional.empty());
             } finally {
                 verify(pathEventSink).jars(argThat(anyMatches(".*highwheel-model\\.jar.*")));
             }
@@ -99,18 +98,18 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void shouldPrintAsInfoDirectoriesThatPassedAsArgument() {
-        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec),
-                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+    @DisplayName("should print as info directories passed as argument")
+    void testPrintDirectories() {
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec), Optional.empty());
         verify(pathEventSink).directories(argThat(anyMatches(".*test-classes.*org.*")));
     }
 
     @Test
-    public void shouldPrintAsIgnoredFileThatDoNotExist() {
+    @DisplayName("should print ignored files that do not exist as info")
+    void testPrintIgnoredFiles() {
         assertThrows(AnalyserException.class, () -> {
             try {
-                testee.runAnalysis(Collections.singletonList("foobar"), one(defaultSpec),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+                testee.runAnalysis(Collections.singletonList("foobar"), one(defaultSpec), Optional.empty());
             } finally {
                 verify(pathEventSink).ignoredPaths(argThat(anyMatches(".*foobar.*")));
             }
@@ -118,26 +117,27 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void shouldPrintAsInfoJarsDiresAndIgnored() {
-        testee.runAnalysis(Arrays.asList(jarPath, orgExamplePath, "foobar"), one(defaultSpec),
-                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+    @DisplayName("should print ignored directories and jars as info")
+    void testPrintIgnoredJarAndDirs() {
+        testee.runAnalysis(Arrays.asList(jarPath, orgExamplePath, "foobar"), one(defaultSpec), Optional.empty());
         verify(pathEventSink).jars(argThat(anyMatches(".*highwheel-model\\.jar.*")));
         verify(pathEventSink).directories(argThat(anyMatches(".*test-classes.*org.*")));
         verify(pathEventSink).ignoredPaths(argThat(anyMatches(".*foobar.*")));
     }
 
     @Test
-    public void shoulFailIfSpecificationFileDoesNotExist() {
-        assertThrows(AnalyserException.class, () -> testee.runAnalysis(Collections.singletonList(orgExamplePath),
-                one("foobar"), AnalyserFacade.ExecutionMode.STRICT, Optional.empty()));
+    @DisplayName("should fail if specification does not exist")
+    void testFailOnNotExistingSpec() {
+        assertThrows(AnalyserException.class,
+                () -> testee.runAnalysis(Collections.singletonList(orgExamplePath), one("foobar"), Optional.empty()));
     }
 
     @Test
-    public void shouldFailIfParsingFails() {
+    @DisplayName("should fail on parse failure")
+    void shouldFailIfParsingFails() {
         assertThrows(ParserException.class, () -> {
             try {
-                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongSpec),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+                testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongSpec), Optional.empty());
             } finally {
                 verify(printer).info(matches(".*Compiling specification.*"));
             }
@@ -145,11 +145,12 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void shouldFailIfCompilationFails() {
+    @DisplayName("should fail on compilation failure")
+    void shouldFailIfCompilationFails() {
         assertThrows(CompilerException.class, () -> {
             try {
                 testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongSemanticsSpec),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+                        Optional.empty());
             } finally {
                 verify(printer).info(matches(".*Compiling specification.*"));
             }
@@ -157,29 +158,28 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void strictAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
-        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec),
-                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+    @DisplayName("should produce strict analysis output on strict specification")
+    void strictAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec), Optional.empty());
         verify(strictAnalysisEventSink).dependenciesCorrect();
         verify(strictAnalysisEventSink).directDependenciesCorrect();
     }
 
     @Test
-    @DisplayName("strict analysis should consider white and blacklist")
+    @DisplayName("should produce strict analysis output with white and blacklist specification")
     void testStrictWhiteBlack() {
-        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpecWhiteBlack),
-                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpecWhiteBlack), Optional.empty());
         verify(strictAnalysisEventSink).dependenciesCorrect();
         verify(strictAnalysisEventSink).directDependenciesCorrect();
     }
 
     @Test
-    @DisplayName("strict analysis should fail with white and blacklist")
+    @DisplayName("should fail on strict analysis with white and blacklist")
     void testWrongStrictWhiteBlack() {
         assertThrows(AnalyserException.class, () -> {
             try {
                 testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongSpecWhiteBlack),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+                        Optional.empty());
             } finally {
                 verify(strictAnalysisEventSink).dependencyViolationsPresent();
                 verify(strictAnalysisEventSink).dependencyViolation("Main", "Facade",
@@ -190,29 +190,28 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void looseAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
-        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpec),
-                AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
+    @DisplayName("should produce loose output when no violation occurs")
+    void looseAnalysisShouldProduceTheExpectedOutputWhenThereAreNoViolation() {
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpec), Optional.empty());
         verify(looseAnalysisEventSink).allDependenciesPresent();
         verify(looseAnalysisEventSink).noUndesiredDependencies();
     }
 
     @Test
-    @DisplayName("loose analysis should consider white and blacklist")
-    public void testLooseWhiteBlack() {
-        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpecWhiteBlack),
-                AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
+    @DisplayName("should produce loose analysis output with white and blacklist")
+    void testLooseWhiteBlack() {
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpecWhiteBlack), Optional.empty());
         verify(looseAnalysisEventSink).allDependenciesPresent();
         verify(looseAnalysisEventSink).noUndesiredDependencies();
     }
 
     @Test
-    @DisplayName("loose analysis should fail with white and blacklist")
-    public void testWrongLooseWhiteBlack() {
+    @DisplayName("should fail on loose analysis output with white and blacklist")
+    void testWrongLooseWhiteBlack() {
         assertThrows(AnalyserException.class, () -> {
             try {
                 testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wronglooseSpecWhiteBlack),
-                        AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
+                        Optional.empty());
             } finally {
                 verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
                 verify(looseAnalysisEventSink).absentDependencyViolation("Main", "Controller");
@@ -221,9 +220,9 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void strictAnalysisShouldProduceMetrics() {
-        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec),
-                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+    @DisplayName("should produce metrics on strict analysis")
+    void testMetricsStrict() {
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(defaultSpec), Optional.empty());
         verifyStrictMetrics();
     }
 
@@ -239,9 +238,9 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void looseAnalysisShouldProduceMetrics() {
-        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpec),
-                AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
+    @DisplayName("should produce metrics on loose analysis")
+    void looseAnalysisShouldProduceMetrics() {
+        testee.runAnalysis(Collections.singletonList(orgExamplePath), one(looseSpec), Optional.empty());
         verifyLooseMetrics();
     }
 
@@ -257,11 +256,12 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void strictAnalysisShouldFailAndPrintTheViolations() {
+    @DisplayName("should print violations on failed strict analysis")
+    void testViolationsStrict() {
         assertThrows(AnalyserException.class, () -> {
             try {
                 testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongStrictDefinitionSpec),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+                        Optional.empty());
             } finally {
                 verify(strictAnalysisEventSink).dependencyViolationsPresent();
                 verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(),
@@ -279,11 +279,12 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void strictAnalysisShouldFailAndPrintLimitedViolations() {
+    @DisplayName("should fail and limit the violations on strict analysis")
+    void testLimitViolationStrict() {
         assertThrows(AnalyserException.class, () -> {
             try {
                 testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongStrictDefinitionSpec),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.of(1));
+                        Optional.of(1));
             } finally {
                 verify(strictAnalysisEventSink).dependencyViolationsPresent();
                 verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", Collections.emptyList(),
@@ -296,11 +297,12 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void looseAnalysisShouldFailAndPrintTheViolations() {
+    @DisplayName("should fail and print the violations on loose analysis")
+    void testLimitViolationLoose() {
         assertThrows(AnalyserException.class, () -> {
             try {
                 testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongLooseDefinitionSpec),
-                        AnalyserFacade.ExecutionMode.LOOSE, Optional.empty());
+                        Optional.empty());
             } finally {
                 verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
                 verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent();
@@ -315,11 +317,12 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void looseAnalysisShouldFailAndPrintLimitedViolations() {
+    @DisplayName("should fail and limit the violations on loose analysis")
+    void testLooseLimitEvidence() {
         assertThrows(AnalyserException.class, () -> {
             try {
                 testee.runAnalysis(Collections.singletonList(orgExamplePath), one(wrongLooseDefinitionSpec),
-                        AnalyserFacade.ExecutionMode.LOOSE, Optional.of(1));
+                        Optional.of(1));
             } finally {
                 verify(looseAnalysisEventSink).absentDependencyViolationsPresent();
                 verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent();
@@ -336,11 +339,11 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void strictAnalysisShouldFailIfAnyOfTheSpecsDoesNotCompile() {
+    @DisplayName("should fail if any of the specifications does not compile on strict")
+    void testManyNotCompileStrict() {
         assertThrows(ParserException.class, () -> {
             try {
-                testee.runAnalysis(one(orgExamplePath), Arrays.asList(defaultSpec, wrongSpec),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+                testee.runAnalysis(one(orgExamplePath), Arrays.asList(defaultSpec, wrongSpec), Optional.empty());
             } finally {
                 assertThat(accumulator).containsExactly("IGNORED_PATHS - ", "DIRECTORIES - 1", "JARS - ",
                         "INFO - Compiling specification '" + defaultSpec + "'", "INFO - Done!",
@@ -350,9 +353,9 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void strictAnalysisShouldCompleteAllSpecificationSuccessfully() {
-        testee.runAnalysis(one(orgExamplePath), Arrays.asList(defaultSpec, alternativeStrictSpec),
-                AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+    @DisplayName("should analyse all specifications successfully on strict analysis")
+    void testAnalyseManyStrict() {
+        testee.runAnalysis(one(orgExamplePath), Arrays.asList(defaultSpec, alternativeStrictSpec), Optional.empty());
         assertThat(accumulator).containsExactly("IGNORED_PATHS - ", "DIRECTORIES - 1", "JARS - ",
                 "INFO - Compiling specification '" + defaultSpec + "'", "INFO - Done!",
                 "INFO - Compiling specification '" + alternativeStrictSpec + "'", "INFO - Done!",
@@ -367,11 +370,12 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void strictAnalysisShouldFailButCompleteAnalysisIfAnyOfTheAnalysisFail() {
+    @DisplayName("should fail if one specification fails but complete successful analyses on strict")
+    void testFailOneCompleteOthersStrict() {
         assertThrows(AnalyserException.class, () -> {
             try {
                 testee.runAnalysis(one(orgExamplePath), Arrays.asList(wrongStrictDefinitionSpec, alternativeStrictSpec),
-                        AnalyserFacade.ExecutionMode.STRICT, Optional.empty());
+                        Optional.empty());
             } finally {
                 assertThat(accumulator).containsExactly("IGNORED_PATHS - ", "DIRECTORIES - 1", "JARS - ",
                         "INFO - Compiling specification '" + wrongStrictDefinitionSpec + "'", "INFO - Done!",
@@ -394,11 +398,11 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void looseAnalysisShouldFailIfAnyOfTheSpecsDoesNotCompile() {
+    @DisplayName("should fail if any of the specs does not compile in loose analysis")
+    void testFailLooseAnalysis() {
         assertThrows(ParserException.class, () -> {
             try {
-                testee.runAnalysis(one(orgExamplePath), Arrays.asList(looseSpec, wrongSpec),
-                        AnalyserFacade.ExecutionMode.LOOSE, Optional.of(0));
+                testee.runAnalysis(one(orgExamplePath), Arrays.asList(looseSpec, wrongSpec), Optional.of(0));
             } finally {
                 assertThat(accumulator).containsExactly("IGNORED_PATHS - ", "DIRECTORIES - 1", "JARS - ",
                         "INFO - Compiling specification '" + looseSpec + "'", "INFO - Done!",
@@ -408,28 +412,12 @@ public class AnalyserFacadeTest {
     }
 
     @Test
-    public void looseAnalysisShouldCompleteAllSpecificationSuccessfully() {
-        testee.runAnalysis(one(orgExamplePath), Arrays.asList(looseSpec, alternativeStrictSpec),
-                AnalyserFacade.ExecutionMode.LOOSE, Optional.of(0));
-        assertThat(accumulator).containsExactly("IGNORED_PATHS - ", "DIRECTORIES - 1", "JARS - ",
-                "INFO - Compiling specification '" + looseSpec + "'", "INFO - Done!",
-                "INFO - Compiling specification '" + alternativeStrictSpec + "'", "INFO - Done!",
-                "INFO - Starting loose analysis on '" + looseSpec + "'", "FAN_IN_OUT_MEASURE - Facade,2,3",
-                "FAN_IN_OUT_MEASURE - Utils,2,0", "FAN_IN_OUT_MEASURE - IO,1,3", "FAN_IN_OUT_MEASURE - Model,4,0",
-                "FAN_IN_OUT_MEASURE - CoreInternals,1,2", "FAN_IN_OUT_MEASURE - CoreApi,3,1",
-                "FAN_IN_OUT_MEASURE - Controller,1,1", "FAN_IN_OUT_MEASURE - Main,0,4", "ALL_DEPENDENCIES_PRESENT",
-                "NO_UNDESIRED_DEPENDENCIES", "INFO - Analysis on '" + looseSpec + "' complete",
-                "INFO - Starting loose analysis on '" + alternativeStrictSpec + "'",
-                "FAN_IN_OUT_MEASURE - Internals,1,0", "FAN_IN_OUT_MEASURE - Main,0,1", "ALL_DEPENDENCIES_PRESENT",
-                "NO_UNDESIRED_DEPENDENCIES", "INFO - Analysis on '" + alternativeStrictSpec + "' complete");
-    }
-
-    @Test
-    public void looseAnalysisShouldFailButCompleteAnalysisIfAnyOfTheAnalysisFail() {
+    @DisplayName("should fail if one specification fails but complete successful analyses on loose")
+    void looseAnalysisShouldFailButCompleteAnalysisIfAnyOfTheAnalysisFail() {
         assertThrows(AnalyserException.class, () -> {
             try {
                 testee.runAnalysis(one(orgExamplePath), Arrays.asList(wrongLooseDefinitionSpec, looseSpec),
-                        AnalyserFacade.ExecutionMode.LOOSE, Optional.of(0));
+                        Optional.of(0));
             } finally {
                 assertThat(accumulator).containsExactly("IGNORED_PATHS - ", "DIRECTORIES - 1", "JARS - ",
                         "INFO - Compiling specification '" + wrongLooseDefinitionSpec + "'", "INFO - Done!",
@@ -451,5 +439,22 @@ public class AnalyserFacadeTest {
                         "INFO - Analysis on '" + looseSpec + "' complete");
             }
         });
+    }
+
+    @Test
+    @DisplayName("should make alternate analyses successfully")
+    void testLooseStrict() {
+        testee.runAnalysis(one(orgExamplePath), Arrays.asList(looseSpec, alternativeStrictSpec), Optional.of(0));
+        assertThat(accumulator).containsExactly("IGNORED_PATHS - ", "DIRECTORIES - 1", "JARS - ",
+                "INFO - Compiling specification '" + looseSpec + "'", "INFO - Done!",
+                "INFO - Compiling specification '" + alternativeStrictSpec + "'", "INFO - Done!",
+                "INFO - Starting loose analysis on '" + looseSpec + "'", "FAN_IN_OUT_MEASURE - Facade,2,3",
+                "FAN_IN_OUT_MEASURE - Utils,2,0", "FAN_IN_OUT_MEASURE - IO,1,3", "FAN_IN_OUT_MEASURE - Model,4,0",
+                "FAN_IN_OUT_MEASURE - CoreInternals,1,2", "FAN_IN_OUT_MEASURE - CoreApi,3,1",
+                "FAN_IN_OUT_MEASURE - Controller,1,1", "FAN_IN_OUT_MEASURE - Main,0,4", "ALL_DEPENDENCIES_PRESENT",
+                "NO_UNDESIRED_DEPENDENCIES", "INFO - Analysis on '" + looseSpec + "' complete",
+                "INFO - Starting strict analysis on '" + alternativeStrictSpec + "'",
+                "FAN_IN_OUT_MEASURE - Internals,1,0", "FAN_IN_OUT_MEASURE - Main,0,1", "DEPENDENCIES_CORRECT",
+                "DIRECT_DEPENDENCIES_CORRECT", "INFO - Analysis on '" + alternativeStrictSpec + "' complete");
     }
 }

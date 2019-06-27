@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GuavaTrackingModuleGraphTest {
+class GuavaTrackingModuleGraphTest {
 
     private final MutableNetwork<HWModule, TrackingModuleDependency> graph = NetworkBuilder.directed()
             .allowsSelfLoops(true).build();
@@ -23,14 +23,14 @@ public class GuavaTrackingModuleGraphTest {
     private final AccessPoint ap3 = AccessPoint.create(ElementName.fromString("ap3"));
 
     @Test
-    public void addModuleShouldAddVertexToJungGraph() {
+    void addModuleShouldAddVertexToJungGraph() {
         testee.addModule(m1);
 
         assertThat(graph.nodes()).contains(m1);
     }
 
     @Test
-    public void addModuleShouldFailIfVertexAlreadyAdded() {
+    void addModuleShouldFailIfVertexAlreadyAdded() {
         testee.addModule(m1);
         testee.addModule(m1);
 
@@ -38,7 +38,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldCreateNewEdgeIfModulesDidNotExistAlready() {
+    void addDependencyShouldCreateNewEdgeIfModulesDidNotExistAlready() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -51,7 +51,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldMergeEvidencesFromDifferentAccessPoints() {
+    void addDependencyShouldMergeEvidencesFromDifferentAccessPoints() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -71,7 +71,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldNotAddEvidencesIfAlreadyPresent() {
+    void addDependencyShouldNotAddEvidencesIfAlreadyPresent() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -90,7 +90,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldMergeEvidencesFromSameAccessPoint() {
+    void addDependencyShouldMergeEvidencesFromSameAccessPoint() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -109,7 +109,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldKeepEvidenceSeparatedForDifferentModules() {
+    void addDependencyShouldKeepEvidenceSeparatedForDifferentModules() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addModule(m3);
@@ -129,7 +129,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void addDependencyShouldNotAddDependencyIfOneOfEdgesDoesNotExist() {
+    void addDependencyShouldNotAddDependencyIfOneOfEdgesDoesNotExist() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -140,7 +140,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void dependenciesShouldReturnAllConnectedModules() {
+    void dependenciesShouldReturnAllConnectedModules() {
         testee.addModule(m1);
         testee.addModule(m2);
         testee.addModule(m3);
@@ -154,7 +154,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void findDependencyShouldReturnExpectedDependency() {
+    void findDependencyShouldReturnExpectedDependency() {
         testee.addModule(m1);
         testee.addModule(m2);
 
@@ -167,7 +167,7 @@ public class GuavaTrackingModuleGraphTest {
     }
 
     @Test
-    public void findDependencyShouldReturnEmptyIfDependencyNotDefined() {
+    void findDependencyShouldReturnEmptyIfDependencyNotDefined() {
         testee.addModule(m1);
         testee.addModule(m2);
 

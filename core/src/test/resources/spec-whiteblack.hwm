@@ -1,6 +1,7 @@
 prefix: "org.example."
 whitelist: "org.example.*"
 blacklist: "org.example.Main", "org.example.commons.*"
+mode: STRICT
 modules:
     Main = "Main"
     Controller = "controller.*"

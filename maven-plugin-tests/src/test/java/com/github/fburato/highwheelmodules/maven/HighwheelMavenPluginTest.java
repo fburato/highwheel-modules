@@ -95,7 +95,7 @@ public class HighwheelMavenPluginTest {
 
     @Test
     public void shouldRunLooseAnalysis() {
-        verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec.hwm -DhwmAnalysisMode=loose");
+        verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec.hwm");
         final String logFile = runPluginAndReturnLog(false);
         assertThat(logFile).matches("(?s).*All dependencies specified exist.*")
                 .matches("(?s).*No dependency violation detected.*");
@@ -103,18 +103,18 @@ public class HighwheelMavenPluginTest {
 
     @Test
     public void shouldFailIfAnyOfMultipleAnalysisFails() {
-        verifier.getCliOptions().add("-DhwmSpecFiles=spec.hwm,loose-spec.hwm");
+        verifier.getCliOptions().add("-DhwmSpecFiles=spec.hwm,loose-spec-strict-mode.hwm");
         final String logFile = runPluginAndReturnLog(true);
         assertThat(logFile).matches("(?s).*Starting strict analysis on.*spec.hwm'.*"
                 + "No dependency violation detected.*" + "No direct dependency violation detected.*"
-                + "Analysis on .*spec.hwm.* complete.*" + "Starting strict analysis on .*loose-spec.hwm.*"
+                + "Analysis on .*spec.hwm.* complete.*" + "Starting strict analysis on .*loose-spec-strict-mode.hwm.*"
                 + "The following dependencies violate the specification:.*"
-                + "No direct dependency violation detected.*" + "Analysis on .*loose-spec.hwm.* failed.*");
+                + "No direct dependency violation detected.*" + "Analysis on .*loose-spec-strict-mode.hwm.* failed.*");
     }
 
     @Test
     public void shouldReportEvidenceInCaseOfFailure() {
-        verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec.hwm");
+        verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec-strict-mode.hwm");
         final String logFile = runPluginAndReturnLog(true);
         assertThat(logFile).matches(
                 "(?s).*Facade -> Utils. Expected path: \\(empty\\), Actual module path: Facade -> CoreInternals -> Utils.*"
@@ -124,7 +124,7 @@ public class HighwheelMavenPluginTest {
 
     @Test
     public void shouldNotReportEvidenceIfEvidenceLimitIs0() {
-        verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec.hwm  -DhwmEvidenceLimit=0");
+        verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec-strict-mode.hwm  -DhwmEvidenceLimit=0");
         final String logFile = runPluginAndReturnLog(true);
         assertThat(logFile).matches(
                 "(?s).*Facade -> Utils. Expected path: \\(empty\\), Actual module path: Facade -> CoreInternals -> Utils.*"

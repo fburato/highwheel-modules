@@ -1,3 +1,4 @@
+mode: STRICT
 modules:
     Main = "org.example.Main"
     Controller = "org.example.controller.*"

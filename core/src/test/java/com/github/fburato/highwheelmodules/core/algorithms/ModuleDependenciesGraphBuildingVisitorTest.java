@@ -17,7 +17,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("ModuleDependenciesGraphBuildingVisitor")
-public class ModuleDependenciesGraphBuildingVisitorTest {
+class ModuleDependenciesGraphBuildingVisitorTest {
 
     private final HWModule SUPER_MODULE = HWModule.make("SuperModule", "org.example.*").get();
     private final HWModule CORE = HWModule.make("Core", "org.example.core.*").get();

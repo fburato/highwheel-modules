@@ -1,5 +1,9 @@
 prefix:
     "com.pitest.highwheel."
+whitelist:
+        "com.pitest.highwheel.", "foo"
+blacklist:
+    "com.pitest.highwheel.", "bar"
 
 modules:
     Core = "com.pitest.highwheel.core.*" , "com.pitest.highwheel.core2.*"

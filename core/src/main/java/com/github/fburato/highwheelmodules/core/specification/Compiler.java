@@ -1,5 +1,6 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
+import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode;
 import com.github.fburato.highwheelmodules.model.modules.AnonymousModule;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.HWModule;
@@ -36,8 +37,9 @@ public class Compiler {
                 "Some of the whitelist regular expressions are malformed");
         final Optional<AnonymousModule> blacklist = compileRegexesOrFail(definition.blackList,
                 "Some of the blacklist regular expressions are malformed");
+        final AnalysisMode mode = compileAnalysisMode(definition.mode);
 
-        return new Definition(whitelist, blacklist, modules.values(), rules.first, rules.second);
+        return new Definition(whitelist, blacklist, mode, modules.values(), rules.first, rules.second);
     }
 
     private Optional<AnonymousModule> compileRegexesOrFail(Optional<List<String>> blackList, String failureMessage) {
@@ -146,6 +148,18 @@ public class Compiler {
                     join(" -/-> ", Arrays.asList(noDependentRule.left, noDependentRule.right))));
         } else {
             return new NoStrictDependency(modules.get(noDependentRule.left), modules.get(noDependentRule.right));
+        }
+    }
+
+    private AnalysisMode compileAnalysisMode(Optional<String> maybeMode) {
+        return maybeMode.map(this::getAnalysisModeOrFail).orElse(AnalysisMode.STRICT);
+    }
+
+    private AnalysisMode getAnalysisModeOrFail(String mode) {
+        try {
+            return AnalysisMode.valueOf(mode);
+        } catch (IllegalArgumentException e) {
+            throw new CompilerException(String.format("Mode '%s' is not supported", mode));
         }
     }
 }

@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - Unreleased
+Version `1.6.0` introduce a breaking change on the analyser behaviour. Specifically, it removes the 
+possibility to provide the analysis mode externally. The reason for this change is because an hwm specification
+is typically designed to be run with a specific mode as it is rare that the same specification is valid
+for both strict and loose. Given this strong relationship, it makes sense to have the mode of execution
+introduced in the specification itself. In order to support this feature, a new `mode` section is introduced
+in the specification language.
+
+Moreover, since spring is over, spring cleaning was overdue, and the JUnit 5 test facilities have been
+extended to most of the tests and a few more cleanup have been added.
+
+### Changed
+
+- **Remove the execution mode from AnalyserFacade**
+
+
+### Added
+
+- **`mode` section in the grammar** 
+
+
 ## [1.5.0] - 2019-04-07
 `1.5.0` is the biggest release of HWM so far. More importantly, the release is completely backward compatible,
 but huge improvements have been made to the specification grammar! The more important changes are:

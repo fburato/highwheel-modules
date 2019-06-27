@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ModuleGraphTransitiveClosureTest {
+class ModuleGraphTransitiveClosureTest {
     private final HWModule CORE = HWModule.make("Core", "org.example.core.*").get();
     private final HWModule FACADE = HWModule.make("Facade", "org.example.core.external.*").get();
     private final HWModule IO = HWModule.make("IO", "org.example.io.*").get();
@@ -28,7 +28,7 @@ public class ModuleGraphTransitiveClosureTest {
     private ModuleGraphTransitiveClosure testee;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         for (HWModule module : modules) {
             moduleGraph.addModule(module);
         }
@@ -45,7 +45,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void minimumDistanceShouldBeMaxIntForNotDependentModules() {
+    void minimumDistanceShouldBeMaxIntForNotDependentModules() {
         assertThat(testee.minimumDistance(COMMONS, COMMONS).get()).isEqualTo(Integer.MAX_VALUE);
         assertThat(testee.minimumDistance(CORE, CORE).get()).isEqualTo(Integer.MAX_VALUE);
         assertThat(testee.minimumDistance(FACADE, FACADE).get()).isEqualTo(Integer.MAX_VALUE);
@@ -72,7 +72,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void minimumDistancePathShouldBeEmptyForNotDependentModules() {
+    void minimumDistancePathShouldBeEmptyForNotDependentModules() {
         assertThat(testee.minimumDistancePath(COMMONS, COMMONS)).isEqualTo(Collections.<HWModule> emptyList());
         assertThat(testee.minimumDistancePath(CORE, CORE)).isEqualTo(Collections.<HWModule> emptyList());
         assertThat(testee.minimumDistancePath(FACADE, FACADE)).isEqualTo(Collections.<HWModule> emptyList());
@@ -99,7 +99,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void minimumDistanceShouldBeTheExpectedOneForDependentModules() {
+    void minimumDistanceShouldBeTheExpectedOneForDependentModules() {
         assertThat(testee.minimumDistance(CORE, COMMONS).get()).isEqualTo(1);
         assertThat(testee.minimumDistance(FACADE, CORE).get()).isEqualTo(1);
         assertThat(testee.minimumDistance(FACADE, COMMONS).get()).isEqualTo(2);
@@ -116,7 +116,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void minimumDistancePathShouldBeTheExpectedOneForDependentModules() {
+    void minimumDistancePathShouldBeTheExpectedOneForDependentModules() {
         assertThat(testee.minimumDistancePath(CORE, COMMONS)).isEqualTo(Collections.singletonList(COMMONS));
         assertThat(testee.minimumDistancePath(FACADE, CORE)).isEqualTo(Collections.singletonList(CORE));
         assertThat(testee.minimumDistancePath(FACADE, COMMONS)).isEqualTo(Arrays.asList(CORE, COMMONS));
@@ -133,7 +133,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void isReachableShouldBeTrueIffMinimumDistanceIsGreaterThanZero() {
+    void isReachableShouldBeTrueIffMinimumDistanceIsGreaterThanZero() {
         for (HWModule module1 : modules) {
             for (HWModule module2 : modules) {
                 assertThat(testee.isReachable(module1, module2)
@@ -145,7 +145,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void sameShouldReturnTrueOnTransitiveClosureThatAreEqual() {
+    void sameShouldReturnTrueOnTransitiveClosureThatAreEqual() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
@@ -177,7 +177,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void sameShouldReturnFalseOnTransitiveClosureWithDifferentModules() {
+    void sameShouldReturnFalseOnTransitiveClosureWithDifferentModules() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
@@ -209,7 +209,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void sameShouldReturnFalseOnTransitiveClosureWithDifferentDependencies() {
+    void sameShouldReturnFalseOnTransitiveClosureWithDifferentDependencies() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
@@ -241,7 +241,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void diffShouldReturnEmptyListOnTransitiveClosureThatAreEqual() {
+    void diffShouldReturnEmptyListOnTransitiveClosureThatAreEqual() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
@@ -273,7 +273,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void diffShouldReturnEmptyOnTransitiveClosureWithDifferentModules() {
+    void diffShouldReturnEmptyOnTransitiveClosureWithDifferentModules() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
@@ -305,7 +305,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void diffShouldReturnListOfDifferencesOnTransitiveClosureWithDifferentDependencies() {
+    void diffShouldReturnListOfDifferencesOnTransitiveClosureWithDifferentDependencies() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
@@ -343,7 +343,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void diffPathShouldReturnEmptyListOnTransitiveClosureThatAreEqual() {
+    void diffPathShouldReturnEmptyListOnTransitiveClosureThatAreEqual() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
@@ -375,7 +375,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void diffPathShouldReturnEmptyOnTransitiveClosureWithDifferentModules() {
+    void diffPathShouldReturnEmptyOnTransitiveClosureWithDifferentModules() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
@@ -407,7 +407,7 @@ public class ModuleGraphTransitiveClosureTest {
     }
 
     @Test
-    public void diffPathShouldReturnListOfDifferencesOnTransitiveClosureWithDifferentDependencies() {
+    void diffPathShouldReturnListOfDifferencesOnTransitiveClosureWithDifferentDependencies() {
         final HWModule CORE_2 = HWModule.make("Core", "org.example.core.*").get();
         final HWModule FACADE_2 = HWModule.make("Facade", "org.example.core.external.*").get();
         final HWModule IO_2 = HWModule.make("IO", "org.example.io.*").get();
