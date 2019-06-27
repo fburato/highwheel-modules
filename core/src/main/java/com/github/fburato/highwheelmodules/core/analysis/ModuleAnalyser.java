@@ -30,6 +30,35 @@ public class ModuleAnalyser {
         this.factory = factory;
     }
 
+    public List<AnalyserModel.AnalysisResult> analyse(final List<Definition> definitions) {
+        if (definitions.isEmpty()) {
+            return new ArrayList<>();
+        } else {
+            final List<Pair<Analyser, AnalysisState>> analyserAndStates = getAnalysersAndStates(definitions);
+            final AccessVisitor visitor = new CompoundAccessVisitor(
+                    analyserAndStates.stream().map(p -> p.second.visitor).collect(Collectors.toList()));
+            try {
+                classParser.parse(root, visitor);
+            } catch (IOException e) {
+                throw new AnalyserException(e);
+            }
+            return analyserAndStates.stream().map(p -> p.first.analyse(p.second)).collect(Collectors.toList());
+        }
+    }
+
+    private List<Pair<Analyser, AnalysisState>> getAnalysersAndStates(final List<Definition> definitions) {
+        final DefinitionVisitor definitionVisitor = new DefinitionVisitor(factory, evidenceLimit);
+        return definitions.stream().map(d -> {
+            final AnalysisState state = definitionVisitor.getAnalysisState(d);
+            switch (d.mode) {
+            case LOOSE:
+                return Pair.<Analyser, AnalysisState> make(new LooseAnalyser(), state);
+            default:
+                return Pair.<Analyser, AnalysisState> make(new StrictAnalyser(), state);
+            }
+        }).collect(Collectors.toList());
+    }
+
     public List<AnalyserModel.AnalysisResult> analyseStrict(final List<Definition> definitions) {
         if (definitions.isEmpty()) {
             return new ArrayList<>();

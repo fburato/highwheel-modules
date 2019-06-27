@@ -15,7 +15,7 @@ import java.util.List;
 
 import static com.github.fburato.highwheelmodules.core.analysis.AnalysisUtils.*;
 
-public class LooseAnalyser {
+public class LooseAnalyser implements Analyser {
 
     public static AnalyserModel.AnalysisResult analyseLoose(AnalysisState analysisState) {
         final ModuleGraphTransitiveClosure actualTransitiveClosure = new ModuleGraphTransitiveClosure(
@@ -62,5 +62,10 @@ public class LooseAnalyser {
             }
         }
         return undesiredDependencyViolations;
+    }
+
+    @Override
+    public AnalyserModel.AnalysisResult analyse(AnalysisState state) {
+        return analyseLoose(state);
     }
 }

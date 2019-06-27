@@ -17,7 +17,7 @@ public class StrictAnalyser implements Analyser {
 
     @Override
     public AnalyserModel.AnalysisResult analyse(AnalysisState state) {
-        return null;
+        return analyseStrict(state);
     }
 
     public static AnalyserModel.AnalysisResult analyseStrict(AnalysisState analysisState) {

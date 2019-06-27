@@ -18,11 +18,6 @@ public class AnalysisState {
     public final AccessVisitor visitor;
     public final HWModule other;
 
-    public AnalysisState(MetricModuleGraph<ModuleDependency> specGraph, MetricModuleGraph<ModuleDependency> actualGraph,
-            ModuleGraph<TrackingModuleDependency> actualTrackingGraph, AccessVisitor visitor, HWModule other) {
-        this(null, null, null, specGraph, actualGraph, actualTrackingGraph, visitor, other);
-    }
-
     public AnalysisState(Collection<HWModule> modules, Collection<Dependency> dependencies,
             Collection<NoStrictDependency> noStrictDependencies, MetricModuleGraph<ModuleDependency> specGraph,
             MetricModuleGraph<ModuleDependency> actualGraph, ModuleGraph<TrackingModuleDependency> actualTrackingGraph,
