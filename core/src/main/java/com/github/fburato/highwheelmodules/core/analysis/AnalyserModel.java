@@ -1,89 +1,11 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
+import com.github.fburato.highwheelmodules.utils.Builder;
 import com.github.fburato.highwheelmodules.utils.Pair;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public interface AnalyserModel {
-
-    class DependencyViolation {
-        public final String sourceModule;
-        public final String destinationModule;
-        public final List<String> specificationPath;
-        public final List<String> actualPath;
-        public final List<List<Pair<String, String>>> evidences;
-
-        public DependencyViolation(String sourceModule, String destinationModule, List<String> specificationPath,
-                List<String> actualPath) {
-            this(sourceModule, destinationModule, specificationPath, actualPath, Collections.emptyList());
-        }
-
-        public DependencyViolation(String sourceModule, String destinationModule, List<String> specificationPath,
-                List<String> actualPath, List<List<Pair<String, String>>> evidences) {
-            this.sourceModule = sourceModule;
-            this.destinationModule = destinationModule;
-            this.specificationPath = specificationPath;
-            this.actualPath = actualPath;
-            this.evidences = evidences;
-        }
-
-        @Override
-        public String toString() {
-            return "DependencyViolation{" + "sourceModule='" + sourceModule + '\'' + ", destinationModule='"
-                    + destinationModule + '\'' + ", specificationPath=" + specificationPath + ", actualPath="
-                    + actualPath + ", evidences=" + evidences + '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-            DependencyViolation that = (DependencyViolation) o;
-            return Objects.equals(sourceModule, that.sourceModule)
-                    && Objects.equals(destinationModule, that.destinationModule)
-                    && Objects.equals(specificationPath, that.specificationPath)
-                    && Objects.equals(actualPath, that.actualPath) && Objects.equals(evidences, that.evidences);
-        }
-
-        @Override
-        public int hashCode() {
-
-            return Objects.hash(sourceModule, destinationModule, specificationPath, actualPath, evidences);
-        }
-    }
-
-    class NoStrictDependencyViolation {
-        public final String sourceModule;
-        public final String destinationModule;
-
-        public NoStrictDependencyViolation(String sourceModule, String destinationModule) {
-            this.sourceModule = sourceModule;
-            this.destinationModule = destinationModule;
-        }
-
-        @Override
-        public String toString() {
-            return sourceModule + " -/-> " + destinationModule;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-
-            NoStrictDependencyViolation that = (NoStrictDependencyViolation) o;
-
-            return Objects.equals(this.sourceModule, that.sourceModule)
-                    && Objects.equals(this.destinationModule, that.destinationModule);
-        }
-    }
 
     class Metrics {
         public final String module;
@@ -196,15 +118,107 @@ public interface AnalyserModel {
         }
     }
 
-    class StrictAnalysisResult {
-        public final Collection<DependencyViolation> dependencyViolations;
-        public final Collection<NoStrictDependencyViolation> noStrictDependencyViolations;
+    class RequiredViolation {
+        public final String sourceModule;
+        public final String destinationModule;
+        public final List<String> specificationPath;
+        public final List<String> actualPath;
+        public final List<List<Pair<String, String>>> evidences;
+
+        public RequiredViolation(String sourceModule, String destinationModule, List<String> specificationPath,
+                List<String> actualPath, List<List<Pair<String, String>>> evidences) {
+            this.sourceModule = sourceModule;
+            this.destinationModule = destinationModule;
+            this.specificationPath = specificationPath;
+            this.actualPath = actualPath;
+            this.evidences = evidences;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            RequiredViolation that = (RequiredViolation) o;
+            return Objects.equals(sourceModule, that.sourceModule)
+                    && Objects.equals(destinationModule, that.destinationModule)
+                    && Objects.equals(specificationPath, that.specificationPath)
+                    && Objects.equals(actualPath, that.actualPath) && Objects.equals(evidences, that.evidences);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(sourceModule, destinationModule, specificationPath, actualPath, evidences);
+        }
+
+        @Override
+        public String toString() {
+            return "RequiredViolation{" + "sourceModule='" + sourceModule + '\'' + ", destinationModule='"
+                    + destinationModule + '\'' + ", specificationPath=" + specificationPath + ", actualPath="
+                    + actualPath + ", evidences=" + evidences + '}';
+        }
+
+        public static class RequiredViolationBuilder extends Builder<RequiredViolation, RequiredViolationBuilder> {
+
+            public String sourceModule;
+            public String destinationModule;
+            public List<String> specificationPath;
+            public List<String> actualPath;
+            public List<List<Pair<String, String>>> evidences;
+
+            private RequiredViolationBuilder() {
+                super(RequiredViolationBuilder::new);
+            }
+
+            @Override
+            protected RequiredViolation makeValue() {
+                return new RequiredViolation(sourceModule, destinationModule, specificationPath, actualPath, evidences);
+            }
+        }
+    }
+
+    class ForbiddenViolation {
+        public final String sourceModule;
+        public final String destinationModule;
+
+        public ForbiddenViolation(String sourceModule, String destinationModule) {
+            this.sourceModule = sourceModule;
+            this.destinationModule = destinationModule;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            ForbiddenViolation that = (ForbiddenViolation) o;
+            return Objects.equals(sourceModule, that.sourceModule)
+                    && Objects.equals(destinationModule, that.destinationModule);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(sourceModule, destinationModule);
+        }
+
+        @Override
+        public String toString() {
+            return "ForbiddenViolation{" + "sourceModule='" + sourceModule + '\'' + ", destinationModule='"
+                    + destinationModule + '\'' + '}';
+        }
+    }
+
+    class AnalysisResult {
+        public final Collection<RequiredViolation> requiredViolations;
+        public final Collection<ForbiddenViolation> forbiddenViolations;
         public final Collection<Metrics> metrics;
 
-        public StrictAnalysisResult(Collection<DependencyViolation> dependencyViolations,
-                Collection<NoStrictDependencyViolation> noStrictDependencyViolations, Collection<Metrics> metrics) {
-            this.dependencyViolations = dependencyViolations;
-            this.noStrictDependencyViolations = noStrictDependencyViolations;
+        public AnalysisResult(Collection<RequiredViolation> requiredViolations,
+                Collection<ForbiddenViolation> forbiddenViolations, Collection<Metrics> metrics) {
+            this.requiredViolations = requiredViolations;
+            this.forbiddenViolations = forbiddenViolations;
             this.metrics = metrics;
         }
     }

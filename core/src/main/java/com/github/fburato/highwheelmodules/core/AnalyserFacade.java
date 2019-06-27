@@ -197,23 +197,22 @@ public class AnalyserFacade {
         return compiler.compile(definition);
     }
 
-    private boolean strictAnalysis(Pair<String, AnalyserModel.StrictAnalysisResult> pathResult) {
+    private boolean strictAnalysis(Pair<String, AnalyserModel.AnalysisResult> pathResult) {
         printer.info(String.format("Starting strict analysis on '%s'", pathResult.first));
-        final AnalyserModel.StrictAnalysisResult analysisResult = pathResult.second;
-        boolean error = !analysisResult.dependencyViolations.isEmpty()
-                || !analysisResult.noStrictDependencyViolations.isEmpty();
+        final AnalyserModel.AnalysisResult analysisResult = pathResult.second;
+        boolean error = !analysisResult.requiredViolations.isEmpty() || !analysisResult.forbiddenViolations.isEmpty();
         printMetrics(analysisResult.metrics);
-        if (analysisResult.dependencyViolations.isEmpty()) {
+        if (analysisResult.requiredViolations.isEmpty()) {
             strictAnalysisEventSink.dependenciesCorrect();
         } else {
             strictAnalysisEventSink.dependencyViolationsPresent();
-            printDependencyViolations(analysisResult.dependencyViolations);
+            printDependencyViolations(analysisResult.requiredViolations);
         }
-        if (analysisResult.noStrictDependencyViolations.isEmpty()) {
+        if (analysisResult.forbiddenViolations.isEmpty()) {
             strictAnalysisEventSink.directDependenciesCorrect();
         } else {
             strictAnalysisEventSink.noDirectDependenciesViolationPresent();
-            printNoDirectDependecyViolation(analysisResult.noStrictDependencyViolations);
+            printNoDirectDependecyViolation(analysisResult.forbiddenViolations);
         }
         if (error) {
             printer.info(String.format("Analysis on '%s' failed", pathResult.first));
@@ -255,8 +254,8 @@ public class AnalyserFacade {
         }
     }
 
-    private void printDependencyViolations(Collection<AnalyserModel.DependencyViolation> violations) {
-        for (AnalyserModel.DependencyViolation violation : violations) {
+    private void printDependencyViolations(Collection<AnalyserModel.RequiredViolation> violations) {
+        for (AnalyserModel.RequiredViolation violation : violations) {
             strictAnalysisEventSink.dependencyViolation(violation.sourceModule, violation.destinationModule,
                     appendStartIfNotEmpty(violation.specificationPath, violation.sourceModule),
                     appendStartIfNotEmpty(violation.actualPath, violation.sourceModule), violation.evidences);
@@ -274,8 +273,8 @@ public class AnalyserFacade {
         }
     }
 
-    private void printNoDirectDependecyViolation(Collection<AnalyserModel.NoStrictDependencyViolation> violations) {
-        for (AnalyserModel.NoStrictDependencyViolation violation : violations) {
+    private void printNoDirectDependecyViolation(Collection<AnalyserModel.ForbiddenViolation> violations) {
+        for (AnalyserModel.ForbiddenViolation violation : violations) {
             strictAnalysisEventSink.noDirectDependencyViolation(violation.sourceModule, violation.destinationModule);
         }
     }
