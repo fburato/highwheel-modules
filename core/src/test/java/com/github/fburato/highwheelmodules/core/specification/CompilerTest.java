@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
-import com.github.fburato.highwheelmodules.core.testutils.SyntaxTreeDefinitionBuilder;
+import com.github.fburato.highwheelmodules.core.specification.SyntaxTree.ChainDependencyRule;
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode;
 import com.github.fburato.highwheelmodules.model.modules.AnonymousModule;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
@@ -17,7 +17,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CompilerTest {
+@DisplayName("Compiler compilation")
+class CompilerTest {
 
     private final Compiler testee = new Compiler();
 
@@ -25,54 +26,72 @@ public class CompilerTest {
     private final HWModule COMMONS = HWModule.make("commons", "commons").get();
     private final HWModule MAIN = HWModule.make("main", "main").get();
     private final HWModule IO = HWModule.make("io", "io").get();
+    private final SyntaxTree.Definition.DefinitionBuilder definitionBuilder = SyntaxTree.Definition.DefinitionBuilder
+            .baseBuilder();
 
     @Test
-    public void shouldFailIfRegularExpressionFailToParse() {
+    @DisplayName("should fail of module regular expression fails to parse")
+    void testFailModuleRegex() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Collections.singletonList(new SyntaxTree.ModuleDefinition("name", "invalidregex[")),
-                    Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("name", "name")));
+            final SyntaxTree.Definition definition = definitionBuilder.with($ -> {
+                $.moduleDefinitions = Collections
+                        .singletonList(new SyntaxTree.ModuleDefinition("name", "invalidregex["));
+                $.rules = Collections.singletonList(new ChainDependencyRule("name", "name"));
+            }).build();
             testee.compile(definition);
         });
     }
 
     @Test
-    public void shouldFailIfModuleNameAppearsTwice() {
+    @DisplayName("should fail if module name appears twice")
+    void testFailRepeatedModule() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Arrays.asList(new SyntaxTree.ModuleDefinition("name", "name"),
-                            new SyntaxTree.ModuleDefinition("name", "name")),
-                    Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("name", "name")));
+            final SyntaxTree.Definition definition = definitionBuilder.with($ -> {
+                $.moduleDefinitions = Arrays.asList(new SyntaxTree.ModuleDefinition("name", "name"),
+                        new SyntaxTree.ModuleDefinition("name", "name"));
+                $.rules = Collections.singletonList(new ChainDependencyRule("name", "name"));
+            }).build();
             testee.compile(definition);
         });
     }
 
     @Test
-    public void shouldFailIfPrefixIsNotAValidRegex() {
+    @DisplayName("should fail if prefix is not a valid regex")
+    void testFailPrefixRegex() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.of("invalidRegex["),
-                    Collections.singletonList(new SyntaxTree.ModuleDefinition("name", "name")),
-                    Collections.emptyList());
+            final SyntaxTree.Definition definition = definitionBuilder.with($ -> {
+                $.prefix = Optional.of("invalidRegex[");
+                $.moduleDefinitions = Collections.singletonList(new SyntaxTree.ModuleDefinition("name", "name"));
+                $.rules = Collections.emptyList();
+            }).build();
             testee.compile(definition);
         });
     }
 
     @Test
-    public void shouldFailIfPrefixAvailableAndModuleRegexIsNotAValidRegex() {
+    @DisplayName("should fail if prefix is valid and module regex is invalid")
+    void testFailPrefixAndModuleRegex() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.of("prefix"),
-                    Collections.singletonList(new SyntaxTree.ModuleDefinition("name", "invalidRegex[")),
-                    Collections.emptyList());
+            final SyntaxTree.Definition definition = definitionBuilder.with($ -> {
+                $.prefix = Optional.of("prefix");
+                $.moduleDefinitions = Collections
+                        .singletonList(new SyntaxTree.ModuleDefinition("name", "invalidRegex["));
+                $.rules = Collections.emptyList();
+            }).build();
             testee.compile(definition);
         });
     }
 
     @Test
-    public void shouldPrefixAllModulesRegexWithPrefix() {
-        final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.of("org.example."),
-                Arrays.asList(new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*", "foobar.*")),
-                        new SyntaxTree.ModuleDefinition("Bar", "bar.*")),
-                Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("Foo", "Bar")));
+    @DisplayName("should add prefix to all modules regex")
+    void testPrependPrefix() {
+        final SyntaxTree.Definition definition = definitionBuilder.with($ -> {
+            $.prefix = Optional.of("org.example.");
+            $.moduleDefinitions = Arrays.asList(
+                    new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*", "foobar.*")),
+                    new SyntaxTree.ModuleDefinition("Bar", "bar.*"));
+            $.rules = Collections.singletonList(new ChainDependencyRule("Foo", "Bar"));
+        }).build();
 
         final Definition actual = testee.compile(definition);
         assertThat(actual.modules).containsExactlyInAnyOrder(
@@ -81,34 +100,36 @@ public class CompilerTest {
     }
 
     @Test
-    public void shouldFailIfRuleReferToNotDefinedModules() {
+    @DisplayName("should fail if rules refer to undefined modules")
+    void testFailNotAvailableModule() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Collections.singletonList(new SyntaxTree.ModuleDefinition("name", "regex")),
-                    Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("name", "name1")));
+            final SyntaxTree.Definition definition = definitionBuilder.with($ -> {
+                $.moduleDefinitions = Collections.singletonList(new SyntaxTree.ModuleDefinition("name", "regex"));
+                $.rules = Collections.singletonList(new ChainDependencyRule("name", "name1"));
+            }).build();
             testee.compile(definition);
         });
     }
 
+    private SyntaxTree.Definition.DefinitionBuilder definitionBuilderWithModules = definitionBuilder
+            .with($ -> $.moduleDefinitions = Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
+                    new SyntaxTree.ModuleDefinition("commons", "commons"),
+                    new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")));
+
     @Test
-    public void shouldReturnTheExpectedModules() {
-        final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
-                        new SyntaxTree.ModuleDefinition("commons", "commons"),
-                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
-                Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("core", "commons")));
+    @DisplayName("should return the expected modules")
+    void testExpectedModules() {
+        final SyntaxTree.Definition definition = definitionBuilderWithModules.build();
         Definition actual = testee.compile(definition);
         assertThat(actual.modules).containsExactlyInAnyOrder(CORE, COMMONS, IO, MAIN);
     }
 
     @Test
-    public void shouldConvertChainDependencyInTwoByTwoDependencies() {
-        final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
-                        new SyntaxTree.ModuleDefinition("commons", "commons"),
-                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
-                Collections.<SyntaxTree.Rule> singletonList(
-                        new SyntaxTree.ChainDependencyRule("main", "core", "commons")));
+    @DisplayName("should convert chain dependencies in two-by-two dependencies")
+    void testChainDependencyConversion() {
+        final SyntaxTree.Definition definition = definitionBuilderWithModules
+                .with($ -> $.rules = Collections.singletonList(new ChainDependencyRule("main", "core", "commons")))
+                .build();
         Definition actual = testee.compile(definition);
         assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(MAIN, CORE),
                 new Dependency(CORE, COMMONS));
@@ -117,12 +138,8 @@ public class CompilerTest {
     @Test
     @DisplayName("should convert one to many dependency in two by two dependencies")
     void testOneToManyCompile() {
-        final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
-                        new SyntaxTree.ModuleDefinition("commons", "commons"),
-                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
-                Collections.<SyntaxTree.Rule> singletonList(
-                        new SyntaxTree.OneToManyRule("main", Arrays.asList("core", "commons"))));
+        final SyntaxTree.Definition definition = definitionBuilderWithModules.with($ -> $.rules = Collections
+                .singletonList(new SyntaxTree.OneToManyRule("main", Arrays.asList("core", "commons")))).build();
         Definition actual = testee.compile(definition);
         assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(MAIN, CORE),
                 new Dependency(MAIN, COMMONS));
@@ -132,11 +149,8 @@ public class CompilerTest {
     @DisplayName("should fail to compile one to many if starting module does not exist")
     void testOneToManyFailOnStarting() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Arrays.asList(new SyntaxTree.ModuleDefinition("a", "regex1"),
-                            new SyntaxTree.ModuleDefinition("b", "regex2")),
-                    Collections.<SyntaxTree.Rule> singletonList(
-                            new SyntaxTree.OneToManyRule("c", Arrays.asList("a", "b"))));
+            final SyntaxTree.Definition definition = definitionBuilderWithModules.with($ -> $.rules = Collections
+                    .singletonList(new SyntaxTree.OneToManyRule("c", Arrays.asList("io", "core")))).build();
             testee.compile(definition);
         });
     }
@@ -145,11 +159,8 @@ public class CompilerTest {
     @DisplayName("should fail to compile one to many if any ending module does not exist")
     void testOneToManyFailOnEnding() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Arrays.asList(new SyntaxTree.ModuleDefinition("a", "regex1"),
-                            new SyntaxTree.ModuleDefinition("b", "regex2")),
-                    Collections.<SyntaxTree.Rule> singletonList(
-                            new SyntaxTree.OneToManyRule("a", Arrays.asList("b", "c"))));
+            final SyntaxTree.Definition definition = definitionBuilderWithModules.with($ -> $.rules = Collections
+                    .singletonList(new SyntaxTree.OneToManyRule("io", Arrays.asList("core", "c")))).build();
             testee.compile(definition);
         });
     }
@@ -157,12 +168,8 @@ public class CompilerTest {
     @Test
     @DisplayName("should convert many to one dependency in two by two dependencies")
     void testManyToManyCompile() {
-        final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
-                        new SyntaxTree.ModuleDefinition("commons", "commons"),
-                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
-                Collections.<SyntaxTree.Rule> singletonList(
-                        new SyntaxTree.ManyToOneRule(Arrays.asList("core", "commons"), "io")));
+        final SyntaxTree.Definition definition = definitionBuilderWithModules.with($ -> $.rules = Collections
+                .singletonList(new SyntaxTree.ManyToOneRule(Arrays.asList("core", "commons"), "io"))).build();
         Definition actual = testee.compile(definition);
         assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(CORE, IO),
                 new Dependency(COMMONS, IO));
@@ -172,11 +179,8 @@ public class CompilerTest {
     @DisplayName("should fail to compile many to one if any starting module does not exist")
     void testManyToOneFailOnStarting() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Arrays.asList(new SyntaxTree.ModuleDefinition("a", "regex1"),
-                            new SyntaxTree.ModuleDefinition("b", "regex2")),
-                    Collections.<SyntaxTree.Rule> singletonList(
-                            new SyntaxTree.ManyToOneRule(Arrays.asList("b", "c"), "a")));
+            final SyntaxTree.Definition definition = definitionBuilderWithModules.with($ -> $.rules = Collections
+                    .singletonList(new SyntaxTree.ManyToOneRule(Arrays.asList("core", "c"), "io"))).build();
             testee.compile(definition);
         });
     }
@@ -185,22 +189,17 @@ public class CompilerTest {
     @DisplayName("should fail to compile many to one if any ending module does not exist")
     void testManyToOneFailOnEnding() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                    Arrays.asList(new SyntaxTree.ModuleDefinition("a", "regex1"),
-                            new SyntaxTree.ModuleDefinition("b", "regex2")),
-                    Collections.<SyntaxTree.Rule> singletonList(
-                            new SyntaxTree.ManyToOneRule(Arrays.asList("a", "b"), "c")));
+            final SyntaxTree.Definition definition = definitionBuilderWithModules.with($ -> $.rules = Collections
+                    .singletonList(new SyntaxTree.ManyToOneRule(Arrays.asList("core", "io"), "c"))).build();
             testee.compile(definition);
         });
     }
 
     @Test
-    public void shouldConvertNoDependencyRulesAppropriately() {
-        final SyntaxTree.Definition definition = new SyntaxTree.Definition(
-                Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
-                        new SyntaxTree.ModuleDefinition("commons", "commons"),
-                        new SyntaxTree.ModuleDefinition("main", "main"), new SyntaxTree.ModuleDefinition("io", "io")),
-                Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.NoDependentRule("core", "io")));
+    @DisplayName("should convert NoDependentRule appropriately")
+    void testNoDependentRuleConversion() {
+        final SyntaxTree.Definition definition = definitionBuilderWithModules
+                .with($ -> $.rules = Collections.singletonList(new SyntaxTree.NoDependentRule("core", "io"))).build();
         Definition actual = testee.compile(definition);
         assertThat(actual.noStrictDependencies).containsExactlyInAnyOrder(new NoStrictDependency(CORE, IO));
     }
@@ -209,40 +208,40 @@ public class CompilerTest {
     @DisplayName("should fail if whitelist contains malformed regex")
     void testFailWhiteList() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.empty(),
-                    Optional.of(Arrays.asList("", "[[123")), Optional.empty(),
-                    Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
-                            new SyntaxTree.ModuleDefinition("commons", "commons"),
-                            new SyntaxTree.ModuleDefinition("main", "main"),
-                            new SyntaxTree.ModuleDefinition("io", "io")),
-                    Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.NoDependentRule("core", "io")));
+            final SyntaxTree.Definition definition = definitionBuilderWithModules
+                    .with($ -> $.whiteList = Optional.of(Arrays.asList("", "[[123"))
+
+                    ).build();
             testee.compile(definition);
         });
     }
 
     @Test
-    @DisplayName("should fail if whitelist contains malformed regex")
+    @DisplayName("should fail if blacklist contains malformed regex")
     void testFailBlacList() {
         assertThrows(CompilerException.class, () -> {
-            final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.empty(), Optional.empty(),
-                    Optional.of(Arrays.asList("dd", "", "[[1asdf   asdf")),
-                    Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
-                            new SyntaxTree.ModuleDefinition("commons", "commons"),
-                            new SyntaxTree.ModuleDefinition("main", "main"),
-                            new SyntaxTree.ModuleDefinition("io", "io")),
-                    Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.NoDependentRule("core", "io")));
+            final SyntaxTree.Definition definition = definitionBuilderWithModules
+                    .with($ -> $.blackList = Optional.of(Arrays.asList("dd", "", "[[1asdf   asdf"))
+
+                    ).build();
             testee.compile(definition);
         });
     }
 
     @Test
-    @DisplayName("should compile definition with whitelist and blacklist")
+    @DisplayName("should compile definition with whitelist, blacklist and prefix")
     void testCompileWhiteBlack() {
-        final SyntaxTree.Definition definition = new SyntaxTree.Definition(Optional.of("org.example."),
-                Optional.of(Arrays.asList("a", "b")), Optional.of(Arrays.asList("c", "d")),
-                Arrays.asList(new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*", "foobar.*")),
-                        new SyntaxTree.ModuleDefinition("Bar", "bar.*")),
-                Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("Foo", "Bar")));
+        final SyntaxTree.Definition definition = definitionBuilder.with($ -> {
+            $.prefix = Optional.of("org.example.");
+            $.whiteList = Optional.of(Arrays.asList("a", "b"));
+            $.blackList = Optional.of(Arrays.asList("c", "d"));
+            $.moduleDefinitions = Arrays.asList(
+                    new SyntaxTree.ModuleDefinition("Foo", Arrays.asList("foo.*", "foobar.*")),
+                    new SyntaxTree.ModuleDefinition("Bar", "bar.*"));
+            $.rules = Collections.singletonList(new ChainDependencyRule("Foo", "Bar"));
+        }
+
+        ).build();
         Definition actual = testee.compile(definition);
         final HWModule Foo = HWModule.make("Foo", "org.example.foo.*", "org.example.foobar.*").get();
         final HWModule Bar = HWModule.make("Bar", "org.example.bar.*").get();
@@ -252,12 +251,13 @@ public class CompilerTest {
         assertThat(actual.blackList).contains(AnonymousModule.make(Arrays.asList("c", "d")).get());
     }
 
-    private SyntaxTreeDefinitionBuilder minimumDefBuilder = SyntaxTreeDefinitionBuilder.baseBuilder().with($ -> {
-        $.moduleDefinitions = Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
-                new SyntaxTree.ModuleDefinition("commons", "commons"));
-        $.rules = Collections.<SyntaxTree.Rule> singletonList(new SyntaxTree.ChainDependencyRule("core", "commons"));
-        $.mode = Optional.of("STRICT");
-    });
+    private SyntaxTree.Definition.DefinitionBuilder minimumDefBuilder = SyntaxTree.Definition.DefinitionBuilder
+            .baseBuilder().with($ -> {
+                $.moduleDefinitions = Arrays.asList(new SyntaxTree.ModuleDefinition("core", "core"),
+                        new SyntaxTree.ModuleDefinition("commons", "commons"));
+                $.rules = Collections.singletonList(new ChainDependencyRule("core", "commons"));
+                $.mode = Optional.of("STRICT");
+            });
 
     @Test
     @DisplayName("should set mode to strict if specification does not contain mode explicitly")

@@ -1,5 +1,7 @@
 package com.github.fburato.highwheelmodules.core.specification;
 
+import com.github.fburato.highwheelmodules.utils.Builder;
+
 import java.util.*;
 
 public interface SyntaxTree {
@@ -165,19 +167,6 @@ public interface SyntaxTree {
         public final List<ModuleDefinition> moduleDefinitions;
         public final List<Rule> rules;
 
-        public Definition(List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
-            this(Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), moduleDefinitions, rules);
-        }
-
-        public Definition(Optional<String> prefix, List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
-            this(prefix, Optional.empty(), Optional.empty(), Optional.empty(), moduleDefinitions, rules);
-        }
-
-        public Definition(Optional<String> prefix, Optional<List<String>> whiteList, Optional<List<String>> blackList,
-                List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
-            this(prefix, whiteList, blackList, Optional.empty(), moduleDefinitions, rules);
-        }
-
         public Definition(Optional<String> prefix, Optional<List<String>> whiteList, Optional<List<String>> blackList,
                 Optional<String> mode, List<ModuleDefinition> moduleDefinitions, List<Rule> rules) {
             this.prefix = prefix;
@@ -209,6 +198,36 @@ public interface SyntaxTree {
         public String toString() {
             return "Definition{" + "prefix=" + prefix + ", whiteList=" + whiteList + ", blackList=" + blackList
                     + ", mode=" + mode + ", moduleDefinitions=" + moduleDefinitions + ", rules=" + rules + '}';
+        }
+
+        public static class DefinitionBuilder extends Builder<Definition, SyntaxTree.Definition.DefinitionBuilder> {
+
+            public Optional<String> prefix;
+            public Optional<List<String>> whiteList;
+            public Optional<List<String>> blackList;
+            public Optional<String> mode;
+            public List<SyntaxTree.ModuleDefinition> moduleDefinitions;
+            public List<SyntaxTree.Rule> rules;
+
+            private DefinitionBuilder() {
+                super(DefinitionBuilder::new);
+            }
+
+            @Override
+            protected SyntaxTree.Definition makeValue() {
+                return new SyntaxTree.Definition(prefix, whiteList, blackList, mode, moduleDefinitions, rules);
+            }
+
+            public static DefinitionBuilder baseBuilder() {
+                return new DefinitionBuilder().with($ -> {
+                    $.prefix = Optional.empty();
+                    $.whiteList = Optional.empty();
+                    $.blackList = Optional.empty();
+                    $.mode = Optional.empty();
+                    $.moduleDefinitions = new ArrayList<>();
+                    $.rules = new ArrayList<>();
+                });
+            }
         }
     }
 }
