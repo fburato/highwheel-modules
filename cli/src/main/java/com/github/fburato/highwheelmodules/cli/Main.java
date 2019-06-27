@@ -143,8 +143,7 @@ public class Main {
             final AnalyserFacade.Printer printer = new SystemPrinter();
             final AnalyserFacade facade = new AnalyserFacade(printer, new SystemPathEventSink(),
                     new SystemMeasureSink(), new SystemStrictAnalysisSink(), new SystemLooseAnalysisEventSink());
-            facade.runAnalysis(cmdParser.argList, cmdParser.specificationFiles, cmdParser.mode,
-                    cmdParser.evidenceLimit);
+            facade.runAnalysis(cmdParser.argList, cmdParser.specificationFiles, cmdParser.evidenceLimit);
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();

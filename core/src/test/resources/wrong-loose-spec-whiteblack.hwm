@@ -1,5 +1,6 @@
 whitelist: "org.example.*"
 blacklist: "org.example.Main", "org.example.commons.*"
+mode: LOOSE
 modules:
     Main = "org.example.Main"
     Controller = "org.example.controller.*"

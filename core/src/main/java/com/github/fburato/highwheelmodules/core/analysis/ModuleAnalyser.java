@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis;
 
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor;
+import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode;
 import com.github.fburato.highwheelmodules.model.modules.Definition;
 import com.github.fburato.highwheelmodules.model.modules.ModuleGraphFactory;
 import com.github.fburato.highwheelmodules.utils.Pair;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ModuleAnalyser {
@@ -34,29 +36,34 @@ public class ModuleAnalyser {
         if (definitions.isEmpty()) {
             return new ArrayList<>();
         } else {
-            final List<Pair<Analyser, AnalysisState>> analyserAndStates = getAnalysersAndStates(definitions);
-            final AccessVisitor visitor = new CompoundAccessVisitor(
-                    analyserAndStates.stream().map(p -> p.second.visitor).collect(Collectors.toList()));
+            final Pair<AccessVisitor, List<Supplier<AnalyserModel.AnalysisResult>>> visitorAndAnalysis = visitorAndAnalysis(
+                    definitions);
             try {
-                classParser.parse(root, visitor);
+                classParser.parse(root, visitorAndAnalysis.first);
             } catch (IOException e) {
                 throw new AnalyserException(e);
             }
-            return analyserAndStates.stream().map(p -> p.first.analyse(p.second)).collect(Collectors.toList());
+            return visitorAndAnalysis.second.stream().map(Supplier::get).collect(Collectors.toList());
         }
     }
 
-    private List<Pair<Analyser, AnalysisState>> getAnalysersAndStates(final List<Definition> definitions) {
+    private Pair<AccessVisitor, List<Supplier<AnalyserModel.AnalysisResult>>> visitorAndAnalysis(
+            final List<Definition> definitions) {
         final DefinitionVisitor definitionVisitor = new DefinitionVisitor(factory, evidenceLimit);
-        return definitions.stream().map(d -> {
-            final AnalysisState state = definitionVisitor.getAnalysisState(d);
-            switch (d.mode) {
-            case LOOSE:
-                return Pair.<Analyser, AnalysisState> make(new LooseAnalyser(), state);
-            default:
-                return Pair.<Analyser, AnalysisState> make(new StrictAnalyser(), state);
-            }
-        }).collect(Collectors.toList());
+        final List<AccessVisitor> visitors = new ArrayList<>();
+        final LooseAnalyser looseAnalyser = new LooseAnalyser();
+        final StrictAnalyser strictAnalyser = new StrictAnalyser();
+        final List<Supplier<AnalyserModel.AnalysisResult>> processors = definitions
+                .stream().<Supplier<AnalyserModel.AnalysisResult>> map(definition -> {
+                    final AnalysisState state = definitionVisitor.getAnalysisState(definition);
+                    visitors.add(state.visitor);
+                    if (definition.mode == AnalysisMode.STRICT) {
+                        return () -> strictAnalyser.analyse(state);
+                    } else {
+                        return () -> looseAnalyser.analyse(state);
+                    }
+                }).collect(Collectors.toList());
+        return Pair.make(new CompoundAccessVisitor(visitors), processors);
     }
 
     public List<AnalyserModel.AnalysisResult> analyseStrict(final List<Definition> definitions) {
