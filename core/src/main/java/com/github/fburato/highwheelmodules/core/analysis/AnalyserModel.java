@@ -45,87 +45,14 @@ public interface AnalyserModel {
         }
     }
 
-    class AbsentDependencyViolation {
-        public final String sourceModule;
-        public final String destinationModule;
-
-        public AbsentDependencyViolation(String sourceModule, String destinationModule) {
-            this.sourceModule = sourceModule;
-            this.destinationModule = destinationModule;
-        }
-
-        @Override
-        public String toString() {
-            return sourceModule + " -/-> " + destinationModule;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-
-            AbsentDependencyViolation that = (AbsentDependencyViolation) o;
-
-            return Objects.equals(this.sourceModule, that.sourceModule)
-                    && Objects.equals(this.destinationModule, that.destinationModule);
-        }
-    }
-
-    class UndesiredDependencyViolation {
-        public final String sourceModule;
-        public final String destinationModule;
-        public final List<String> moduleEvidence;
-        public final List<List<Pair<String, String>>> evidences;
-
-        public UndesiredDependencyViolation(String sourceModule, String destinationModule,
-                List<String> moduleEvidence) {
-            this(sourceModule, destinationModule, moduleEvidence, Collections.emptyList());
-        }
-
-        public UndesiredDependencyViolation(String sourceModule, String destinationModule, List<String> moduleEvidence,
-                List<List<Pair<String, String>>> evidences) {
-            this.sourceModule = sourceModule;
-            this.destinationModule = destinationModule;
-            this.moduleEvidence = moduleEvidence;
-            this.evidences = evidences;
-        }
-
-        @Override
-        public String toString() {
-            return "UndesiredDependencyViolation{" + "sourceModule='" + sourceModule + '\'' + ", destinationModule='"
-                    + destinationModule + '\'' + ", moduleEvidence=" + moduleEvidence + ", evidences=" + evidences
-                    + '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o)
-                return true;
-            if (o == null || getClass() != o.getClass())
-                return false;
-            UndesiredDependencyViolation that = (UndesiredDependencyViolation) o;
-            return Objects.equals(sourceModule, that.sourceModule)
-                    && Objects.equals(destinationModule, that.destinationModule)
-                    && Objects.equals(moduleEvidence, that.moduleEvidence) && Objects.equals(evidences, that.evidences);
-        }
-
-        @Override
-        public int hashCode() {
-
-            return Objects.hash(sourceModule, destinationModule, moduleEvidence, evidences);
-        }
-    }
-
-    class RequiredViolation {
+    class EvidenceBackedViolation {
         public final String sourceModule;
         public final String destinationModule;
         public final List<String> specificationPath;
         public final List<String> actualPath;
         public final List<List<Pair<String, String>>> evidences;
 
-        public RequiredViolation(String sourceModule, String destinationModule, List<String> specificationPath,
+        public EvidenceBackedViolation(String sourceModule, String destinationModule, List<String> specificationPath,
                 List<String> actualPath, List<List<Pair<String, String>>> evidences) {
             this.sourceModule = sourceModule;
             this.destinationModule = destinationModule;
@@ -140,7 +67,7 @@ public interface AnalyserModel {
                 return true;
             if (o == null || getClass() != o.getClass())
                 return false;
-            RequiredViolation that = (RequiredViolation) o;
+            EvidenceBackedViolation that = (EvidenceBackedViolation) o;
             return Objects.equals(sourceModule, that.sourceModule)
                     && Objects.equals(destinationModule, that.destinationModule)
                     && Objects.equals(specificationPath, that.specificationPath)
@@ -154,35 +81,17 @@ public interface AnalyserModel {
 
         @Override
         public String toString() {
-            return "RequiredViolation{" + "sourceModule='" + sourceModule + '\'' + ", destinationModule='"
+            return "EvidenceBackedViolation{" + "sourceModule='" + sourceModule + '\'' + ", destinationModule='"
                     + destinationModule + '\'' + ", specificationPath=" + specificationPath + ", actualPath="
                     + actualPath + ", evidences=" + evidences + '}';
         }
-
-        public static class RequiredViolationBuilder extends Builder<RequiredViolation, RequiredViolationBuilder> {
-
-            public String sourceModule;
-            public String destinationModule;
-            public List<String> specificationPath;
-            public List<String> actualPath;
-            public List<List<Pair<String, String>>> evidences;
-
-            private RequiredViolationBuilder() {
-                super(RequiredViolationBuilder::new);
-            }
-
-            @Override
-            protected RequiredViolation makeValue() {
-                return new RequiredViolation(sourceModule, destinationModule, specificationPath, actualPath, evidences);
-            }
-        }
     }
 
-    class ForbiddenViolation {
+    class ModuleConnectionViolation {
         public final String sourceModule;
         public final String destinationModule;
 
-        public ForbiddenViolation(String sourceModule, String destinationModule) {
+        public ModuleConnectionViolation(String sourceModule, String destinationModule) {
             this.sourceModule = sourceModule;
             this.destinationModule = destinationModule;
         }
@@ -193,7 +102,7 @@ public interface AnalyserModel {
                 return true;
             if (o == null || getClass() != o.getClass())
                 return false;
-            ForbiddenViolation that = (ForbiddenViolation) o;
+            ModuleConnectionViolation that = (ModuleConnectionViolation) o;
             return Objects.equals(sourceModule, that.sourceModule)
                     && Objects.equals(destinationModule, that.destinationModule);
         }
@@ -205,33 +114,20 @@ public interface AnalyserModel {
 
         @Override
         public String toString() {
-            return "ForbiddenViolation{" + "sourceModule='" + sourceModule + '\'' + ", destinationModule='"
+            return "ModuleConnectionViolation{" + "sourceModule='" + sourceModule + '\'' + ", destinationModule='"
                     + destinationModule + '\'' + '}';
         }
     }
 
     class AnalysisResult {
-        public final Collection<RequiredViolation> requiredViolations;
-        public final Collection<ForbiddenViolation> forbiddenViolations;
+        public final Collection<EvidenceBackedViolation> evidenceBackedViolations;
+        public final Collection<ModuleConnectionViolation> moduleConnectionViolations;
         public final Collection<Metrics> metrics;
 
-        public AnalysisResult(Collection<RequiredViolation> requiredViolations,
-                Collection<ForbiddenViolation> forbiddenViolations, Collection<Metrics> metrics) {
-            this.requiredViolations = requiredViolations;
-            this.forbiddenViolations = forbiddenViolations;
-            this.metrics = metrics;
-        }
-    }
-
-    class LooseAnalysisResult {
-        public final Collection<AbsentDependencyViolation> absentDependencyViolations;
-        public final Collection<UndesiredDependencyViolation> undesiredDependencyViolations;
-        public final Collection<Metrics> metrics;
-
-        public LooseAnalysisResult(Collection<AbsentDependencyViolation> absentDependencyViolations,
-                Collection<UndesiredDependencyViolation> undesiredDependencyViolations, Collection<Metrics> metrics) {
-            this.absentDependencyViolations = absentDependencyViolations;
-            this.undesiredDependencyViolations = undesiredDependencyViolations;
+        public AnalysisResult(Collection<EvidenceBackedViolation> evidenceBackedViolations,
+                Collection<ModuleConnectionViolation> moduleConnectionViolations, Collection<Metrics> metrics) {
+            this.evidenceBackedViolations = evidenceBackedViolations;
+            this.moduleConnectionViolations = moduleConnectionViolations;
             this.metrics = metrics;
         }
     }

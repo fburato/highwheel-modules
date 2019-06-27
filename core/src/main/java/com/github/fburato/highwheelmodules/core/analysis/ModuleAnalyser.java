@@ -77,7 +77,7 @@ public class ModuleAnalyser {
         return StrictAnalyser.analyseStrict(definition, analysisState);
     }
 
-    public List<Pair<Definition, AnalyserModel.LooseAnalysisResult>> analyseLoose(final List<Definition> definitions) {
+    public List<Pair<Definition, AnalyserModel.AnalysisResult>> analyseLoose(final List<Definition> definitions) {
         if (definitions.isEmpty()) {
             return new ArrayList<>();
         } else if (definitions.size() == 1) {
@@ -87,7 +87,7 @@ public class ModuleAnalyser {
         }
     }
 
-    private List<Pair<Definition, AnalyserModel.LooseAnalysisResult>> internalAnalyseLoose(
+    private List<Pair<Definition, AnalyserModel.AnalysisResult>> internalAnalyseLoose(
             final List<Definition> definitions) {
         final List<Pair<Definition, AnalysisState>> defVisitors = getAnalysisStates(definitions);
         final AccessVisitor visitor = new CompoundAccessVisitor(collectVisitors(defVisitors));
@@ -102,7 +102,7 @@ public class ModuleAnalyser {
                 .collect(Collectors.toList());
     }
 
-    private AnalyserModel.LooseAnalysisResult internalAnalyseLoose(final Definition definition) {
+    private AnalyserModel.AnalysisResult internalAnalyseLoose(final Definition definition) {
         final DefinitionVisitor definitionVisitor = new DefinitionVisitor(factory, evidenceLimit);
         final AnalysisState analysisState = definitionVisitor.getAnalysisState(definition);
 

@@ -9,6 +9,7 @@ import com.github.fburato.highwheelmodules.model.rules.Dependency;
 import com.github.fburato.highwheelmodules.model.rules.NoStrictDependency;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,44 +17,44 @@ import static com.github.fburato.highwheelmodules.core.analysis.AnalysisUtils.*;
 
 public class LooseAnalyser {
 
-    public static AnalyserModel.LooseAnalysisResult analyseLoose(Definition definition, AnalysisState analysisState) {
+    public static AnalyserModel.AnalysisResult analyseLoose(Definition definition, AnalysisState analysisState) {
         final ModuleGraphTransitiveClosure actualTransitiveClosure = new ModuleGraphTransitiveClosure(
                 analysisState.actualGraph, append(definition.modules, analysisState.other));
 
-        final List<AnalyserModel.AbsentDependencyViolation> absentDependencyViolations = getAbsentDependencies(
+        final List<AnalyserModel.ModuleConnectionViolation> absentDependencyViolations = getAbsentDependencies(
                 actualTransitiveClosure, definition.dependencies, analysisState.other);
-        final List<AnalyserModel.UndesiredDependencyViolation> undesiredDependencyViolations = getUndesiredDependecies(
+        final List<AnalyserModel.EvidenceBackedViolation> undesiredDependencyViolations = getUndesiredDependecies(
                 actualTransitiveClosure, definition.noStrictDependencies, analysisState.other,
                 analysisState.actualTrackingGraph);
 
-        return new AnalyserModel.LooseAnalysisResult(absentDependencyViolations, undesiredDependencyViolations,
-                getMetrics(analysisState.actualGraph, definition.modules, analysisState.actualGraph,
-                        analysisState.other));
+        return new AnalyserModel.AnalysisResult(undesiredDependencyViolations, absentDependencyViolations, getMetrics(
+                analysisState.actualGraph, definition.modules, analysisState.actualGraph, analysisState.other));
     }
 
-    private static List<AnalyserModel.AbsentDependencyViolation> getAbsentDependencies(
+    private static List<AnalyserModel.ModuleConnectionViolation> getAbsentDependencies(
             ModuleGraphTransitiveClosure transitiveClosure, Collection<Dependency> dependencies, HWModule other) {
-        final List<AnalyserModel.AbsentDependencyViolation> dependencyViolations = new ArrayList<>();
+        final List<AnalyserModel.ModuleConnectionViolation> dependencyViolations = new ArrayList<>();
         for (Dependency dependency : dependencies) {
             if (!dependency.source.equals(other) && !dependency.dest.equals(other)
                     && !transitiveClosure.isReachable(dependency.source, dependency.dest)) {
                 dependencyViolations
-                        .add(new AnalyserModel.AbsentDependencyViolation(dependency.source.name, dependency.dest.name));
+                        .add(new AnalyserModel.ModuleConnectionViolation(dependency.source.name, dependency.dest.name));
             }
         }
 
         return dependencyViolations;
     }
 
-    private static List<AnalyserModel.UndesiredDependencyViolation> getUndesiredDependecies(
+    private static List<AnalyserModel.EvidenceBackedViolation> getUndesiredDependecies(
             ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> noStrictDependencies,
             HWModule other, ModuleGraph<TrackingModuleDependency> trackingGraph) {
-        final List<AnalyserModel.UndesiredDependencyViolation> undesiredDependencyViolations = new ArrayList<>();
+        final List<AnalyserModel.EvidenceBackedViolation> undesiredDependencyViolations = new ArrayList<>();
         for (NoStrictDependency noStrictDependency : noStrictDependencies) {
             if (!noStrictDependency.source.equals(other) && !noStrictDependency.dest.equals(other)
                     && transitiveClosure.isReachable(noStrictDependency.source, noStrictDependency.dest)) {
-                undesiredDependencyViolations.add(new AnalyserModel.UndesiredDependencyViolation(
+                undesiredDependencyViolations.add(new AnalyserModel.EvidenceBackedViolation(
                         noStrictDependency.source.name, noStrictDependency.dest.name,
+                        Arrays.asList(noStrictDependency.source.name, noStrictDependency.dest.name),
                         getNames(transitiveClosure.minimumDistancePath(noStrictDependency.source,
                                 noStrictDependency.dest)),
                         getEvidence(trackingGraph, noStrictDependency.source, transitiveClosure

@@ -200,19 +200,20 @@ public class AnalyserFacade {
     private boolean strictAnalysis(Pair<String, AnalyserModel.AnalysisResult> pathResult) {
         printer.info(String.format("Starting strict analysis on '%s'", pathResult.first));
         final AnalyserModel.AnalysisResult analysisResult = pathResult.second;
-        boolean error = !analysisResult.requiredViolations.isEmpty() || !analysisResult.forbiddenViolations.isEmpty();
+        boolean error = !analysisResult.evidenceBackedViolations.isEmpty()
+                || !analysisResult.moduleConnectionViolations.isEmpty();
         printMetrics(analysisResult.metrics);
-        if (analysisResult.requiredViolations.isEmpty()) {
+        if (analysisResult.evidenceBackedViolations.isEmpty()) {
             strictAnalysisEventSink.dependenciesCorrect();
         } else {
             strictAnalysisEventSink.dependencyViolationsPresent();
-            printDependencyViolations(analysisResult.requiredViolations);
+            printDependencyViolations(analysisResult.evidenceBackedViolations);
         }
-        if (analysisResult.forbiddenViolations.isEmpty()) {
+        if (analysisResult.moduleConnectionViolations.isEmpty()) {
             strictAnalysisEventSink.directDependenciesCorrect();
         } else {
             strictAnalysisEventSink.noDirectDependenciesViolationPresent();
-            printNoDirectDependecyViolation(analysisResult.forbiddenViolations);
+            printNoDirectDependecyViolation(analysisResult.moduleConnectionViolations);
         }
         if (error) {
             printer.info(String.format("Analysis on '%s' failed", pathResult.first));
@@ -222,23 +223,23 @@ public class AnalyserFacade {
         return error;
     }
 
-    private boolean looseAnalysis(Pair<String, AnalyserModel.LooseAnalysisResult> pathResult) {
+    private boolean looseAnalysis(Pair<String, AnalyserModel.AnalysisResult> pathResult) {
         printer.info(String.format("Starting loose analysis on '%s'", pathResult.first));
-        final AnalyserModel.LooseAnalysisResult analysisResult = pathResult.second;
+        final AnalyserModel.AnalysisResult analysisResult = pathResult.second;
         printMetrics(analysisResult.metrics);
-        boolean error = !analysisResult.absentDependencyViolations.isEmpty()
-                || !analysisResult.undesiredDependencyViolations.isEmpty();
-        if (analysisResult.absentDependencyViolations.isEmpty()) {
+        boolean error = !analysisResult.moduleConnectionViolations.isEmpty()
+                || !analysisResult.evidenceBackedViolations.isEmpty();
+        if (analysisResult.moduleConnectionViolations.isEmpty()) {
             looseAnalysisEventSink.allDependenciesPresent();
         } else {
             looseAnalysisEventSink.absentDependencyViolationsPresent();
-            printAbsentDependencies(analysisResult.absentDependencyViolations);
+            printAbsentDependencies(analysisResult.moduleConnectionViolations);
         }
-        if (analysisResult.undesiredDependencyViolations.isEmpty()) {
+        if (analysisResult.evidenceBackedViolations.isEmpty()) {
             looseAnalysisEventSink.noUndesiredDependencies();
         } else {
             looseAnalysisEventSink.undesiredDependencyViolationsPresent();
-            printUndesiredDependencies(analysisResult.undesiredDependencyViolations);
+            printUndesiredDependencies(analysisResult.evidenceBackedViolations);
         }
         if (error) {
             printer.info(String.format("Analysis on '%s' failed", pathResult.first));
@@ -254,8 +255,8 @@ public class AnalyserFacade {
         }
     }
 
-    private void printDependencyViolations(Collection<AnalyserModel.RequiredViolation> violations) {
-        for (AnalyserModel.RequiredViolation violation : violations) {
+    private void printDependencyViolations(Collection<AnalyserModel.EvidenceBackedViolation> violations) {
+        for (AnalyserModel.EvidenceBackedViolation violation : violations) {
             strictAnalysisEventSink.dependencyViolation(violation.sourceModule, violation.destinationModule,
                     appendStartIfNotEmpty(violation.specificationPath, violation.sourceModule),
                     appendStartIfNotEmpty(violation.actualPath, violation.sourceModule), violation.evidences);
@@ -273,22 +274,22 @@ public class AnalyserFacade {
         }
     }
 
-    private void printNoDirectDependecyViolation(Collection<AnalyserModel.ForbiddenViolation> violations) {
-        for (AnalyserModel.ForbiddenViolation violation : violations) {
+    private void printNoDirectDependecyViolation(Collection<AnalyserModel.ModuleConnectionViolation> violations) {
+        for (AnalyserModel.ModuleConnectionViolation violation : violations) {
             strictAnalysisEventSink.noDirectDependencyViolation(violation.sourceModule, violation.destinationModule);
         }
     }
 
-    private void printAbsentDependencies(Collection<AnalyserModel.AbsentDependencyViolation> violations) {
-        for (AnalyserModel.AbsentDependencyViolation violation : violations) {
+    private void printAbsentDependencies(Collection<AnalyserModel.ModuleConnectionViolation> violations) {
+        for (AnalyserModel.ModuleConnectionViolation violation : violations) {
             looseAnalysisEventSink.absentDependencyViolation(violation.sourceModule, violation.destinationModule);
         }
     }
 
-    private void printUndesiredDependencies(Collection<AnalyserModel.UndesiredDependencyViolation> violations) {
-        for (AnalyserModel.UndesiredDependencyViolation violation : violations) {
+    private void printUndesiredDependencies(Collection<AnalyserModel.EvidenceBackedViolation> violations) {
+        for (AnalyserModel.EvidenceBackedViolation violation : violations) {
             looseAnalysisEventSink.undesiredDependencyViolation(violation.sourceModule, violation.destinationModule,
-                    appendStartIfNotEmpty(violation.moduleEvidence, violation.sourceModule), violation.evidences);
+                    appendStartIfNotEmpty(violation.actualPath, violation.sourceModule), violation.evidences);
         }
     }
 
