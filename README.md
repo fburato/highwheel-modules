@@ -224,7 +224,7 @@ mvn com.github.fburato:highwheel-modules-maven-plugin:analyse
 You can also run a specific version of the plugin without including it in your build with:
 
 ```
-mvn com.github.fburato:highwheel-modules-maven-plugin:1.5.0:analyse
+mvn com.github.fburato:highwheel-modules-maven-plugin:1.6.0:analyse
 ```
 The plugin will:
 
