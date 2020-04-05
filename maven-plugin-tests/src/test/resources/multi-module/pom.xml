@@ -27,7 +27,7 @@
             <plugin>
                 <groupId>com.github.fburato</groupId>
                 <artifactId>highwheel-modules-maven-plugin</artifactId>
-                <version>1.6.1-SNAPSHOT</version>
+                <version>1.6.2-SNAPSHOT</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
