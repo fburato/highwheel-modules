@@ -19,6 +19,7 @@
         <module>moduleA</module>
         <module>moduleB</module>
         <module>moduleC</module>
+        <module>moduleD</module>
     </modules>
     
     <build>

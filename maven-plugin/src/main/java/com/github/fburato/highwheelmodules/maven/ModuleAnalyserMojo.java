@@ -176,17 +176,25 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     @Parameter(property = "hwmEvidenceLimit", defaultValue = "5")
     private int evidenceLimit;
 
+    @Parameter(property = "hwmSkip", defaultValue = "false")
+    private boolean hwmSkip;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         final String packaging = project.getModel().getPackaging();
 
         if (packaging.equalsIgnoreCase("pom") && childOnly) {
-            this.getLog().info("Skipping pom project");
+            this.getLog().info(String.format("Skipping pom module %s for hwmChildOnly=true", project.getName()));
             return;
         }
 
         if (!packaging.equalsIgnoreCase("pom") && parentOnly) {
-            this.getLog().info("Skipping non pom project");
+            this.getLog().info(String.format("Skipping non pom module %s for hwmParentOnly=true", project.getName()));
+            return;
+        }
+
+        if (hwmSkip) {
+            this.getLog().info(String.format("Skipping module %s for hwmSkip=true", project.getName()));
             return;
         }
         final File attemptSpecFileInBuild = new File(

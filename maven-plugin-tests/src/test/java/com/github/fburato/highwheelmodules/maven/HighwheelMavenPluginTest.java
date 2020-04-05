@@ -148,7 +148,8 @@ public class HighwheelMavenPluginTest {
                         + "Starting strict analysis on.*test-classes.multi-module.spec\\.hwm.*"
                         + "Starting strict analysis on.*test-classes.multi-module.moduleA.spec\\.hwm.*"
                         + "Starting strict analysis on.*test-classes.multi-module.moduleB.spec\\.hwm.*"
-                        + "Starting strict analysis on.*test-classes.multi-module.moduleC.spec\\.hwm.*");
+                        + "Starting strict analysis on.*test-classes.multi-module.moduleC.spec\\.hwm.*"
+                        + "Skipping module moduleD for hwmSkip=true.*");
     }
 
     @Test
@@ -166,7 +167,7 @@ public class HighwheelMavenPluginTest {
                 .doesNotMatch(
                         "(?s).*Directories:.*moduleA.target.classes.*moduleB.target.classes.*moduleC.target.classes.*"
                                 + "Starting strict analysis on.*test-classes.multi-module.spec\\.hwm.*")
-                .matches("(?s).*Skipping pom project.*");
+                .matches("(?s).*Skipping pom module parentModule for hwmChildOnly=true.*");
     }
 
     @Test
@@ -183,7 +184,9 @@ public class HighwheelMavenPluginTest {
                 .doesNotMatch("(?s).*Starting strict analysis on.*test-classes.multi-module.moduleC.spec\\.hwm.*")
                 .matches("(?s).*Directories:.*moduleA.target.classes.*moduleB.target.classes.*moduleC.target.classes.*"
                         + "Starting strict analysis on.*test-classes.multi-module.spec\\.hwm.*")
-                .matches("(?s).*Skipping non pom project.*" + "Skipping non pom project.*"
-                        + "Skipping non pom project.*");
+                .matches("(?s).*Skipping non pom module moduleA for hwmParentOnly=true.*"
+                        + "Skipping non pom module moduleB for hwmParentOnly=true.*"
+                        + "Skipping non pom module moduleC for hwmParentOnly=true.*"
+                        + "Skipping non pom module moduleD for hwmParentOnly=true.*");
     }
 }
