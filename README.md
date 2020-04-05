@@ -224,7 +224,7 @@ mvn com.github.fburato:highwheel-modules-maven-plugin:analyse
 You can also run a specific version of the plugin without including it in your build with:
 
 ```
-mvn com.github.fburato:highwheel-modules-maven-plugin:1.6.0:analyse
+mvn com.github.fburato:highwheel-modules-maven-plugin:1.6.1:analyse
 ```
 The plugin will:
 
@@ -239,12 +239,15 @@ It is possible to change the behaviour of the plugin as follows:
 
 * `-DhwmSpecFiles=<comma separated list of paths to spec files>`: use the paths provided instead of `spec.hwm` from the base dir if the path is 
 relative, otherwise use the path as is if the path is absolute.
-* `-DhwmChildOnly=true`: in a multi-module build, run the analysis only on the child modules.
-* `-DhwmParentOnly=true`: in a multi-module build, run the analysis only on the parent.
+* `-DhwmChildOnly=true`: in a multi-module build, run the analysis only on the child modules (skips pom packaging modules).
+* `-DhwmParentOnly=true`: in a multi-module build, run the analysis only on the parent (skips non-pom packaging modules).
 * `-DhwmEvidenceLimit=<integer>`: limit the pieces of evidence that are displayed when the analysis fails (i.e. code
 dependencies between the modules that make the dependency hold or not hold). 
 
 In a multi-module build, the plugin will use all the child output directories as elements of the analysis.
+
+If you want to prevent one module from being analysed, add the `<hwmSkip>true</hwmSkip>` property to the configuration of the
+plugin. 
 
 ### Add the plugin to your build
 Add the following dependency to your build/plugins section:
@@ -253,7 +256,7 @@ Add the following dependency to your build/plugins section:
 <dependency>
     <groupId>com.github.fburato</groupId>
     <artifactId>highwheel-modules-maven-plugin</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
 </dependency>
 ```
 

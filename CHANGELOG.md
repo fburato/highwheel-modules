@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2020-04-05
+Version `1.6.1` introduces a new property on the maven plugin called `hwmSkip`. Once set to true for one module, 
+this property prevents the analysis from starting, allowing for a more fine grain control on what modules should
+be analysed.
+
+### Added
+
+- **`hwmSkip` property in the maven plugin** 
+
 ## [1.6.0] - 2019-07-06
 Version `1.6.0` introduces a breaking change on the analyser behaviour. Specifically, it removes the 
 possibility to provide the analysis mode externally. The reason for this change is because an hwm specification
