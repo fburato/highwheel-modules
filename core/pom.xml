@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.fburato</groupId>
         <artifactId>highwheel-modules-parent</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2-SNAPSHOT</version>
     </parent>
     <artifactId>highwheel-modules-core</artifactId>
     <name>core</name>
