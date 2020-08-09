@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2020-08-09
+Version `1.6.2` bumps the version of ASM from 7.1 to 8.0.1, which enables highwheel-modules to parse bytecode up
+to JDK 14. Please note that RecordComponents are parsed as regular classes and not as new entities, so annotation
+for Records will not appear in the dependency graphs. I'm going to add support for records once the feature has 
+stabilised sufficiently.
+
+### Added
+
+- **Support for JDK 14 bytecode**
+
+
 ## [1.6.1] - 2020-04-05
 Version `1.6.1` introduces a new property on the maven plugin called `hwmSkip`. Once set to true for one module, 
 this property prevents the analysis from starting, allowing for a more fine grain control on what modules should

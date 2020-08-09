@@ -129,7 +129,7 @@ When running on strict mode, the rules are interpreted as follows:
 * `A -> B` requires that there must exist a direct dependency between a class in module `A` and a class 
 in module `B`. The rule is violated if there is no such dependency or if `A` depends on `B` indirectly through other
 modules
-* `A -/-> B` requires that if there `B` is reachable from `A` then there is no explicit dependency between classes
+* `A -/-> B` requires that if `B` is reachable from `A` then there is no explicit dependency between classes
 of `A` and classes of `B`. The rule is violated if there is such a direct dependency.
 
 Moreover, a strict analysis fails if there are dependencies in the actual dependency graph calculated from the bytecode
@@ -256,7 +256,7 @@ Add the following dependency to your build/plugins section:
 <dependency>
     <groupId>com.github.fburato</groupId>
     <artifactId>highwheel-modules-maven-plugin</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
 </dependency>
 ```
 
