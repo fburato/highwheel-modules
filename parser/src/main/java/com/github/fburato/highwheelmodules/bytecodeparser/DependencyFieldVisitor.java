@@ -14,7 +14,7 @@ public class DependencyFieldVisitor extends FieldVisitor {
     private final AccessVisitor typeReceiver;
 
     public DependencyFieldVisitor(final AccessPoint owner, final AccessVisitor typeReceiver) {
-        super(Opcodes.ASM7, null);
+        super(Opcodes.ASM8, null);
         this.typeReceiver = typeReceiver;
         this.parent = owner;
     }

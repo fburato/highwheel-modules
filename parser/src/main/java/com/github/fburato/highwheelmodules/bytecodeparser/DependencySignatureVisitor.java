@@ -14,7 +14,7 @@ public class DependencySignatureVisitor extends SignatureVisitor {
     private final AccessType type;
 
     public DependencySignatureVisitor(final AccessPoint owner, final AccessVisitor typeReceiver, AccessType type) {
-        super(Opcodes.ASM7);
+        super(Opcodes.ASM8);
         this.typeReceiver = typeReceiver;
         this.parent = owner;
         this.type = type;
