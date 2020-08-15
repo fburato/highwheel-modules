@@ -38,6 +38,11 @@ public interface SyntaxTree {
             return Objects.equals(this.moduleName, that.moduleName)
                     && Objects.equals(this.moduleRegex, that.moduleRegex);
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(moduleName, moduleRegex);
+        }
     }
 
     interface Rule {
@@ -70,6 +75,11 @@ public interface SyntaxTree {
 
             return moduleNameChain.equals(that.moduleNameChain);
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(moduleNameChain);
+        }
     }
 
     final class NoDependentRule implements Rule {
@@ -96,6 +106,11 @@ public interface SyntaxTree {
             NoDependentRule that = (NoDependentRule) o;
 
             return Objects.equals(this.left, that.left) && Objects.equals(this.right, that.right);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(left, right);
         }
     }
 

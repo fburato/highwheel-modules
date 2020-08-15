@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 
 public final class AnonymousModule implements MatchingModule {
 
-    public final List<String> patternLiterals;
-    final List<Pattern> patterns;
+    final List<String> patternLiterals;
+    private final List<Pattern> patterns;
 
     AnonymousModule(Stream<String> patternLiteral) {
         this.patternLiterals = patternLiteral.collect(Collectors.toList());

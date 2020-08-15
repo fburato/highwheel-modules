@@ -17,17 +17,6 @@ public class Definition {
     public final Collection<Dependency> dependencies;
     public final Collection<NoStrictDependency> noStrictDependencies;
 
-    public Definition(Collection<HWModule> modules, Collection<Dependency> dependencies,
-            Collection<NoStrictDependency> noStrictDependencies) {
-        this(Optional.empty(), Optional.empty(), AnalysisMode.STRICT, modules, dependencies, noStrictDependencies);
-    }
-
-    public Definition(Optional<AnonymousModule> whitelist, Optional<AnonymousModule> blackList,
-            Collection<HWModule> modules, Collection<Dependency> dependencies,
-            Collection<NoStrictDependency> noStrictDependencies) {
-        this(whitelist, blackList, AnalysisMode.STRICT, modules, dependencies, noStrictDependencies);
-    }
-
     public Definition(Optional<AnonymousModule> whitelist, Optional<AnonymousModule> blackList, AnalysisMode mode,
             Collection<HWModule> modules, Collection<Dependency> dependencies,
             Collection<NoStrictDependency> noStrictDependencies) {

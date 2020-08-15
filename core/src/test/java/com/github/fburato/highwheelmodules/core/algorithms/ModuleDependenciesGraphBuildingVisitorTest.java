@@ -17,6 +17,7 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("ModuleDependenciesGraphBuildingVisitor")
+@SuppressWarnings("rawtypes")
 class ModuleDependenciesGraphBuildingVisitorTest {
 
     private final HWModule SUPER_MODULE = HWModule.make("SuperModule", "org.example.*").get();
@@ -93,7 +94,7 @@ class ModuleDependenciesGraphBuildingVisitorTest {
                     warningsCollector);
 
             assertThat(constructionWarnings.size()).isEqualTo(1);
-            assertThat(constructionWarnings.get(0).name).isEqualTo("Core");
+            assertThat(constructionWarnings.get(0).name()).isEqualTo("Core");
         }
     }
 

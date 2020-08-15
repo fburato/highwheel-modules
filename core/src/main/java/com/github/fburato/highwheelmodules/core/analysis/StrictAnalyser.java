@@ -42,8 +42,8 @@ public class StrictAnalyser implements Analyser {
                 differences.size());
         for (ModuleGraphTransitiveClosure.PathDifference difference : differences) {
             if (!difference.source.equals(other) && !difference.dest.equals(other)) {
-                evidenceBackedViolations.add(new AnalyserModel.EvidenceBackedViolation(difference.source.name,
-                        difference.dest.name, getNames(difference.firstPath), getNames(difference.secondPath),
+                evidenceBackedViolations.add(new AnalyserModel.EvidenceBackedViolation(difference.source.name(),
+                        difference.dest.name(), getNames(difference.firstPath), getNames(difference.secondPath),
                         getEvidence(trackingGraph, difference.source, difference.secondPath)));
             }
         }
@@ -54,10 +54,10 @@ public class StrictAnalyser implements Analyser {
             ModuleGraphTransitiveClosure transitiveClosure, Collection<NoStrictDependency> rules, HWModule other) {
         final List<AnalyserModel.ModuleConnectionViolation> noStrictDependencyViolations = new ArrayList<>();
         for (NoStrictDependency rule : rules) {
-            if (!rule.source.equals(other) && !rule.dest.equals(other)
-                    && transitiveClosure.minimumDistance(rule.source, rule.dest).get() == 1) {
+            if (!rule.source().equals(other) && !rule.dest().equals(other)
+                    && transitiveClosure.minimumDistance(rule.source(), rule.dest()).get() == 1) {
                 noStrictDependencyViolations
-                        .add(new AnalyserModel.ModuleConnectionViolation(rule.source.name, rule.dest.name));
+                        .add(new AnalyserModel.ModuleConnectionViolation(rule.source().name(), rule.dest().name()));
             }
         }
         return noStrictDependencyViolations;

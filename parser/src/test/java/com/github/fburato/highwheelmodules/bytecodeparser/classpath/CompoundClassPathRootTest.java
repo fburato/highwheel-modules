@@ -1,37 +1,26 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
-import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CompoundClassPathRootTest {
 
-    private CompoundClassPathRoot testee;
+    private final ClasspathRoot child1 = mock(ClasspathRoot.class);
 
-    @Mock
-    private ClasspathRoot child1;
+    private final ClasspathRoot child2 = mock(ClasspathRoot.class);
 
-    @Mock
-    private ClasspathRoot child2;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        this.testee = new CompoundClassPathRoot(Arrays.asList(this.child1, this.child2));
-    }
+    private final CompoundClassPathRoot testee = new CompoundClassPathRoot(Arrays.asList(this.child1, this.child2));
 
     @Test
     public void shouldReturnNamesOfAllClassesKnownByChildren() {
@@ -58,7 +47,7 @@ public class CompoundClassPathRootTest {
     @Test
     public void shouldReturnClassDataFromChildren() throws IOException {
         when(this.child1.getData(any(ElementName.class))).thenReturn(null);
-        final InputStream is = Mockito.mock(InputStream.class);
+        final InputStream is = mock(InputStream.class);
         when(this.child1.getData(any(ElementName.class))).thenReturn(is);
         assertThat(this.testee.getData(ElementName.fromString("Foo"))).isSameAs(is);
     }
@@ -66,7 +55,7 @@ public class CompoundClassPathRootTest {
     @Test
     public void shouldReturnResourcesFromChildren() throws IOException {
         when(this.child1.getResource(any(String.class))).thenReturn(null);
-        final InputStream is = Mockito.mock(InputStream.class);
+        final InputStream is = mock(InputStream.class);
         when(this.child1.getResource(any(String.class))).thenReturn(is);
         assertThat(this.testee.getResource("Foo")).isSameAs(is);
     }

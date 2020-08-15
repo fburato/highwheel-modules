@@ -208,9 +208,9 @@ class ModuleAnalyserTest {
 
             assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
             assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
-            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
-                    met(FACADE.name, 2, 3), met(COREAPI.name, 3, 1), met(COREINTERNALS.name, 1, 2), met(IO.name, 1, 3),
-                    met(MODEL.name, 4, 0), met(UTILS.name, 2, 0)));
+            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 4), met(CONTROLLER.name(), 1, 1),
+                    met(FACADE.name(), 2, 3), met(COREAPI.name(), 3, 1), met(COREINTERNALS.name(), 1, 2),
+                    met(IO.name(), 1, 3), met(MODEL.name(), 4, 0), met(UTILS.name(), 2, 0)));
         }
 
         @Test
@@ -227,9 +227,9 @@ class ModuleAnalyserTest {
 
             assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
             assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
-            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 1), met(CONTROLLER.name, 1, 0),
-                    met(FACADE.name, 0, 0), met(COREAPI.name, 0, 0), met(COREINTERNALS.name, 0, 0), met(IO.name, 0, 0),
-                    met(MODEL.name, 0, 0), met(UTILS.name, 0, 0)));
+            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 1), met(CONTROLLER.name(), 1, 0),
+                    met(FACADE.name(), 0, 0), met(COREAPI.name(), 0, 0), met(COREINTERNALS.name(), 0, 0),
+                    met(IO.name(), 0, 0), met(MODEL.name(), 0, 0), met(UTILS.name(), 0, 0)));
         }
 
         @Test
@@ -249,9 +249,9 @@ class ModuleAnalyserTest {
 
             assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
             assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
-            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
-                    met(FACADE.name, 1, 3), met(COREAPI.name, 2, 1), met(COREINTERNALS.name, 1, 1), met(IO.name, 0, 2),
-                    met(MODEL.name, 4, 0), met(UTILS.name, 0, 0)));
+            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 0), met(CONTROLLER.name(), 0, 1),
+                    met(FACADE.name(), 1, 3), met(COREAPI.name(), 2, 1), met(COREINTERNALS.name(), 1, 1),
+                    met(IO.name(), 0, 2), met(MODEL.name(), 4, 0), met(UTILS.name(), 0, 0)));
         }
 
         @Test
@@ -272,9 +272,9 @@ class ModuleAnalyserTest {
 
             assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
             assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
-            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
-                    met(FACADE.name, 1, 3), met(COREAPI.name, 2, 1), met(COREINTERNALS.name, 1, 1), met(IO.name, 0, 2),
-                    met(MODEL.name, 4, 0), met(UTILS.name, 0, 0)));
+            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 0), met(CONTROLLER.name(), 0, 1),
+                    met(FACADE.name(), 1, 3), met(COREAPI.name(), 2, 1), met(COREINTERNALS.name(), 1, 1),
+                    met(IO.name(), 0, 2), met(MODEL.name(), 4, 0), met(UTILS.name(), 0, 0)));
         }
 
         @Test
@@ -311,9 +311,9 @@ class ModuleAnalyserTest {
                     .isEqualTo(Arrays.asList(met("Main", 0, 2), met("Controllers", 1, 1), met("Facade", 2, 0)));
             assertThat(actual2.evidenceBackedViolations.isEmpty()).isTrue();
             assertThat(actual2.moduleConnectionViolations.isEmpty()).isTrue();
-            assertThat(actual2.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
-                    met(FACADE.name, 2, 3), met(COREAPI.name, 3, 1), met(COREINTERNALS.name, 1, 2), met(IO.name, 1, 3),
-                    met(MODEL.name, 4, 0), met(UTILS.name, 2, 0)));
+            assertThat(actual2.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 4), met(CONTROLLER.name(), 1, 1),
+                    met(FACADE.name(), 2, 3), met(COREAPI.name(), 3, 1), met(COREINTERNALS.name(), 1, 2),
+                    met(IO.name(), 1, 3), met(MODEL.name(), 4, 0), met(UTILS.name(), 2, 0)));
         }
     }
 
@@ -322,11 +322,11 @@ class ModuleAnalyserTest {
     }
 
     private static Dependency dep(HWModule source, HWModule dest) {
-        return new Dependency(source, dest);
+        return Dependency.make(source, dest);
     }
 
     private static NoStrictDependency noSD(HWModule source, HWModule dest) {
-        return new NoStrictDependency(source, dest);
+        return NoStrictDependency.make(source, dest);
     }
 
     private static AnalyserModel.Metrics met(String name, int fanIn, int fanOut) {
@@ -473,9 +473,9 @@ class ModuleAnalyserTest {
 
             assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
             assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
-            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
-                    met(FACADE.name, 2, 3), met(COREAPI.name, 3, 1), met(COREINTERNALS.name, 1, 2), met(IO.name, 1, 3),
-                    met(MODEL.name, 4, 0), met(UTILS.name, 2, 0)));
+            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 4), met(CONTROLLER.name(), 1, 1),
+                    met(FACADE.name(), 2, 3), met(COREAPI.name(), 3, 1), met(COREINTERNALS.name(), 1, 2),
+                    met(IO.name(), 1, 3), met(MODEL.name(), 4, 0), met(UTILS.name(), 2, 0)));
         }
 
         @Test
@@ -493,9 +493,9 @@ class ModuleAnalyserTest {
                     .get(0);
             assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
             assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
-            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
-                    met(FACADE.name, 1, 1), met(COREAPI.name, 0, 0), met(COREINTERNALS.name, 0, 0), met(IO.name, 0, 0),
-                    met(MODEL.name, 1, 0), met(UTILS.name, 0, 0)));
+            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 0), met(CONTROLLER.name(), 0, 1),
+                    met(FACADE.name(), 1, 1), met(COREAPI.name(), 0, 0), met(COREINTERNALS.name(), 0, 0),
+                    met(IO.name(), 0, 0), met(MODEL.name(), 1, 0), met(UTILS.name(), 0, 0)));
         }
 
         @Test
@@ -514,9 +514,9 @@ class ModuleAnalyserTest {
                     .get(0);
             assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
             assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
-            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
-                    met(FACADE.name, 1, 3), met(COREAPI.name, 2, 1), met(COREINTERNALS.name, 1, 1), met(IO.name, 0, 2),
-                    met(MODEL.name, 4, 0), met(UTILS.name, 0, 0)));
+            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 0), met(CONTROLLER.name(), 0, 1),
+                    met(FACADE.name(), 1, 3), met(COREAPI.name(), 2, 1), met(COREINTERNALS.name(), 1, 1),
+                    met(IO.name(), 0, 2), met(MODEL.name(), 4, 0), met(UTILS.name(), 0, 0)));
         }
 
         @Test
@@ -536,9 +536,9 @@ class ModuleAnalyserTest {
                     .get(0);
             assertThat(actual.moduleConnectionViolations.isEmpty()).isTrue();
             assertThat(actual.evidenceBackedViolations.isEmpty()).isTrue();
-            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 0), met(CONTROLLER.name, 0, 1),
-                    met(FACADE.name, 1, 3), met(COREAPI.name, 2, 1), met(COREINTERNALS.name, 1, 1), met(IO.name, 0, 2),
-                    met(MODEL.name, 4, 0), met(UTILS.name, 0, 0)));
+            assertThat(actual.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 0), met(CONTROLLER.name(), 0, 1),
+                    met(FACADE.name(), 1, 3), met(COREAPI.name(), 2, 1), met(COREINTERNALS.name(), 1, 1),
+                    met(IO.name(), 0, 2), met(MODEL.name(), 4, 0), met(UTILS.name(), 0, 0)));
         }
 
         @Test
@@ -576,9 +576,9 @@ class ModuleAnalyserTest {
                     .isEqualTo(Arrays.asList(met("Main", 0, 2), met("Controllers", 1, 1), met("Facade", 2, 0)));
             assertThat(actual2.moduleConnectionViolations.isEmpty()).isTrue();
             assertThat(actual2.evidenceBackedViolations.isEmpty()).isTrue();
-            assertThat(actual2.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
-                    met(FACADE.name, 2, 3), met(COREAPI.name, 3, 1), met(COREINTERNALS.name, 1, 2), met(IO.name, 1, 3),
-                    met(MODEL.name, 4, 0), met(UTILS.name, 2, 0)));
+            assertThat(actual2.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 4), met(CONTROLLER.name(), 1, 1),
+                    met(FACADE.name(), 2, 3), met(COREAPI.name(), 3, 1), met(COREINTERNALS.name(), 1, 2),
+                    met(IO.name(), 1, 3), met(MODEL.name(), 4, 0), met(UTILS.name(), 2, 0)));
         }
     }
 
@@ -645,9 +645,9 @@ class ModuleAnalyserTest {
                 .isEqualTo(Arrays.asList(met("Main", 0, 2), met("Controllers", 1, 1), met("Facade", 2, 0)));
         assertThat(actual2.evidenceBackedViolations.isEmpty()).isTrue();
         assertThat(actual2.moduleConnectionViolations.isEmpty()).isTrue();
-        assertThat(actual2.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
-                met(FACADE.name, 2, 3), met(COREAPI.name, 3, 1), met(COREINTERNALS.name, 1, 2), met(IO.name, 1, 3),
-                met(MODEL.name, 4, 0), met(UTILS.name, 2, 0)));
+        assertThat(actual2.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 4), met(CONTROLLER.name(), 1, 1),
+                met(FACADE.name(), 2, 3), met(COREAPI.name(), 3, 1), met(COREINTERNALS.name(), 1, 2),
+                met(IO.name(), 1, 3), met(MODEL.name(), 4, 0), met(UTILS.name(), 2, 0)));
 
         assertThat(actual3.moduleConnectionViolations)
                 .containsAll(Collections.singletonList(aDep("Controllers", "Main")));
@@ -660,9 +660,9 @@ class ModuleAnalyserTest {
                 .isEqualTo(Arrays.asList(met("Main", 0, 2), met("Controllers", 1, 1), met("Facade", 2, 0)));
         assertThat(actual4.moduleConnectionViolations.isEmpty()).isTrue();
         assertThat(actual4.evidenceBackedViolations.isEmpty()).isTrue();
-        assertThat(actual4.metrics).containsAll(Arrays.asList(met(MAIN.name, 0, 4), met(CONTROLLER.name, 1, 1),
-                met(FACADE.name, 2, 3), met(COREAPI.name, 3, 1), met(COREINTERNALS.name, 1, 2), met(IO.name, 1, 3),
-                met(MODEL.name, 4, 0), met(UTILS.name, 2, 0)));
+        assertThat(actual4.metrics).containsAll(Arrays.asList(met(MAIN.name(), 0, 4), met(CONTROLLER.name(), 1, 1),
+                met(FACADE.name(), 2, 3), met(COREAPI.name(), 3, 1), met(COREINTERNALS.name(), 1, 2),
+                met(IO.name(), 1, 3), met(MODEL.name(), 4, 0), met(UTILS.name(), 2, 0)));
     }
 
 }

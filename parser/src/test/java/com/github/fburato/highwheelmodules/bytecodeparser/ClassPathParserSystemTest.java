@@ -1,35 +1,7 @@
 package com.github.fburato.highwheelmodules.bytecodeparser;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.function.Predicate;
-
 import com.example.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.objectweb.asm.Type;
-import com.github.fburato.highwheelmodules.bytecodeparser.classpath.ClassLoaderClassPathRoot;
-import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
-import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
-import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
-import com.github.fburato.highwheelmodules.model.bytecode.AccessPointName;
-import com.github.fburato.highwheelmodules.model.bytecode.AccessType;
-import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
-
-import com.example.annotated.AnAnnotation;
-import com.example.annotated.AnnotatedAtClassLevel;
-import com.example.annotated.AnnotatedAtFieldLevel;
-import com.example.annotated.AnnotatedAtMethodLevel;
-import com.example.annotated.AnnotatedAtParameterLevel;
-import com.example.annotated.AnnotatedAtVariableLevel;
+import com.example.annotated.*;
 import com.example.classliterals.HasFieldOfTypeClassFoo;
 import com.example.classliterals.MethodAccessFooClassLiteral;
 import com.example.classliterals.StoresFooArrayClassLiteralAsField;
@@ -39,18 +11,30 @@ import com.example.generics.HasCollectionOfFooParameter;
 import com.example.generics.ImplementsGenericisedInterface;
 import com.example.generics.ReturnsCollectionOfFoo;
 import com.example.innerclasses.CallsMethodFromFooWithinInnerClass;
+import com.github.fburato.highwheelmodules.bytecodeparser.classpath.ClassLoaderClassPathRoot;
+import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
+import com.github.fburato.highwheelmodules.model.bytecode.AccessPointName;
+import com.github.fburato.highwheelmodules.model.bytecode.AccessType;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
+import org.junit.jupiter.api.Test;
+import org.objectweb.asm.Type;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.Predicate;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 public class ClassPathParserSystemTest {
 
     private ClassPathParser testee;
 
-    @Mock
-    private AccessVisitor v;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+    private final AccessVisitor v = mock(AccessVisitor.class);
 
     @Test
     public void shouldDetectAnInheritanceDepedencyWhenOneClassExtendsAnother() {

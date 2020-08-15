@@ -39,10 +39,10 @@ public class LooseAnalyser implements Analyser {
             ModuleGraphTransitiveClosure transitiveClosure, Collection<Dependency> dependencies, HWModule other) {
         final List<AnalyserModel.ModuleConnectionViolation> dependencyViolations = new ArrayList<>();
         for (Dependency dependency : dependencies) {
-            if (!dependency.source.equals(other) && !dependency.dest.equals(other)
-                    && !transitiveClosure.isReachable(dependency.source, dependency.dest)) {
-                dependencyViolations
-                        .add(new AnalyserModel.ModuleConnectionViolation(dependency.source.name, dependency.dest.name));
+            if (!dependency.source().equals(other) && !dependency.dest().equals(other)
+                    && !transitiveClosure.isReachable(dependency.source(), dependency.dest())) {
+                dependencyViolations.add(new AnalyserModel.ModuleConnectionViolation(dependency.source().name(),
+                        dependency.dest().name()));
             }
         }
 
@@ -54,15 +54,15 @@ public class LooseAnalyser implements Analyser {
             HWModule other, ModuleGraph<TrackingModuleDependency> trackingGraph) {
         final List<AnalyserModel.EvidenceBackedViolation> undesiredDependencyViolations = new ArrayList<>();
         for (NoStrictDependency noStrictDependency : noStrictDependencies) {
-            if (!noStrictDependency.source.equals(other) && !noStrictDependency.dest.equals(other)
-                    && transitiveClosure.isReachable(noStrictDependency.source, noStrictDependency.dest)) {
+            if (!noStrictDependency.source().equals(other) && !noStrictDependency.dest().equals(other)
+                    && transitiveClosure.isReachable(noStrictDependency.source(), noStrictDependency.dest())) {
                 undesiredDependencyViolations.add(new AnalyserModel.EvidenceBackedViolation(
-                        noStrictDependency.source.name, noStrictDependency.dest.name,
-                        Arrays.asList(noStrictDependency.source.name, noStrictDependency.dest.name),
-                        getNames(transitiveClosure.minimumDistancePath(noStrictDependency.source,
-                                noStrictDependency.dest)),
-                        getEvidence(trackingGraph, noStrictDependency.source, transitiveClosure
-                                .minimumDistancePath(noStrictDependency.source, noStrictDependency.dest))));
+                        noStrictDependency.source().name(), noStrictDependency.dest().name(),
+                        Arrays.asList(noStrictDependency.source().name(), noStrictDependency.dest().name()),
+                        getNames(transitiveClosure.minimumDistancePath(noStrictDependency.source(),
+                                noStrictDependency.dest())),
+                        getEvidence(trackingGraph, noStrictDependency.source(), transitiveClosure
+                                .minimumDistancePath(noStrictDependency.source(), noStrictDependency.dest()))));
             }
         }
         return undesiredDependencyViolations;

@@ -37,7 +37,7 @@ public class AnalysisUtils {
     public static List<String> getNames(Collection<HWModule> modules) {
         final List<String> result = new ArrayList<>(modules.size());
         for (HWModule module : modules) {
-            result.add(module.name);
+            result.add(module.name());
         }
         return result;
     }
@@ -46,7 +46,7 @@ public class AnalysisUtils {
             ModuleGraph<ModuleDependency> graph, HWModule other) {
         final List<AnalyserModel.Metrics> metrics = new ArrayList<>(modules.size());
         for (HWModule module : modules) {
-            metrics.add(new AnalyserModel.Metrics(module.name,
+            metrics.add(new AnalyserModel.Metrics(module.name(),
                     moduleMetrics.fanInOf(module).get() + (graph.findDependency(other, module).isPresent() ? -1 : 0),
                     moduleMetrics.fanOutOf(module).get() + (graph.findDependency(module, other).isPresent() ? -1 : 0)));
         }

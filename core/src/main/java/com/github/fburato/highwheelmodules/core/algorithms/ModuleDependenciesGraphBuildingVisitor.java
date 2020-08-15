@@ -59,10 +59,10 @@ public class ModuleDependenciesGraphBuildingVisitor<T> implements AccessVisitor 
         final Set<String> processedModuleNames = new HashSet<>(modules.size());
         for (HWModule module : modules) {
             graph.addModule(module);
-            if (processedModuleNames.contains(module.name)) {
+            if (processedModuleNames.contains(module.name())) {
                 warningsCollector.constructionWarning(module);
             }
-            processedModuleNames.add(module.name);
+            processedModuleNames.add(module.name());
         }
     }
 

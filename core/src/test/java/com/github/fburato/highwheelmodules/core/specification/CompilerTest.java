@@ -131,8 +131,8 @@ class CompilerTest {
                 .with($ -> $.rules = Collections.singletonList(new ChainDependencyRule("main", "core", "commons")))
                 .build();
         Definition actual = testee.compile(definition);
-        assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(MAIN, CORE),
-                new Dependency(CORE, COMMONS));
+        assertThat(actual.dependencies).containsExactlyInAnyOrder(Dependency.make(MAIN, CORE),
+                Dependency.make(CORE, COMMONS));
     }
 
     @Test
@@ -141,8 +141,8 @@ class CompilerTest {
         final SyntaxTree.Definition definition = definitionBuilderWithModules.with($ -> $.rules = Collections
                 .singletonList(new SyntaxTree.OneToManyRule("main", Arrays.asList("core", "commons")))).build();
         Definition actual = testee.compile(definition);
-        assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(MAIN, CORE),
-                new Dependency(MAIN, COMMONS));
+        assertThat(actual.dependencies).containsExactlyInAnyOrder(Dependency.make(MAIN, CORE),
+                Dependency.make(MAIN, COMMONS));
     }
 
     @Test
@@ -171,8 +171,8 @@ class CompilerTest {
         final SyntaxTree.Definition definition = definitionBuilderWithModules.with($ -> $.rules = Collections
                 .singletonList(new SyntaxTree.ManyToOneRule(Arrays.asList("core", "commons"), "io"))).build();
         Definition actual = testee.compile(definition);
-        assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(CORE, IO),
-                new Dependency(COMMONS, IO));
+        assertThat(actual.dependencies).containsExactlyInAnyOrder(Dependency.make(CORE, IO),
+                Dependency.make(COMMONS, IO));
     }
 
     @Test
@@ -201,7 +201,7 @@ class CompilerTest {
         final SyntaxTree.Definition definition = definitionBuilderWithModules
                 .with($ -> $.rules = Collections.singletonList(new SyntaxTree.NoDependentRule("core", "io"))).build();
         Definition actual = testee.compile(definition);
-        assertThat(actual.noStrictDependencies).containsExactlyInAnyOrder(new NoStrictDependency(CORE, IO));
+        assertThat(actual.noStrictDependencies).containsExactlyInAnyOrder(NoStrictDependency.make(CORE, IO));
     }
 
     @Test
@@ -246,7 +246,7 @@ class CompilerTest {
         final HWModule Foo = HWModule.make("Foo", "org.example.foo.*", "org.example.foobar.*").get();
         final HWModule Bar = HWModule.make("Bar", "org.example.bar.*").get();
         assertThat(actual.modules).containsExactlyInAnyOrder(Foo, Bar);
-        assertThat(actual.dependencies).containsExactlyInAnyOrder(new Dependency(Foo, Bar));
+        assertThat(actual.dependencies).containsExactlyInAnyOrder(Dependency.make(Foo, Bar));
         assertThat(actual.whitelist).contains(AnonymousModule.make(Arrays.asList("a", "b")).get());
         assertThat(actual.blackList).contains(AnonymousModule.make(Arrays.asList("c", "d")).get());
     }

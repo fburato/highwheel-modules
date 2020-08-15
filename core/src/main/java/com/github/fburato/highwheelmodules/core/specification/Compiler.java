@@ -100,7 +100,7 @@ public class Compiler {
                 throw new CompilerException(
                         String.format(MODULE_HAS_NOT_BEEN_DEFINED, next, join(" -> ", chainDependencies)));
             } else {
-                result.add(new Dependency(modules.get(current), modules.get(next)));
+                result.add(Dependency.make(modules.get(current), modules.get(next)));
             }
         }
         return result;
@@ -117,7 +117,7 @@ public class Compiler {
             if (modules.get(dest) == null) {
                 throw makeCompilerException.apply(dest);
             } else {
-                return new Dependency(modules.get(oneToManyRule.one), modules.get(dest));
+                return Dependency.make(modules.get(oneToManyRule.one), modules.get(dest));
             }
         }).collect(Collectors.toList());
     }
@@ -133,7 +133,7 @@ public class Compiler {
             if (modules.get(dest) == null) {
                 throw makeCompilerException.apply(dest);
             } else {
-                return new Dependency(modules.get(dest), modules.get(manyToOneRule.one));
+                return Dependency.make(modules.get(dest), modules.get(manyToOneRule.one));
             }
         }).collect(Collectors.toList());
     }
@@ -147,7 +147,7 @@ public class Compiler {
             throw new CompilerException(String.format(MODULE_HAS_NOT_BEEN_DEFINED, noDependentRule.right,
                     join(" -/-> ", Arrays.asList(noDependentRule.left, noDependentRule.right))));
         } else {
-            return new NoStrictDependency(modules.get(noDependentRule.left), modules.get(noDependentRule.right));
+            return NoStrictDependency.make(modules.get(noDependentRule.left), modules.get(noDependentRule.right));
         }
     }
 

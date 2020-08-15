@@ -10,7 +10,7 @@ import java.util.regex.PatternSyntaxException;
 
 public final class HWModule implements MatchingModule {
 
-    public final String name;
+    private final String name;
     private final AnonymousModule anonymousModule;
 
     private HWModule(String name, AnonymousModule anonymousModule) {
@@ -28,6 +28,10 @@ public final class HWModule implements MatchingModule {
         } catch (PatternSyntaxException e) {
             return Optional.empty();
         }
+    }
+
+    public String name() {
+        return this.name;
     }
 
     public boolean contains(ElementName elementName) {

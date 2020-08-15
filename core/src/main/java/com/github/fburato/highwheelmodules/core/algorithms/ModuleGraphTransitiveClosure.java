@@ -67,7 +67,7 @@ public class ModuleGraphTransitiveClosure {
         applyFloydWarshallMainIteration();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private List<HWModule>[][] initialiseSquareMatrixTo(final int size) {
         final List<HWModule>[][] array = (List<HWModule>[][]) new List[size][size];
         for (int i = 0; i < array.length; ++i)

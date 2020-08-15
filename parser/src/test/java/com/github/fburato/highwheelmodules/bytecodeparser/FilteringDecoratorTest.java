@@ -1,30 +1,26 @@
 package com.github.fburato.highwheelmodules.bytecodeparser;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPointName;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessType;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Predicate;
 
+import static org.mockito.Mockito.*;
+
 public class FilteringDecoratorTest {
 
-    private FilteringDecorator testee;
+    interface ElementNamePredicate extends Predicate<ElementName> {
+    }
 
-    @Mock
-    private AccessVisitor child;
+    private final AccessVisitor child = mock(AccessVisitor.class);
 
-    @Mock
-    private Predicate<ElementName> filter;
+    private final Predicate<ElementName> filter = mock(ElementNamePredicate.class);
+
+    private final FilteringDecorator testee = new FilteringDecorator(child, filter);
 
     private final ElementName fooElement = ElementName.fromString("foo");
     private final ElementName barElement = ElementName.fromString("bar");
@@ -32,12 +28,6 @@ public class FilteringDecoratorTest {
     private final AccessPoint foo = AccessPoint.create(this.fooElement, AccessPointName.create("foo", "()V"));
 
     private final AccessPoint bar = AccessPoint.create(this.barElement, AccessPointName.create("bar", "()V"));
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        this.testee = new FilteringDecorator(this.child, this.filter);
-    }
 
     @Test
     public void shouldNotForwardCallWhenFilterDoesNotMatchSource() {

@@ -52,7 +52,7 @@ public class DefinitionVisitor {
             specModuleGraph.addModule(module);
         }
         for (Dependency dep : dependencies) {
-            specModuleGraph.addDependency(new ModuleDependency(dep.source, dep.dest));
+            specModuleGraph.addDependency(new ModuleDependency(dep.source(), dep.dest()));
         }
 
         return specModuleGraph;
