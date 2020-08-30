@@ -63,7 +63,7 @@ class AnalyserFacadeTest {
 
     @BeforeEach
     void setUp() {
-        testee = new AnalyserFacade(printer, pathEventSink, measureEventSink, strictAnalysisEventSink,
+        testee = new AnalyserFacadeImpl(printer, pathEventSink, measureEventSink, strictAnalysisEventSink,
                 looseAnalysisEventSink);
     }
 
@@ -427,15 +427,15 @@ class AnalyserFacadeTest {
                         "FAN_IN_OUT_MEASURE - IO,1,3", "FAN_IN_OUT_MEASURE - Model,4,0",
                         "FAN_IN_OUT_MEASURE - CoreInternals,1,2", "FAN_IN_OUT_MEASURE - CoreApi,3,1",
                         "FAN_IN_OUT_MEASURE - Controller,1,1", "FAN_IN_OUT_MEASURE - Main,0,4",
-                        "ABSENT_DEPENDENCY_VIOLATIONS_PRESENT", "ABSENT_DEPENDENCY_VIOLATION - IO,CoreInternals",
                         "UNDESIRED_DEPENDENCY_VIOLATION_PRESENT",
                         "UNDESIRED_DEPENDENCY_VIOLATION - {IO,Model,[IO,Model],[1]}",
+                        "ABSENT_DEPENDENCY_VIOLATIONS_PRESENT", "ABSENT_DEPENDENCY_VIOLATION - IO,CoreInternals",
                         "INFO - Analysis on '" + wrongLooseDefinitionSpec + "' failed",
                         "INFO - Starting loose analysis on '" + looseSpec + "'", "FAN_IN_OUT_MEASURE - Facade,2,3",
                         "FAN_IN_OUT_MEASURE - Utils,2,0", "FAN_IN_OUT_MEASURE - IO,1,3",
                         "FAN_IN_OUT_MEASURE - Model,4,0", "FAN_IN_OUT_MEASURE - CoreInternals,1,2",
                         "FAN_IN_OUT_MEASURE - CoreApi,3,1", "FAN_IN_OUT_MEASURE - Controller,1,1",
-                        "FAN_IN_OUT_MEASURE - Main,0,4", "ALL_DEPENDENCIES_PRESENT", "NO_UNDESIRED_DEPENDENCIES",
+                        "FAN_IN_OUT_MEASURE - Main,0,4", "NO_UNDESIRED_DEPENDENCIES", "ALL_DEPENDENCIES_PRESENT",
                         "INFO - Analysis on '" + looseSpec + "' complete");
             }
         });
@@ -451,8 +451,8 @@ class AnalyserFacadeTest {
                 "INFO - Starting loose analysis on '" + looseSpec + "'", "FAN_IN_OUT_MEASURE - Facade,2,3",
                 "FAN_IN_OUT_MEASURE - Utils,2,0", "FAN_IN_OUT_MEASURE - IO,1,3", "FAN_IN_OUT_MEASURE - Model,4,0",
                 "FAN_IN_OUT_MEASURE - CoreInternals,1,2", "FAN_IN_OUT_MEASURE - CoreApi,3,1",
-                "FAN_IN_OUT_MEASURE - Controller,1,1", "FAN_IN_OUT_MEASURE - Main,0,4", "ALL_DEPENDENCIES_PRESENT",
-                "NO_UNDESIRED_DEPENDENCIES", "INFO - Analysis on '" + looseSpec + "' complete",
+                "FAN_IN_OUT_MEASURE - Controller,1,1", "FAN_IN_OUT_MEASURE - Main,0,4", "NO_UNDESIRED_DEPENDENCIES",
+                "ALL_DEPENDENCIES_PRESENT", "INFO - Analysis on '" + looseSpec + "' complete",
                 "INFO - Starting strict analysis on '" + alternativeStrictSpec + "'",
                 "FAN_IN_OUT_MEASURE - Internals,1,0", "FAN_IN_OUT_MEASURE - Main,0,1", "DEPENDENCIES_CORRECT",
                 "DIRECT_DEPENDENCIES_CORRECT", "INFO - Analysis on '" + alternativeStrictSpec + "' complete");

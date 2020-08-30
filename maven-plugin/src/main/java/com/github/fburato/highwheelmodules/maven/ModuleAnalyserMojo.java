@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.maven;
 
 import com.github.fburato.highwheelmodules.core.AnalyserFacade;
+import com.github.fburato.highwheelmodules.core.AnalyserFacadeImpl;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -236,8 +237,8 @@ public class ModuleAnalyserMojo extends AbstractMojo {
     private void analyse(List<String> roots, String specFilePath) throws MojoFailureException {
         try {
             final AnalyserFacade.Printer printer = new MavenPrinter();
-            final AnalyserFacade facade = new AnalyserFacade(printer, new MavenPathEventSink(), new MavenMeasureSink(),
-                    new MavenStrictAnalysisSink(), new MavenLooseAnalysisEventSink());
+            final AnalyserFacade facade = new AnalyserFacadeImpl(printer, new MavenPathEventSink(),
+                    new MavenMeasureSink(), new MavenStrictAnalysisSink(), new MavenLooseAnalysisEventSink());
             facade.runAnalysis(roots, Arrays.asList(specFilePath.split(",")), Optional.of(evidenceLimit));
         } catch (Exception e) {
             throw new MojoFailureException("Error during analysis: " + e.getMessage());

@@ -1,6 +1,7 @@
 package com.github.fburato.highwheelmodules.cli;
 
 import com.github.fburato.highwheelmodules.core.AnalyserFacade;
+import com.github.fburato.highwheelmodules.core.AnalyserFacadeImpl;
 import com.github.fburato.highwheelmodules.utils.Pair;
 
 import java.util.List;
@@ -141,7 +142,7 @@ public class Main {
         try {
             final CmdParser cmdParser = new CmdParser(argv);
             final AnalyserFacade.Printer printer = new SystemPrinter();
-            final AnalyserFacade facade = new AnalyserFacade(printer, new SystemPathEventSink(),
+            final AnalyserFacade facade = new AnalyserFacadeImpl(printer, new SystemPathEventSink(),
                     new SystemMeasureSink(), new SystemStrictAnalysisSink(), new SystemLooseAnalysisEventSink());
             facade.runAnalysis(cmdParser.argList, cmdParser.specificationFiles, cmdParser.evidenceLimit);
         } catch (Exception e) {

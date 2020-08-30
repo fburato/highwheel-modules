@@ -51,8 +51,8 @@ class ModuleAnalyserTest {
     private final HWModule IO = HWModule.make("IO", "org.example.io.*").get();
     private final HWModule UTILS = HWModule.make("Commons", "org.example.commons.*").get();
 
-    private ModuleAnalyser testee(ClasspathRoot root, Optional<Integer> evidenceLimit) {
-        return new ModuleAnalyser(classParser, root, evidenceLimit, factory);
+    private ModuleAnalyserS testee(ClasspathRoot root, Optional<Integer> evidenceLimit) {
+        return ModuleAnalyserS.apply(classParser, root, evidenceLimit, factory);
     }
 
     @Nested
