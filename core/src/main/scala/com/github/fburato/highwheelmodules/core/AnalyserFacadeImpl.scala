@@ -8,7 +8,7 @@ import com.github.fburato.highwheelmodules.bytecodeparser.classpath.{ArchiveClas
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.EventSink.{LooseAnalysisEventSink, MeasureEventSink, PathEventSink, StrictAnalysisEventSink}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.Printer
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserModel.{AnalysisResult, Metrics}
-import com.github.fburato.highwheelmodules.core.analysis.{AnalyserException, ModuleAnalyser}
+import com.github.fburato.highwheelmodules.core.analysis.{AnalyserException, ModuleAnalyserS}
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
 import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
@@ -18,6 +18,7 @@ import com.github.fburato.highwheelmodules.utils.Pair
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters._
 import scala.util.{Failure, Success, Try}
 
 class AnalyserFacadeImpl private[core](printer: Printer,
@@ -55,11 +56,11 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     val classPathRoot = getAnalysisScope(classPathRoots)
     val definitionsAndPaths = specificationPath.asScala.toSeq.map { path => compileSpecification(path).map(d => (path, d)) }
     val traversed = sequence(definitionsAndPaths)
-    val analyser = new ModuleAnalyser(classParser, classPathRoot, evidenceLimit, moduleGraphFactory)
+    val analyser = ModuleAnalyserS(classParser, classPathRoot, evidenceLimit.toScala.map(i => i.toInt), moduleGraphFactory)
 
     def analyseAndCollect(pathDefinitions: Seq[(String, Definition)]): Try[Seq[(String, Definition, AnalysisResult)]] = {
-      val definitions = pathDefinitions.map(_._2).asJava
-      val analysisResults = Try(analyser.analyse(definitions).asScala)
+      val definitions = pathDefinitions.map(_._2)
+      val analysisResults = analyser.analyse(definitions)
       analysisResults.map(results => (pathDefinitions zip results) map {
         case ((path, definition), result) => (path, definition, result)
       })

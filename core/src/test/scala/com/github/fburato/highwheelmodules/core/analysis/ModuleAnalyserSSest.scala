@@ -11,7 +11,7 @@ import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, Classpa
 import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, Definition, HWModule, ModuleGraphFactory}
 import com.github.fburato.highwheelmodules.model.rules.{Dependency, NoStrictDependency}
 import com.github.fburato.highwheelmodules.utils.Pair
-import org.mockito.scalatest.IdiomaticMockito
+import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -19,7 +19,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.jdk.CollectionConverters._
 import scala.util.Failure
 
-class ModuleAnalyserSSest extends AnyWordSpec with Matchers with IdiomaticMockito with OneInstancePerTest {
+class ModuleAnalyserSSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
   private val orgExamples = new DirectoryClassPathRoot(Paths.get("target", "test-classes").toFile)
   private val realClassParser: ClassParser = new ClassPathParser(item => item.asJavaName() startsWith "org.example")
@@ -130,7 +130,7 @@ class ModuleAnalyserSSest extends AnyWordSpec with Matchers with IdiomaticMockit
           ("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
           ("org.example.Main:main", "org.example.core.CoreFacade")
         ))),
-        evidence(CONTROLLER.name, FACADE.name, List(), List(FACADE.name),  List(List(
+        evidence(CONTROLLER.name, FACADE.name, List(), List(FACADE.name), List(List(
           ("org.example.controller.Controller1:access", "org.example.core.CoreFacade:facadeMethod1"),
           ("org.example.controller.Controller1", "org.example.core.CoreFacade"),
           ("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade")
@@ -317,6 +317,8 @@ class ModuleAnalyserSSest extends AnyWordSpec with Matchers with IdiomaticMockit
         case Seq(a1, a2) => (a1, a2)
       }
 
+      verify(classParser).parse(refEq(orgExamples), any)
+
       actual1.evidenceBackedViolations should contain allElementsOf List(
         violation(MAIN.name, MAIN.name, List(CONTROLLER.name, MAIN.name), List()),
         violation(CONTROLLER.name, MAIN.name, List(MAIN.name), List())
@@ -325,11 +327,11 @@ class ModuleAnalyserSSest extends AnyWordSpec with Matchers with IdiomaticMockit
         violation(MAIN.name, FACADE.name)
       )
       actual1.metrics should contain theSameElementsAs List(
-        metric("Main", 0, 2), 
-        metric("Controllers", 1, 1), 
+        metric("Main", 0, 2),
+        metric("Controllers", 1, 1),
         metric("Facade", 2, 0)
       )
-      
+
       actual2.evidenceBackedViolations.size shouldEqual 0
       actual2.moduleConnectionViolations.size shouldEqual 0
       actual2.metrics should contain theSameElementsAs List(
@@ -343,5 +345,371 @@ class ModuleAnalyserSSest extends AnyWordSpec with Matchers with IdiomaticMockit
         metric(UTILS.name, 2, 0)
       )
     }
+  }
+
+  "when definitions are all loose, analyse" should {
+
+    val looseBuilder = Definition.DefinitionBuilder.baseBuilder()
+      .`with`(d => d.mode = AnalysisMode.LOOSE)
+
+    "analyse if specification has one module and no rule" in {
+      val definition = looseBuilder.`with`(d => d.modules = List(MAIN).asJava).build()
+
+      val actual = testee(orgExamples, None).analyse(List(definition)).get.head
+
+      actual.moduleConnectionViolations.size shouldEqual 0
+      actual.evidenceBackedViolations.size shouldEqual 0
+      actual.metrics should contain theSameElementsAs List(metric(MAIN.name, 0, 0))
+    }
+
+    "fail if no module is provided" in {
+      val definition = looseBuilder.build()
+      testee(orgExamples, None).analyse(Seq(definition)) should matchPattern {
+        case Failure(_: AnalyserException) =>
+      }
+    }
+
+    "analyse specification with many modules and rules" in {
+      val definition = looseBuilder.`with`(d => {
+        d.modules = List(MAIN, CONTROLLER).asJava
+        d.dependencies = List(dep(MAIN, CONTROLLER)).asJava
+        d.noStrictDependencies = List(noSD(CONTROLLER, MAIN)).asJava
+      }).build()
+
+      val actual = testee(orgExamples, None).analyse(List(definition)).get.head
+
+      actual.moduleConnectionViolations.size shouldEqual 0
+      actual.evidenceBackedViolations.size shouldEqual 0
+      actual.metrics should contain theSameElementsAs List(
+        metric("Main", 0, 1),
+        metric("Controllers", 1, 0)
+      )
+    }
+
+    "detect violations on the specification" in {
+      val definition = looseBuilder.`with`(d => {
+        d.modules = List(MAIN, CONTROLLER, FACADE).asJava
+        d.dependencies = List(dep(MAIN, CONTROLLER), dep(CONTROLLER, MAIN)).asJava
+        d.noStrictDependencies = List(noSD(MAIN, FACADE)).asJava
+      }).build()
+
+      val actual = testee(orgExamples, None).analyse(List(definition)).get.head
+
+      actual.moduleConnectionViolations should contain allElementsOf List(
+        violation(CONTROLLER.name, MAIN.name)
+      )
+      actual.evidenceBackedViolations should contain allElementsOf List(
+        evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
+          ("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
+          ("org.example.Main:main", "org.example.core.CoreFacade")
+        )))
+      )
+      actual.metrics should contain theSameElementsAs List(
+        metric("Main", 0, 2),
+        metric("Controllers", 1, 1),
+        metric("Facade", 2, 0)
+      )
+    }
+
+    "provide evidence for undesired dependencies" in {
+      val definition = looseBuilder.`with`(d => {
+        d.modules = List(MAIN, CONTROLLER, FACADE).asJava
+        d.noStrictDependencies = List(noSD(MAIN, CONTROLLER)).asJava
+      }).build()
+
+      val actual = testee(orgExamples, None).analyse(List(definition)).get.head
+
+      actual.evidenceBackedViolations should contain allElementsOf List(
+        evidence(MAIN.name, CONTROLLER.name, List(MAIN.name, CONTROLLER.name), List(CONTROLLER.name), List(List(
+          ("org.example.Main:main", "org.example.controller.Controller1:access"),
+          ("org.example.Main:main", "org.example.controller.Controller1"),
+          ("org.example.Main:main", "org.example.controller.Controller1:(init)")
+        )))
+      )
+    }
+
+    "limit evidence provided if limit configured" in {
+      val definition = looseBuilder.`with`(d => {
+        d.modules = List(MAIN, CONTROLLER, FACADE).asJava
+        d.noStrictDependencies = List(noSD(MAIN, CONTROLLER)).asJava
+      }).build()
+
+      val actual = testee(orgExamples, Some(1)).analyse(List(definition)).get.head
+      val mainController = actual.evidenceBackedViolations.asScala
+        .filter(v => v.sourceModule == MAIN.name && v.destinationModule == CONTROLLER.name)
+        .head
+      List(Pair.make("org.example.Main:main", "org.example.controller.Controller1:access"),
+        Pair.make("org.example.Main:main", "org.example.controller.Controller1"),
+        Pair.make("org.example.Main:main", "org.example.controller.Controller1:(init)")) should contain allElementsOf List(mainController.evidences.get(0).get(0))
+      mainController.evidences.get(0).size shouldEqual 1
+    }
+
+    "analyse all modules in scope" in {
+      val definition = looseBuilder.`with`(d => {
+        d.modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL).asJava
+        d.dependencies = List(
+          dep(MAIN, CONTROLLER), dep(MAIN, IO), dep(MAIN, MODEL),
+          dep(CONTROLLER, FACADE),
+          dep(COREINTERNALS, MODEL),
+          dep(FACADE, COREINTERNALS),
+          dep(FACADE, MODEL),
+          dep(COREAPI, MODEL),
+          dep(IO, COREAPI), dep(IO, MODEL)).asJava
+        d.noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)).asJava
+      }).build()
+
+      val actual = testee(orgExamples, None).analyse(List(definition)).get.head
+
+      actual.moduleConnectionViolations.size shouldEqual 0
+      actual.evidenceBackedViolations.size shouldEqual 0
+      actual.metrics should contain allElementsOf List(
+        metric(MAIN.name, 0, 4),
+        metric(CONTROLLER.name, 1, 1),
+        metric(FACADE.name, 2, 3),
+        metric(COREAPI.name, 3, 1),
+        metric(COREINTERNALS.name, 1, 2),
+        metric(IO.name, 1, 3),
+        metric(MODEL.name, 4, 0),
+        metric(UTILS.name, 2, 0)
+      )
+    }
+
+    "consider only dependencies in the whitelist" in {
+      val definition = looseBuilder.`with`(d => {
+        d.whitelist = AnonymousModule.make("org.example.controller.*", "org.example.core.CoreFacade", "org.example.core.model.*")
+        d.modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL).asJava
+        d.dependencies = List(dep(CONTROLLER, FACADE), dep(FACADE, MODEL)).asJava
+        d.noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)).asJava
+      }).build()
+
+      val actual = testee(orgExamples, None).analyse(List(definition)).get.head
+
+      actual.moduleConnectionViolations.size shouldEqual 0
+      actual.evidenceBackedViolations.size shouldEqual 0
+      actual.metrics should contain theSameElementsAs List(
+        metric(MAIN.name, 0, 0),
+        metric(CONTROLLER.name, 0, 1),
+        metric(FACADE.name, 1, 1),
+        metric(COREAPI.name, 0, 0),
+        metric(COREINTERNALS.name, 0, 0),
+        metric(IO.name, 0, 0),
+        metric(MODEL.name, 1, 0),
+        metric(UTILS.name, 0, 0)
+      )
+    }
+
+    "consider dependencies not in the blacklist" in {
+      val definition = looseBuilder.`with`(d => {
+        d.blackList = AnonymousModule.make("org.example.Main", "org.example.commons.*")
+        d.modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL).asJava
+        d.dependencies = List(
+          dep(CONTROLLER, FACADE),
+          dep(COREINTERNALS, MODEL),
+          dep(FACADE, COREINTERNALS), dep(FACADE, MODEL),
+          dep(COREAPI, MODEL),
+          dep(IO, COREAPI), dep(IO, MODEL)).asJava
+        d.noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)).asJava
+      }).build()
+
+      val actual = testee(orgExamples, None).analyse(List(definition)).get.head
+
+      actual.moduleConnectionViolations.size shouldEqual 0
+      actual.evidenceBackedViolations.size shouldEqual 0
+      actual.metrics should contain theSameElementsAs List(
+        metric(MAIN.name, 0, 0),
+        metric(CONTROLLER.name, 0, 1),
+        metric(FACADE.name, 1, 3),
+        metric(COREAPI.name, 2, 1),
+        metric(COREINTERNALS.name, 1, 1),
+        metric(IO.name, 0, 2),
+        metric(MODEL.name, 4, 0),
+        metric(UTILS.name, 0, 0)
+      )
+    }
+
+    "consider dependencies in the whitelist and not in the blacklist" in {
+      val definition = looseBuilder.`with`(d => {
+        d.whitelist = AnonymousModule.make("org.example.*")
+        d.blackList = AnonymousModule.make("org.example.Main", "org.example.commons.*")
+        d.modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL).asJava
+        d.dependencies = List(
+          dep(CONTROLLER, FACADE),
+          dep(COREINTERNALS, MODEL),
+          dep(FACADE, COREINTERNALS), dep(FACADE, MODEL),
+          dep(COREAPI, MODEL),
+          dep(IO, COREAPI), dep(IO, MODEL)
+        ).asJava
+      }).build()
+
+      val actual = testee(orgExamples, None).analyse(List(definition)).get.head
+
+      actual.moduleConnectionViolations.size shouldEqual 0
+      actual.evidenceBackedViolations.size shouldEqual 0
+      actual.metrics should contain allElementsOf List(
+        metric(MAIN.name, 0, 0),
+        metric(CONTROLLER.name, 0, 1),
+        metric(FACADE.name, 1, 3),
+        metric(COREAPI.name, 2, 1),
+        metric(COREINTERNALS.name, 1, 1),
+        metric(IO.name, 0, 2),
+        metric(MODEL.name, 4, 0),
+        metric(UTILS.name, 0, 0)
+      )
+    }
+
+    "analyse multiple definitions in one pass" in {
+      val definition1 = looseBuilder.`with`(d => {
+        d.modules = List(MAIN, CONTROLLER, FACADE).asJava
+        d.dependencies = List(dep(MAIN, CONTROLLER), dep(CONTROLLER, MAIN)).asJava
+        d.noStrictDependencies = List(noSD(MAIN, FACADE)).asJava
+      }).build()
+      val definition2 = looseBuilder.`with`(d => {
+        d.modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL).asJava
+        d.dependencies = List(
+          dep(MAIN, CONTROLLER), dep(MAIN, IO),
+          dep(MAIN, MODEL),
+          dep(CONTROLLER, FACADE),
+          dep(COREINTERNALS, MODEL),
+          dep(FACADE, COREINTERNALS), dep(FACADE, MODEL),
+          dep(COREAPI, MODEL),
+          dep(IO, COREAPI), dep(IO, MODEL)).asJava
+        d.noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)).asJava
+      }).build()
+
+      val (actual1, actual2) = testee(orgExamples, None).analyse(List(definition1, definition2)).get match {
+        case Seq(a1, a2) => (a1, a2)
+      }
+
+      verify(classParser).parse(refEq(orgExamples), any)
+
+      actual1.moduleConnectionViolations should contain allElementsOf List(
+        violation(CONTROLLER.name, MAIN.name)
+      )
+      actual1.evidenceBackedViolations should contain allElementsOf List(
+        evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
+          ("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
+          ("org.example.Main:main", "org.example.core.CoreFacade")
+        )))
+      )
+      actual1.metrics should contain theSameElementsAs List(
+        metric("Main", 0, 2),
+        metric("Controllers", 1, 1),
+        metric("Facade", 2, 0)
+      )
+
+      actual2.moduleConnectionViolations.size shouldEqual 0
+      actual2.evidenceBackedViolations.size shouldEqual 0
+      actual2.metrics should contain theSameElementsAs List(
+        metric(MAIN.name, 0, 4),
+        metric(CONTROLLER.name, 1, 1),
+        metric(FACADE.name, 2, 3),
+        metric(COREAPI.name, 3, 1),
+        metric(COREINTERNALS.name, 1, 2),
+        metric(IO.name, 1, 3),
+        metric(MODEL.name, 4, 0),
+        metric(UTILS.name, 2, 0)
+      )
+    }
+  }
+
+  "analyse should change mode based on definition" in {
+    val definition1 = Definition.DefinitionBuilder.baseBuilder().`with`(d => {
+      d.mode = AnalysisMode.STRICT
+      d.modules = List(MAIN, CONTROLLER, FACADE).asJava
+      d.dependencies = List(dep(MAIN, CONTROLLER),
+        dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)).asJava
+      d.noStrictDependencies = List(noSD(MAIN, FACADE)).asJava
+    }).build()
+    val definition2 = Definition.DefinitionBuilder.baseBuilder().`with`(d => {
+      d.mode = AnalysisMode.STRICT
+      d.modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL).asJava
+      d.dependencies = List(
+        dep(MAIN, CONTROLLER), dep(MAIN, FACADE), dep(MAIN, COREAPI), dep(MAIN, IO),
+        dep(CONTROLLER, FACADE),
+        dep(COREINTERNALS, MODEL), dep(COREINTERNALS, UTILS),
+        dep(FACADE, COREINTERNALS), dep(FACADE, COREAPI), dep(FACADE, MODEL),
+        dep(COREAPI, MODEL),
+        dep(IO, COREAPI), dep(IO, MODEL), dep(IO, UTILS)).asJava
+      d.noStrictDependencies = List(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS)).asJava
+    }).build()
+    val definition3 = Definition.DefinitionBuilder.baseBuilder().`with`(d => {
+      d.mode = AnalysisMode.LOOSE
+      d.modules = List(MAIN, CONTROLLER, FACADE).asJava
+      d.dependencies = List(dep(MAIN, CONTROLLER), dep(CONTROLLER, MAIN)).asJava
+      d.noStrictDependencies = List(noSD(MAIN, FACADE)).asJava
+    }).build()
+    val definition4 = Definition.DefinitionBuilder.baseBuilder().`with`(d => {
+      d.mode = AnalysisMode.LOOSE
+      d.modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL).asJava
+      d.dependencies = List(
+        dep(MAIN, CONTROLLER), dep(MAIN, IO),
+        dep(MAIN, MODEL),
+        dep(CONTROLLER, FACADE),
+        dep(COREINTERNALS, MODEL),
+        dep(FACADE, COREINTERNALS), dep(FACADE, MODEL),
+        dep(COREAPI, MODEL),
+        dep(IO, COREAPI), dep(IO, MODEL)).asJava
+      d.noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN)).asJava
+    }).build()
+
+    val (actual1, actual2, actual3, actual4) = testee(orgExamples, None).analyse(List(definition1, definition2, definition3, definition4)).get match {
+      case Seq(a1, a2, a3, a4) => (a1, a2, a3, a4)
+    }
+
+    verify(classParser).parse(refEq(orgExamples), any)
+
+    actual1.evidenceBackedViolations should contain allElementsOf List(
+      violation(MAIN.name, MAIN.name, List(CONTROLLER.name, MAIN.name), List()),
+      violation(CONTROLLER.name, MAIN.name, List(MAIN.name), List())
+    )
+    actual1.moduleConnectionViolations should contain allElementsOf List(
+      violation(MAIN.name, FACADE.name)
+    )
+    actual1.metrics should contain theSameElementsAs List(
+      metric("Main", 0, 2),
+      metric("Controllers", 1, 1),
+      metric("Facade", 2, 0)
+    )
+
+    actual2.evidenceBackedViolations.size shouldEqual 0
+    actual2.moduleConnectionViolations.size shouldEqual 0
+    actual2.metrics should contain theSameElementsAs List(
+      metric(MAIN.name, 0, 4),
+      metric(CONTROLLER.name, 1, 1),
+      metric(FACADE.name, 2, 3),
+      metric(COREAPI.name, 3, 1),
+      metric(COREINTERNALS.name, 1, 2),
+      metric(IO.name, 1, 3),
+      metric(MODEL.name, 4, 0),
+      metric(UTILS.name, 2, 0)
+    )
+
+    actual3.moduleConnectionViolations should contain allElementsOf List(
+      violation(CONTROLLER.name, MAIN.name)
+    )
+    actual3.evidenceBackedViolations should contain allElementsOf List(
+      evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
+        ("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
+        ("org.example.Main:main", "org.example.core.CoreFacade")
+      )))
+    )
+    actual3.metrics should contain theSameElementsAs List(
+      metric("Main", 0, 2),
+      metric("Controllers", 1, 1),
+      metric("Facade", 2, 0)
+    )
+
+    actual4.moduleConnectionViolations.size shouldEqual 0
+    actual4.evidenceBackedViolations.size shouldEqual 0
+    actual4.metrics should contain theSameElementsAs List(
+      metric(MAIN.name, 0, 4),
+      metric(CONTROLLER.name, 1, 1),
+      metric(FACADE.name, 2, 3),
+      metric(COREAPI.name, 3, 1),
+      metric(COREINTERNALS.name, 1, 2),
+      metric(IO.name, 1, 3),
+      metric(MODEL.name, 4, 0),
+      metric(UTILS.name, 2, 0)
+    )
   }
 }

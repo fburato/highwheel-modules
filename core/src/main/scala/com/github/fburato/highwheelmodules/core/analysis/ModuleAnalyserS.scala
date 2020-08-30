@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
 import java.io.IOException
-import java.util.{Optional, List => JList}
+import java.util.{List => JList}
 
 import com.github.fburato.highwheelmodules.core.algorithms.CompoundAccessVisitor
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserModel.AnalysisResult
@@ -27,7 +27,7 @@ object ModuleAnalyserS {
     private val looseAnalyser = new LooseAnalyser()
 
     override def analyse(definitions: Seq[Definition]): Try[Seq[AnalysisResult]] =
-      if(definitions.isEmpty) {
+      if (definitions.isEmpty) {
         Success(Seq())
       } else {
         for {
@@ -54,9 +54,6 @@ object ModuleAnalyserS {
       })
     }
   }
-
-  def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Optional[Integer], factory: ModuleGraphFactory): ModuleAnalyserS =
-    new Implementation(classParser, classpathRoot, evidenceLimit.map(i => i.asInstanceOf[Int]).toScala, factory)
 
   def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyserS =
     new Implementation(classParser, classpathRoot, evidenceLimit, factory)

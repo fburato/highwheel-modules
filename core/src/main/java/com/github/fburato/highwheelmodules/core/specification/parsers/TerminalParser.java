@@ -3,7 +3,7 @@ package com.github.fburato.highwheelmodules.core.specification.parsers;
 import org.jparsec.*;
 
 final class TerminalParser {
-    private final String[] operators = { "=", "\n", ":", "->", "-/->", ",", ")", "(" };
+    private final String[] operators = { "=", "\n", "\r", ":", "->", "-/->", ",", ")", "(" };
 
     private final String MODULES_KEYWORD = "modules";
     private final String RULES_KEYWORD = "rules";
@@ -67,9 +67,10 @@ final class TerminalParser {
     }
 
     private final Parser<Token> newLine = term("\n").label("\\n (newline)");
+    private final Parser<Token> carriage = term("\r").label("\\r (newline)");
 
     public Parser<Token> newLine() {
-        return this.newLine;
+        return this.newLine.or(carriage);
     }
 
     private final Parser<Token> prefixPreamble = term(PREFIX_KEYWORD);
