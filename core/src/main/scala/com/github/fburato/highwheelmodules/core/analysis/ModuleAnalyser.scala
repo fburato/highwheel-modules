@@ -3,7 +3,7 @@ package com.github.fburato.highwheelmodules.core.analysis
 import java.io.IOException
 import java.util.{List => JList}
 
-import com.github.fburato.highwheelmodules.core.algorithms.{CompoundAccessVisitor, ModuleDependenciesGraphBuildingVisitor}
+import com.github.fburato.highwheelmodules.core.algorithms.{CompoundAccessVisitor, ModuleDependenciesGraphBuildingVisitorS}
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
 import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, ClassParser, ClasspathRoot}
 import com.github.fburato.highwheelmodules.model.modules._
@@ -48,16 +48,15 @@ object ModuleAnalyser {
         val actualModuleGraph = factory.buildMetricModuleGraph()
         val auxTrackingBareGraph = factory.buildTrackingModuleGraph()
         val trackingGraph = factory.buildEvidenceModuleGraph(auxTrackingBareGraph, evidenceLimit.map(i => new Integer(i)).toJava)
-        val modulesCollection = modules.asJavaCollection
-        val moduleGraphVisitor = new ModuleDependenciesGraphBuildingVisitor(modulesCollection, actualModuleGraph, other,
+        val moduleGraphVisitor = ModuleDependenciesGraphBuildingVisitorS(modules, actualModuleGraph, other,
           (sourceModule, destModule, _, _, _) => new ModuleDependency(sourceModule, destModule),
-          definition.whitelist, definition.blackList
+          definition.whitelist.toScala, definition.blackList.toScala
         )
-        val evidenceGraphVisitor = new ModuleDependenciesGraphBuildingVisitor(modulesCollection, trackingGraph, other,
+        val evidenceGraphVisitor = ModuleDependenciesGraphBuildingVisitorS(modules, trackingGraph, other,
           (sourceModule, destModule, sourceAP, destAP, _) => new EvidenceModuleDependency(sourceModule, destModule, sourceAP, destAP),
-          definition.whitelist, definition.blackList
+          definition.whitelist.toScala, definition.blackList.toScala
         )
-        val accessVisitor = new CompoundAccessVisitor(moduleGraphVisitor, evidenceGraphVisitor)
+        val accessVisitor = CompoundAccessVisitor(Seq(moduleGraphVisitor, evidenceGraphVisitor))
         AnalysisState(modules, definition.dependencies.asScala.toSeq, definition.noStrictDependencies.asScala.toSeq, specModuleGraph, actualModuleGraph, auxTrackingBareGraph, accessVisitor, other)
       }
 
@@ -78,7 +77,7 @@ object ModuleAnalyser {
       )
       sequence(merged).map(sequence => {
         val (visitors, processors) = sequence.unzip
-        (new CompoundAccessVisitor(visitors.asJava), processors)
+        (CompoundAccessVisitor(visitors), processors)
       })
     }
   }

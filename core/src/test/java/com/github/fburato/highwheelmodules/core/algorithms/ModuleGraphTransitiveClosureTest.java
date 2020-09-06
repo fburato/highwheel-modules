@@ -41,7 +41,7 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph.addDependency(new ModuleDependency(MAIN, ENDPOINTS));
         moduleGraph.addDependency(new ModuleDependency(MAIN, IO));
         moduleGraph.addDependency(new ModuleDependency(MAIN, CORE));
-        testee = new ModuleGraphTransitiveClosure(moduleGraph, modules);
+        testee = ModuleGraphTransitiveClosure.apply(moduleGraph, modules);
     }
 
     @Test
@@ -73,29 +73,29 @@ class ModuleGraphTransitiveClosureTest {
 
     @Test
     void minimumDistancePathShouldBeEmptyForNotDependentModules() {
-        assertThat(testee.minimumDistancePath(COMMONS, COMMONS)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(CORE, CORE)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(FACADE, FACADE)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(IO, IO)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(ENDPOINTS, ENDPOINTS)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(MAIN, MAIN)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(COMMONS, CORE)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(COMMONS, FACADE)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(COMMONS, IO)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(COMMONS, ENDPOINTS)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(COMMONS, MAIN)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(CORE, FACADE)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(CORE, IO)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(CORE, ENDPOINTS)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(CORE, MAIN)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(FACADE, IO)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(FACADE, ENDPOINTS)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(FACADE, MAIN)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(IO, ENDPOINTS)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(IO, FACADE)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(IO, MAIN)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(ENDPOINTS, IO)).isEqualTo(Collections.<HWModule> emptyList());
-        assertThat(testee.minimumDistancePath(ENDPOINTS, MAIN)).isEqualTo(Collections.<HWModule> emptyList());
+        assertThat(testee.minimumDistancePath(COMMONS, COMMONS)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(CORE, CORE)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(FACADE, FACADE)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(IO, IO)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(ENDPOINTS, ENDPOINTS)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(MAIN, MAIN)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(COMMONS, CORE)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(COMMONS, FACADE)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(COMMONS, IO)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(COMMONS, ENDPOINTS)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(COMMONS, MAIN)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(CORE, FACADE)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(CORE, IO)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(CORE, ENDPOINTS)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(CORE, MAIN)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(FACADE, IO)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(FACADE, ENDPOINTS)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(FACADE, MAIN)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(IO, ENDPOINTS)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(IO, FACADE)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(IO, MAIN)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(ENDPOINTS, IO)).isEqualTo(Collections.<HWModule>emptyList());
+        assertThat(testee.minimumDistancePath(ENDPOINTS, MAIN)).isEqualTo(Collections.<HWModule>emptyList());
     }
 
     @Test
@@ -139,7 +139,7 @@ class ModuleGraphTransitiveClosureTest {
                 assertThat(testee.isReachable(module1, module2)
                         && testee.minimumDistance(module1, module2).get() < Integer.MAX_VALUE
                         || !testee.isReachable(module1, module2)
-                                && testee.minimumDistance(module1, module2).get() == Integer.MAX_VALUE).isTrue();
+                        && testee.minimumDistance(module1, module2).get() == Integer.MAX_VALUE).isTrue();
             }
         }
     }
@@ -171,7 +171,7 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
 
         assertThat(testee.same(otherTestee)).isTrue();
     }
@@ -203,7 +203,7 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
 
         assertThat(testee.same(otherTestee)).isFalse();
     }
@@ -235,7 +235,7 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         // moduleGraph_2.addDependency(new ModuleDependency(MAIN_2,CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
 
         assertThat(testee.same(otherTestee)).isFalse();
     }
@@ -267,7 +267,7 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
 
         assertThat(testee.diff(otherTestee).get().isEmpty()).isTrue();
     }
@@ -299,7 +299,7 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
 
         assertThat(testee.diff(otherTestee).isPresent()).isFalse();
     }
@@ -331,15 +331,15 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         // moduleGraph_2.addDependency(new ModuleDependency(MAIN_2,CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
         final List<ModuleGraphTransitiveClosure.Difference> differences = testee.diff(otherTestee).get();
 
         assertThat(differences.size()).isEqualTo(1);
 
-        assertThat(differences.get(0).source).isEqualTo(MAIN);
-        assertThat(differences.get(0).dest).isEqualTo(CORE);
-        assertThat(differences.get(0).firstDistance).isEqualTo(1);
-        assertThat(differences.get(0).secondDistance).isEqualTo(2);
+        assertThat(differences.get(0).source()).isEqualTo(MAIN);
+        assertThat(differences.get(0).dest()).isEqualTo(CORE);
+        assertThat(differences.get(0).firstDistance()).isEqualTo(1);
+        assertThat(differences.get(0).secondDistance()).isEqualTo(2);
     }
 
     @Test
@@ -369,7 +369,7 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
 
         assertThat(testee.diffPath(otherTestee).get().isEmpty()).isTrue();
     }
@@ -401,7 +401,7 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
 
         assertThat(testee.diffPath(otherTestee).isPresent()).isFalse();
     }
@@ -433,15 +433,16 @@ class ModuleGraphTransitiveClosureTest {
         moduleGraph_2.addDependency(new ModuleDependency(MAIN_2, IO_2));
         // moduleGraph_2.addDependency(new ModuleDependency(MAIN_2,CORE_2));
 
-        final ModuleGraphTransitiveClosure otherTestee = new ModuleGraphTransitiveClosure(moduleGraph_2, modules_2);
+        final ModuleGraphTransitiveClosure otherTestee = ModuleGraphTransitiveClosure.apply(moduleGraph_2, modules_2);
         final List<ModuleGraphTransitiveClosure.PathDifference> differences = testee.diffPath(otherTestee).get();
 
         assertThat(differences.size()).isEqualTo(1);
 
-        assertThat(differences.get(0).source).isEqualTo(MAIN);
-        assertThat(differences.get(0).dest).isEqualTo(CORE);
-        assertThat(differences.get(0).firstPath).isEqualTo(Collections.singletonList(CORE));
-        assertThat(differences.get(0).secondPath.size()).isEqualTo(2);
-        assertThat(differences.get(0).secondPath.get(1)).isEqualTo(CORE);
+        assertThat(differences.get(0).source()).isEqualTo(MAIN);
+        assertThat(differences.get(0).dest()).isEqualTo(CORE);
+        assertThat(differences.get(0).firstPath().size()).isEqualTo(1);
+        assertThat(differences.get(0).firstPath().apply(0)).isEqualTo(CORE);
+        assertThat(differences.get(0).secondPath().size()).isEqualTo(2);
+        assertThat(differences.get(0).secondPath().apply(1)).isEqualTo(CORE);
     }
 }
