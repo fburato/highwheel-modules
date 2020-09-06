@@ -24,7 +24,7 @@ object SpecificationCompiler {
         val definition = definitionParser parse new FileReader(file)
         compiler.compile(definition)
       } recoverWith {
-        case e: IOException => Failure(new AnalyserException(s"Error while parsing the specification file: '${e.getMessage}'"))
+        case e: IOException => Failure(AnalyserException(s"Error while parsing the specification file: '${e.getMessage}'"))
       }
     }
   }

@@ -7,15 +7,13 @@ import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser
 import com.github.fburato.highwheelmodules.bytecodeparser.classpath.{ArchiveClassPathRoot, CompoundClassPathRoot, DirectoryClassPathRoot}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.EventSink.{LooseAnalysisEventSink, MeasureEventSink, PathEventSink, StrictAnalysisEventSink}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.Printer
-import com.github.fburato.highwheelmodules.core.analysis.AnalyserModel.{AnalysisResult, Metrics}
-import com.github.fburato.highwheelmodules.core.analysis.{AnalyserException, ModuleAnalyserS}
+import com.github.fburato.highwheelmodules.core.analysis.{AnalyserException, AnalysisResult, Metric, ModuleAnalyser}
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
 import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
 import com.github.fburato.highwheelmodules.model.modules.{Definition, ModuleGraphFactory}
 import com.github.fburato.highwheelmodules.utils.Pair
 
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters._
@@ -56,7 +54,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     val classPathRoot = getAnalysisScope(classPathRoots)
     val definitionsAndPaths = specificationPath.asScala.toSeq.map { path => compileSpecification(path).map(d => (path, d)) }
     val traversed = sequence(definitionsAndPaths)
-    val analyser = ModuleAnalyserS(classParser, classPathRoot, evidenceLimit.toScala.map(i => i.toInt), moduleGraphFactory)
+    val analyser = ModuleAnalyser(classParser, classPathRoot, evidenceLimit.toScala.map(i => i.toInt), moduleGraphFactory)
 
     def analyseAndCollect(pathDefinitions: Seq[(String, Definition)]): Try[Seq[(String, Definition, AnalysisResult)]] = {
       val definitions = pathDefinitions.map(_._2)
@@ -75,7 +73,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
 
     results.flatMap {
       case true => Success(())
-      case false => Failure(new AnalyserException("Analysis failed"))
+      case false => Failure(AnalyserException("Analysis failed"))
     }.get
   }
 
@@ -111,7 +109,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
   private def compileSpecification(specificationPath: String): Try[Definition] = {
     val specificationFile = new File(specificationPath)
     if (!specificationFile.exists || specificationFile.isDirectory || !specificationFile.canRead) {
-      Failure(new AnalyserException(s"Cannot read specification file '$specificationPath'"))
+      Failure(AnalyserException(s"Cannot read from specification file '$specificationPath'"))
     } else {
       printer.info(s"Compiling specification '$specificationPath'")
       specificationCompiler.compile(specificationFile).map(d => {
@@ -123,12 +121,12 @@ class AnalyserFacadeImpl private[core](printer: Printer,
 
   private def analysis(path: String, analysisResult: AnalysisResult, eventSink: AnalysisEventSink): Boolean = {
     printer.info(s"Starting ${eventSink.analysisType} analysis on '$path'")
-    printMetrics(analysisResult.metrics.asScala)
+    printMetrics(analysisResult.metrics)
     if (analysisResult.evidenceBackedViolations.isEmpty) {
       eventSink.dependentDefinitionsCorrect()
     } else {
       eventSink.dependentViolationsPresent()
-      val violations = analysisResult.evidenceBackedViolations.asScala
+      val violations = analysisResult.evidenceBackedViolations
       violations.foreach(v => eventSink.signalDependentViolation(v.sourceModule, v.destinationModule,
         appendStartIfNotEmpty(v.specificationPath, v.sourceModule),
         appendStartIfNotEmpty(v.actualPath, v.sourceModule), v.evidences))
@@ -137,10 +135,10 @@ class AnalyserFacadeImpl private[core](printer: Printer,
       eventSink.nonDependentDefinitionsCorrect()
     } else {
       eventSink.nonDependentViolationsPresent()
-      val violations = analysisResult.moduleConnectionViolations.asScala
+      val violations = analysisResult.moduleConnectionViolations
       violations.foreach(v => eventSink.signalNonDependentViolation(v.sourceModule, v.destinationModule))
     }
-    if (!analysisResult.evidenceBackedViolations.isEmpty || !analysisResult.moduleConnectionViolations.isEmpty) {
+    if (analysisResult.evidenceBackedViolations.nonEmpty || analysisResult.moduleConnectionViolations.nonEmpty) {
       printer.info(s"Analysis on '$path' failed")
       true
     } else {
@@ -149,15 +147,15 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     }
   }
 
-  private def printMetrics(metrics: Iterable[Metrics]): Unit = {
+  private def printMetrics(metrics: Seq[Metric]): Unit = {
     metrics.foreach(m => measureEventSink.fanInOutMeasure(m.module, m.fanIn, m.fanOut))
   }
 
-  private def appendStartIfNotEmpty[T](collection: JList[T], start: T): JList[T] =
+  private def appendStartIfNotEmpty[T](collection: Seq[T], start: T): Seq[T] =
     if (collection.isEmpty) {
       collection
     } else {
-      (mutable.Seq(start) ++ collection.asScala).asJava
+      Seq(start) ++ collection
     }
 }
 
@@ -175,7 +173,7 @@ private[core] object AnalyserFacadeImpl {
 
     def nonDependentViolationsPresent(): Unit
 
-    def signalDependentViolation(sourceModule: String, destinationModule: String, expectedPath: JList[String], actualPath: JList[String], evidences: JList[JList[Pair[String, String]]]): Unit
+    def signalDependentViolation(sourceModule: String, destinationModule: String, expectedPath: Seq[String], actualPath: Seq[String], evidences: Seq[Seq[(String, String)]]): Unit
 
     def signalNonDependentViolation(sourceModule: String, destinationModule: String): Unit
   }
@@ -191,12 +189,16 @@ private[core] object AnalyserFacadeImpl {
 
     override def nonDependentViolationsPresent(): Unit = delegate.noDirectDependenciesViolationPresent()
 
-    override def signalDependentViolation(sourceModule: String, destinationModule: String, expectedPath: JList[String], actualPath: JList[String], evidences: JList[JList[Pair[String, String]]]): Unit =
-      delegate.dependencyViolation(sourceModule, destinationModule, expectedPath, actualPath, evidences)
+    override def signalDependentViolation(sourceModule: String, destinationModule: String, expectedPath: Seq[String], actualPath: Seq[String], evidences: Seq[Seq[(String, String)]]): Unit =
+      delegate.dependencyViolation(sourceModule, destinationModule, expectedPath.asJava, actualPath.asJava, convertEvidences(evidences))
 
     override def signalNonDependentViolation(sourceModule: String, destinationModule: String): Unit =
       delegate.noDirectDependencyViolation(sourceModule, destinationModule)
   }
+
+  private def convertEvidences(evidences: Seq[Seq[(String, String)]]): JList[JList[Pair[String, String]]] = evidences.map(e => e.map({
+    case (p1, p2) => Pair.make(p1, p2)
+  }).asJava).asJava
 
   private class DelegateLooseAnalysisEventSink(private val delegate: LooseAnalysisEventSink) extends AnalysisEventSink {
 
@@ -210,8 +212,8 @@ private[core] object AnalyserFacadeImpl {
 
     override def nonDependentViolationsPresent(): Unit = delegate.absentDependencyViolationsPresent()
 
-    override def signalDependentViolation(sourceModule: String, destinationModule: String, expectedPath: JList[String], actualPath: JList[String], evidences: JList[JList[Pair[String, String]]]): Unit =
-      delegate.undesiredDependencyViolation(sourceModule, destinationModule, actualPath, evidences)
+    override def signalDependentViolation(sourceModule: String, destinationModule: String, expectedPath: Seq[String], actualPath: Seq[String], evidences: Seq[Seq[(String, String)]]): Unit =
+      delegate.undesiredDependencyViolation(sourceModule, destinationModule, actualPath.asJava, convertEvidences(evidences))
 
     override def signalNonDependentViolation(sourceModule: String, destinationModule: String): Unit =
       delegate.absentDependencyViolation(sourceModule, destinationModule)

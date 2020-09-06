@@ -1,0 +1,92 @@
+package com.github.fburato.highwheelmodules.core.analysis
+
+import java.io.IOException
+import java.util.{List => JList}
+
+import com.github.fburato.highwheelmodules.core.algorithms.{CompoundAccessVisitor, ModuleDependenciesGraphBuildingVisitor}
+import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
+import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, ClassParser, ClasspathRoot}
+import com.github.fburato.highwheelmodules.model.modules._
+
+import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters._
+import scala.util.{Failure, Success, Try}
+
+trait ModuleAnalyser {
+  def analyse(definitions: JList[Definition]): JList[AnalysisResult] = analyse(definitions.asScala.toSeq).get.asJava
+
+  def analyse(definitions: Seq[Definition]): Try[Seq[AnalysisResult]]
+}
+
+object ModuleAnalyser {
+
+  private class Implementation(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory) extends ModuleAnalyser {
+    private val strictAnalyser = StrictAnalyser
+    private val looseAnalyser = LooseAnalyser
+
+    override def analyse(definitions: Seq[Definition]): Try[Seq[AnalysisResult]] =
+      if (definitions.isEmpty) {
+        Success(Seq())
+      } else {
+        for {
+          visitorsAndProcessors <- visitorAndProcessors(definitions)
+          (visitor, processors) = visitorsAndProcessors
+          _ <- Try(classParser.parse(classpathRoot, visitor)) recoverWith {
+            case e: IOException => Failure(AnalyserException(e))
+          }
+          results <- sequence(processors.map(p => Try(p())))
+        } yield results
+      }
+
+    private def initialiseState(definition: Definition): Try[AnalysisState] = {
+      val other = HWModule.make("(other)", "").get
+
+      def generateState(modules: Seq[HWModule]): AnalysisState = {
+        val specModuleGraph = factory.buildMetricModuleGraph()
+        definition.modules.forEach(m => specModuleGraph.addModule(m))
+        definition.dependencies.forEach(d => specModuleGraph.addDependency(new ModuleDependency(d.source, d.dest)))
+        val actualModuleGraph = factory.buildMetricModuleGraph()
+        val auxTrackingBareGraph = factory.buildTrackingModuleGraph()
+        val trackingGraph = factory.buildEvidenceModuleGraph(auxTrackingBareGraph, evidenceLimit.map(i => new Integer(i)).toJava)
+        val modulesCollection = modules.asJavaCollection
+        val moduleGraphVisitor = new ModuleDependenciesGraphBuildingVisitor(modulesCollection, actualModuleGraph, other,
+          (sourceModule, destModule, _, _, _) => new ModuleDependency(sourceModule, destModule),
+          definition.whitelist, definition.blackList
+        )
+        val evidenceGraphVisitor = new ModuleDependenciesGraphBuildingVisitor(modulesCollection, trackingGraph, other,
+          (sourceModule, destModule, sourceAP, destAP, _) => new EvidenceModuleDependency(sourceModule, destModule, sourceAP, destAP),
+          definition.whitelist, definition.blackList
+        )
+        val accessVisitor = new CompoundAccessVisitor(moduleGraphVisitor, evidenceGraphVisitor)
+        AnalysisState(modules, definition.dependencies.asScala.toSeq, definition.noStrictDependencies.asScala.toSeq, specModuleGraph, actualModuleGraph, auxTrackingBareGraph, accessVisitor, other)
+      }
+
+      definition.modules.asScala.toSeq match {
+        case Seq() => Failure(AnalyserException("No modules provided in definition"))
+        case s => Success(generateState(s))
+      }
+    }
+
+    private def visitorAndProcessors(definitions: Seq[Definition]): Try[(AccessVisitor, Seq[() => AnalysisResult])] = {
+      val merged = definitions.map(d =>
+        for {
+          state <- initialiseState(d)
+        } yield (state.visitor, () => d.mode match {
+          case AnalysisMode.STRICT => strictAnalyser.analyse(state)
+          case AnalysisMode.LOOSE => looseAnalyser.analyse(state)
+        })
+      )
+      sequence(merged).map(sequence => {
+        val (visitors, processors) = sequence.unzip
+        (new CompoundAccessVisitor(visitors.asJava), processors)
+      })
+    }
+  }
+
+  def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyser =
+    new Implementation(classParser, classpathRoot, evidenceLimit, factory)
+
+  private def sequence[T](xs: Seq[Try[T]]): Try[Seq[T]] = xs.foldLeft(Try(Seq[T]())) {
+    (a, b) => a flatMap (c => b map (d => c :+ d))
+  }
+}

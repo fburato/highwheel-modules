@@ -11,7 +11,10 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
 
@@ -241,7 +244,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
                     new MavenMeasureSink(), new MavenStrictAnalysisSink(), new MavenLooseAnalysisEventSink());
             facade.runAnalysis(roots, Arrays.asList(specFilePath.split(",")), Optional.of(evidenceLimit));
         } catch (Exception e) {
-            throw new MojoFailureException("Error during analysis: " + e.getMessage());
+            throw new MojoFailureException("Error during analysis: " + e.getMessage(), e);
         }
     }
 }
