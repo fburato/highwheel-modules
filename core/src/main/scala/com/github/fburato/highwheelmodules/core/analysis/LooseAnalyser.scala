@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
-import com.github.fburato.highwheelmodules.core.algorithms.{ModuleGraphTransitiveClosure, ModuleGraphTransitiveClosureSImpl}
+import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure
 import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleGraph, TrackingModuleDependency}
 import com.github.fburato.highwheelmodules.model.rules.{Dependency, NoStrictDependency}
 
@@ -14,7 +14,7 @@ private[analysis] object LooseAnalyser extends Analyser {
       absentDependencies, getMetrics(state.actualGraph, state.modules, state.actualGraph, state.other))
   }
 
-  private def getAbsentDependencies(transitiveClosure: ModuleGraphTransitiveClosureSImpl,
+  private def getAbsentDependencies(transitiveClosure: ModuleGraphTransitiveClosure,
                                     dependencies: Seq[Dependency],
                                     other: HWModule): Seq[ModuleConnectionViolation] = {
     dependencies
@@ -22,7 +22,7 @@ private[analysis] object LooseAnalyser extends Analyser {
       .map(d => ModuleConnectionViolation(d.source.name, d.dest.name))
   }
 
-  private def getUndesiredDependencies(transitiveClosure: ModuleGraphTransitiveClosureSImpl,
+  private def getUndesiredDependencies(transitiveClosure: ModuleGraphTransitiveClosure,
                                        noStrictDependencies: Seq[NoStrictDependency],
                                        other: HWModule,
                                        trackingGraph: ModuleGraph[TrackingModuleDependency]): Seq[EvidenceBackedViolation] = {
