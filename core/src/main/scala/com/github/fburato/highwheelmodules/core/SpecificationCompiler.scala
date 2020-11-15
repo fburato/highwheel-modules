@@ -1,13 +1,16 @@
 package com.github.fburato.highwheelmodules.core
 
-import java.io.{File, FileReader, IOException}
+import java.io.File
+import java.nio.charset.StandardCharsets
 
-import com.github.fburato.highwheelmodules.core.analysis.AnalyserException
-import com.github.fburato.highwheelmodules.core.specification.Compiler
-import com.github.fburato.highwheelmodules.core.specification.parsers.DefinitionParser
+import com.github.fburato.highwheelmodules.core.specification.HwmCompiler
+import com.github.fburato.highwheelmodules.core.specification.lexer.HwmLexer
+import com.github.fburato.highwheelmodules.core.specification.parser.HwmParser
 import com.github.fburato.highwheelmodules.model.modules.Definition
 
-import scala.util.{Failure, Try}
+import scala.io.Source
+import scala.util.Try
+import scala.util.parsing.input.StreamReader
 
 trait SpecificationCompiler {
   def compile(file: File): Try[Definition]
@@ -15,18 +18,11 @@ trait SpecificationCompiler {
 
 object SpecificationCompiler {
 
-  def apply(): SpecificationCompiler = new SpecificationCompiler {
-    private val definitionParser = new DefinitionParser
-    private val compiler = new Compiler
-
-    override def compile(file: File): Try[Definition] = {
-      Try {
-        val definition = definitionParser parse new FileReader(file)
-        compiler.compile(definition)
-      } recoverWith {
-        case e: IOException => Failure(AnalyserException(s"Error while parsing the specification file: '${e.getMessage}'"))
-      }
-    }
-  }
+  def apply(): SpecificationCompiler = (file: File) => (for {
+    maybeTokens <- Try(HwmLexer(StreamReader(Source.fromFile(file, StandardCharsets.UTF_8.toString).reader()))).toEither
+    tokens <- maybeTokens
+    parsedDefinition <- HwmParser.parse(tokens)
+    definition <- HwmCompiler.compile(parsedDefinition)
+  } yield definition).toTry
 
 }

@@ -114,7 +114,7 @@ public class HighwheelMavenPluginTest {
 
     @Test
     public void shouldReportEvidenceInCaseOfFailure() {
-        verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec-strict-mode.hwm");
+        verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec-strict-mode.hwm -DhwmEvidenceLimit=5");
         final String logFile = runPluginAndReturnLog(true);
         assertThat(logFile).matches(
                 "(?s).*Facade -> Utils. Expected path: \\(empty\\), Actual module path: Facade -> CoreInternals -> Utils.*"
@@ -127,8 +127,8 @@ public class HighwheelMavenPluginTest {
         verifier.getCliOptions().add("-DhwmSpecFiles=loose-spec-strict-mode.hwm  -DhwmEvidenceLimit=0");
         final String logFile = runPluginAndReturnLog(true);
         assertThat(logFile).matches(
-                "(?s).*Facade -> Utils. Expected path: \\(empty\\), Actual module path: Facade -> CoreInternals -> Utils.*"
-                        + "Facade -> Model. Expected path: Facade -> CoreInternals -> Model, Actual module path: Facade -> Model.*")
+                "(?s).*Facade -> Model. Expected path: Facade -> CoreInternals -> Model, Actual module path: Facade -> Model.*"
+                        + "Facade -> Utils. Expected path: \\(empty\\), Actual module path: Facade -> CoreInternals -> Utils.*")
                 .doesNotContainPattern("(?s).*Actual evidence paths:.*");
     }
 

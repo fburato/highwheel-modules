@@ -1,5 +1,5 @@
 whitelist:
-    "com.pitest.highwheel.", "something"
+    "com.pitest.highwheel.", "foo"
 
 modules:
     Core = "com.pitest.highwheel.core.*" , "com.pitest.highwheel.core2.*"

@@ -4,9 +4,8 @@ import java.nio.file.Paths
 import java.util.{Optional, List => JList}
 
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserException
-import com.github.fburato.highwheelmodules.core.specification.CompilerException
+import com.github.fburato.highwheelmodules.core.specification.{CompilerException, ParserException}
 import com.github.fburato.highwheelmodules.utils.Pair
-import org.jparsec.error.ParserException
 import org.mockito.ArgumentMatcher
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -251,7 +250,7 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
     "analyse all specifications successfully on strict analysis" in {
       testee.runAnalysis(list(orgExamplePath), list(defaultSpec, alternativeStrictSpec), Optional.empty())
 
-      accumulator should contain theSameElementsInOrderAs List(
+      accumulator should contain theSameElementsAs List(
         "IGNORED_PATHS - ",
         "DIRECTORIES - 1",
         "JARS - ",
@@ -285,7 +284,7 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
         testee.runAnalysis(list(orgExamplePath), list(wrongStrictDefinitionSpec, alternativeStrictSpec), Optional.empty())
       }
 
-      accumulator should contain theSameElementsInOrderAs List(
+      accumulator should contain theSameElementsAs List(
         "IGNORED_PATHS - ",
         "DIRECTORIES - 1",
         "JARS - ",
@@ -319,7 +318,7 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
     "make alternate analyses successfully" in {
       testee.runAnalysis(list(orgExamplePath), list(looseSpec, alternativeStrictSpec), Optional.of(0))
 
-      accumulator should contain theSameElementsInOrderAs List(
+      accumulator should contain theSameElementsAs List(
         "IGNORED_PATHS - ",
         "DIRECTORIES - 1",
         "JARS - ",

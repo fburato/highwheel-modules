@@ -7,7 +7,7 @@ import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser
 import com.github.fburato.highwheelmodules.bytecodeparser.classpath.{ArchiveClassPathRoot, CompoundClassPathRoot, DirectoryClassPathRoot}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.EventSink.{LooseAnalysisEventSink, MeasureEventSink, PathEventSink, StrictAnalysisEventSink}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.Printer
-import com.github.fburato.highwheelmodules.core.analysis.{AnalyserException, AnalysisResult, Metric, ModuleAnalyser}
+import com.github.fburato.highwheelmodules.core.analysis._
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
 import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
@@ -127,7 +127,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     } else {
       eventSink.dependentViolationsPresent()
       val violations = analysisResult.evidenceBackedViolations
-      violations.foreach(v => eventSink.signalDependentViolation(v.sourceModule, v.destinationModule,
+      violations.sortBy(v => (v.sourceModule, v.destinationModule)).foreach(v => eventSink.signalDependentViolation(v.sourceModule, v.destinationModule,
         appendStartIfNotEmpty(v.specificationPath, v.sourceModule),
         appendStartIfNotEmpty(v.actualPath, v.sourceModule), v.evidences))
     }
@@ -136,7 +136,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     } else {
       eventSink.nonDependentViolationsPresent()
       val violations = analysisResult.moduleConnectionViolations
-      violations.foreach(v => eventSink.signalNonDependentViolation(v.sourceModule, v.destinationModule))
+      violations.sortBy(v => (v.sourceModule, v.destinationModule)).foreach(v => eventSink.signalNonDependentViolation(v.sourceModule, v.destinationModule))
     }
     if (analysisResult.evidenceBackedViolations.nonEmpty || analysisResult.moduleConnectionViolations.nonEmpty) {
       printer.info(s"Analysis on '$path' failed")
@@ -148,7 +148,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
   }
 
   private def printMetrics(metrics: Seq[Metric]): Unit = {
-    metrics.foreach(m => measureEventSink.fanInOutMeasure(m.module, m.fanIn, m.fanOut))
+    metrics.sortBy(_.module).foreach(m => measureEventSink.fanInOutMeasure(m.module, m.fanIn, m.fanOut))
   }
 
   private def appendStartIfNotEmpty[T](collection: Seq[T], start: T): Seq[T] =
