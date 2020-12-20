@@ -9,9 +9,7 @@ import java.util.zip.ZipFile
 import scala.jdk.CollectionConverters.EnumerationHasAsScala
 import scala.util.{Try, Using}
 
-class ArchiveClassPathRootS(file: File) extends ClassPathRootDelegator(new InternalArchiveClassPathRoot(file))
-
-class InternalArchiveClassPathRoot(file: File) extends ClasspathRootS {
+class ArchiveClassPathRoot(file: File) extends ClasspathRootS {
   override def getData(elementName: ElementName): Try[InputStream] = getResource(elementName.asInternalName() + ".class")
 
   override def classNames: Try[Seq[ElementName]] = {

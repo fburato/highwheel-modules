@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.algorithms
 
 import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessType, ElementName}
-import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitorS
 import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, HWModule, ModuleGraph}
 
 case class ModuleDependenciesGraphBuildingVisitorS[T](modules: Seq[HWModule],
@@ -9,7 +9,7 @@ case class ModuleDependenciesGraphBuildingVisitorS[T](modules: Seq[HWModule],
                                                       other: HWModule,
                                                       dependencyBuilder: (HWModule, HWModule, AccessPoint, AccessPoint, AccessType) => T,
                                                       whiteList: Option[AnonymousModule],
-                                                      blacklist: Option[AnonymousModule]) extends AccessVisitor {
+                                                      blacklist: Option[AnonymousModule]) extends AccessVisitorS {
 
   private def addModulesToGraph(): Unit = {
     graph addModule other

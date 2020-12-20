@@ -2,25 +2,22 @@ package com.github.fburato.highwheelmodules.core.analysis
 
 import com.github.fburato.highwheelmodules.core.algorithms.{CompoundAccessVisitor, ModuleDependenciesGraphBuildingVisitorS}
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
-import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, ClassParser, ClasspathRoot}
+import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitorS, ClassParserS, ClasspathRootS}
 import com.github.fburato.highwheelmodules.model.modules._
 import com.github.fburato.highwheelmodules.utils.TryUtils._
 
 import java.io.IOException
-import java.util.{List => JList}
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters._
 import scala.util.{Failure, Success, Try}
 
 trait ModuleAnalyser {
-  def analyse(definitions: JList[Definition]): JList[AnalysisResult] = analyse(definitions.asScala.toSeq).get.asJava
-
   def analyse(definitions: Seq[Definition]): Try[Seq[AnalysisResult]]
 }
 
 object ModuleAnalyser {
 
-  private class Implementation(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory) extends ModuleAnalyser {
+  private class Implementation(classParser: ClassParserS, classpathRoot: ClasspathRootS, evidenceLimit: Option[Int], factory: ModuleGraphFactory) extends ModuleAnalyser {
     private val strictAnalyser = StrictAnalyser
     private val looseAnalyser = LooseAnalyser
 
@@ -31,7 +28,7 @@ object ModuleAnalyser {
         for {
           visitorsAndProcessors <- visitorAndProcessors(definitions)
           (visitor, processors) = visitorsAndProcessors
-          _ <- Try(classParser.parse(classpathRoot, visitor)) recoverWith {
+          _ <- classParser.parse(classpathRoot, visitor) recoverWith {
             case e: IOException => Failure(AnalyserException(e))
           }
           results <- sequence(processors.map(p => Try(p())))
@@ -66,7 +63,7 @@ object ModuleAnalyser {
       }
     }
 
-    private def visitorAndProcessors(definitions: Seq[Definition]): Try[(AccessVisitor, Seq[() => AnalysisResult])] = {
+    private def visitorAndProcessors(definitions: Seq[Definition]): Try[(AccessVisitorS, Seq[() => AnalysisResult])] = {
       val merged = definitions.map(d =>
         for {
           state <- initialiseState(d)
@@ -82,6 +79,6 @@ object ModuleAnalyser {
     }
   }
 
-  def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyser =
+  def apply(classParser: ClassParserS, classpathRoot: ClasspathRootS, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyser =
     new Implementation(classParser, classpathRoot, evidenceLimit, factory)
 }

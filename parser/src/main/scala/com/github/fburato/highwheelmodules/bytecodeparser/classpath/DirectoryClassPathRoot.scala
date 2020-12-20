@@ -8,9 +8,7 @@ import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.util.Try
 
-class DirectoryClassPathRootS(file: File) extends ClassPathRootDelegator(new InternalDirectoryClassPathRoot(file))
-
-class InternalDirectoryClassPathRoot(root: File) extends ClasspathRootS {
+class DirectoryClassPathRoot(root: File) extends ClasspathRootS {
   override def getData(elementName: ElementName): Try[InputStream] =
     getResource(elementName.asJavaName.replace('.', File.separatorChar).concat(".class"))
 

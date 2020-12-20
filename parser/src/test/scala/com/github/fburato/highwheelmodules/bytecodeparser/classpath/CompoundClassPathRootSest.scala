@@ -15,7 +15,7 @@ import scala.util.{Failure, Success}
 class CompoundClassPathRootSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
   private val child1 = mock[ClasspathRootS]
   private val child2 = mock[ClasspathRootS]
-  private val testee = new InternalClassPathRoot(Seq(child1, child2))
+  private val testee = new ClassPathRoot(Seq(child1, child2))
   private val inputStream1 = new ByteArrayInputStream(new Array[Byte](10))
   private val inputStream2 = new ByteArrayInputStream(new Array[Byte](20))
 

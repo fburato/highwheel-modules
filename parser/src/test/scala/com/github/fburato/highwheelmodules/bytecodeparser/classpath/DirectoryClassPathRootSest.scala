@@ -13,11 +13,11 @@ import scala.util.Success
 
 class DirectoryClassPathRootSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
-  private val invalidRootTestee: InternalDirectoryClassPathRoot =
-    new InternalDirectoryClassPathRoot(new File("foo"))
+  private val invalidRootTestee: DirectoryClassPathRoot =
+    new DirectoryClassPathRoot(new File("foo"))
 
   private val validRootTestee =
-    new InternalDirectoryClassPathRoot(Paths.get("target", "test-classes").toFile)
+    new DirectoryClassPathRoot(Paths.get("target", "test-classes").toFile)
 
 
   "getData" should {

@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core
 
 
-import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitorS
 import com.github.fburato.highwheelmodules.model.modules._
 import com.github.fburato.highwheelmodules.model.rules.{Dependency, NoStrictDependency}
 
@@ -16,7 +16,7 @@ package object analysis {
                            specGraph: MetricModuleGraph[ModuleDependency],
                            actualGraph: MetricModuleGraph[ModuleDependency],
                            actualTrackingGraph: ModuleGraph[TrackingModuleDependency],
-                           visitor: AccessVisitor,
+                           visitor: AccessVisitorS,
                            other: HWModule)
 
   case class Metric(module: String, fanIn: Int, fanOut: Int)

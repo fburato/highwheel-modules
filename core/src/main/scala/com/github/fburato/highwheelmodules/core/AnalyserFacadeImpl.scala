@@ -1,13 +1,13 @@
 package com.github.fburato.highwheelmodules.core
 
-import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParserS
-import com.github.fburato.highwheelmodules.bytecodeparser.classpath.{ArchiveClassPathRootS, CompoundClassPathRootS, DirectoryClassPathRootS}
+import com.github.fburato.highwheelmodules.bytecodeparser.InternalClassPathParser
+import com.github.fburato.highwheelmodules.bytecodeparser.classpath.{ArchiveClassPathRoot, ClassPathRoot, DirectoryClassPathRoot}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.EventSink.{LooseAnalysisEventSink, MeasureEventSink, PathEventSink, StrictAnalysisEventSink}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.Printer
 import com.github.fburato.highwheelmodules.core.analysis._
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
-import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
+import com.github.fburato.highwheelmodules.model.classpath.{ClassParserS, ClasspathRootS}
 import com.github.fburato.highwheelmodules.model.modules.{Definition, ModuleGraphFactory}
 import com.github.fburato.highwheelmodules.utils.Pair
 
@@ -23,7 +23,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
                                        measureEventSink: MeasureEventSink,
                                        strictAnalysisEventSink: StrictAnalysisEventSink,
                                        looseAnalysisEventSink: LooseAnalysisEventSink,
-                                       classParser: ClassParser,
+                                       classParser: ClassParserS,
                                        moduleGraphFactory: ModuleGraphFactory,
                                        specificationCompiler: SpecificationCompiler) extends AnalyserFacade {
 
@@ -33,7 +33,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
            strictAnalysisEventSink: StrictAnalysisEventSink,
            looseAnalysisEventSink: LooseAnalysisEventSink) = {
     this(printer, pathEventSink, measureEventSink, strictAnalysisEventSink, looseAnalysisEventSink,
-      new ClassPathParserS(_ => true),
+      new InternalClassPathParser(_ => true),
       new GuavaGraphFactory,
       SpecificationCompiler()
     )
@@ -50,7 +50,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
   }
 
   override def runAnalysis(classPathRoots: JList[String], specificationPath: JList[String], evidenceLimit: JOptional[Integer]): Unit = {
-    val classPathRoot = getAnalysisScope(classPathRoots)
+    val classPathRoot = getAnalysisScope(classPathRoots.asScala.toSeq)
     val definitionsAndPaths = specificationPath.asScala.toSeq.map { path => compileSpecification(path).map(d => (path, d)) }
     val traversed = sequence(definitionsAndPaths)
     val analyser = ModuleAnalyser(classParser, classPathRoot, evidenceLimit.toScala.map(i => i.toInt), moduleGraphFactory)
@@ -76,13 +76,13 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     }.get
   }
 
-  private def getAnalysisScope(paths: JList[String]): ClasspathRoot = {
-    case class Classification(jars: ArrayBuffer[File], dirs: ArrayBuffer[File], ignored: ArrayBuffer[String])
-    def classify(paths: JList[String]): Classification = {
+  private def getAnalysisScope(paths: Seq[String]): ClasspathRootS = {
+    case class Classification(jars: Seq[File], dirs: Seq[File], ignored: Seq[String])
+    def classify(paths: Seq[String]): Classification = {
       val jars = new ArrayBuffer[File]
       val dirs = new ArrayBuffer[File]
       val ignored = new ArrayBuffer[String]
-      paths.forEach { path =>
+      paths.foreach { path =>
         val file = new File(path)
         if (!file.exists || !file.canRead || (file.isFile && !path.endsWith(".jar"))) {
           ignored += path
@@ -92,7 +92,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
           jars += file
         }
       }
-      Classification(jars, dirs, ignored)
+      Classification(jars.toSeq, dirs.toSeq, ignored.toSeq)
     }
 
     val classification = classify(paths)
@@ -100,9 +100,9 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     pathEventSink directories classification.dirs.map(_.getAbsolutePath).asJava
     pathEventSink jars classification.jars.map(_.getAbsolutePath).asJava
 
-    new CompoundClassPathRootS(
-      (classification.dirs.map(f => new DirectoryClassPathRootS(f).asInstanceOf[ClasspathRoot]) ++
-        classification.jars.map(f => new ArchiveClassPathRootS(f).asInstanceOf[ClasspathRoot])).asJava)
+    new ClassPathRoot(
+      classification.dirs.map(f => new DirectoryClassPathRoot(f).asInstanceOf[ClasspathRootS]) ++
+        classification.jars.map(f => new ArchiveClassPathRoot(f).asInstanceOf[ClasspathRootS]))
   }
 
   private def compileSpecification(specificationPath: String): Try[Definition] = {
