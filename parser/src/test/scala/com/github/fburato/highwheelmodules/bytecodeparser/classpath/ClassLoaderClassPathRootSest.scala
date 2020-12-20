@@ -12,7 +12,7 @@ import scala.util.Success
 
 class ClassLoaderClassPathRootSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
-  private val testee = new InternalClassLoaderClassPathRoot(this.getClass.getClassLoader)
+  private val testee = new ClassLoaderClassPathRoot(this.getClass.getClassLoader)
 
   "classNames should return empty" in {
     testee.classNames shouldEqual Success(Seq())

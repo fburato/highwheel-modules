@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.algorithms
 
 import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessType, ElementName}
-import com.github.fburato.highwheelmodules.model.classpath.AccessVisitorS
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
 import org.mockito.Mockito
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.should.Matchers
@@ -9,8 +9,8 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class CompoundAccessVistorSest extends AnyWordSpec with Matchers with MockitoSugar {
 
-  private val av1 = mock[AccessVisitorS]
-  private val av2 = mock[AccessVisitorS]
+  private val av1 = mock[AccessVisitor]
+  private val av2 = mock[AccessVisitor]
   private val testee = CompoundAccessVisitor(Seq(av1, av2))
   private val order = Mockito.inOrder(av1, av2)
   private val ap = AccessPoint.create(ElementName.fromString("a"))

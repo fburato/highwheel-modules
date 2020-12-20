@@ -1,10 +1,10 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
-import com.github.fburato.highwheelmodules.bytecodeparser.InternalClassPathParser
+import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser
 import com.github.fburato.highwheelmodules.bytecodeparser.classpath.DirectoryClassPathRoot
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
-import com.github.fburato.highwheelmodules.model.classpath.{ClassParserS, ClasspathRootS}
+import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
 import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, Definition, HWModule, ModuleGraphFactory}
 import com.github.fburato.highwheelmodules.model.rules.{Dependency, NoStrictDependency}
 import org.mockito.scalatest.MockitoSugar
@@ -19,7 +19,7 @@ import scala.util.Failure
 class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
   private val orgExamples = new DirectoryClassPathRoot(Paths.get("target", "test-classes").toFile)
-  private val realClassParser: ClassParserS = new InternalClassPathParser(item => item.asJavaName() startsWith "org.example")
+  private val realClassParser: ClassParser = new ClassPathParser(item => item.asJavaName() startsWith "org.example")
   private val classParser = spy(realClassParser)
   private val factory: ModuleGraphFactory = new GuavaGraphFactory
 
@@ -32,7 +32,7 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
   private val IO = HWModule.make("IO", "org.example.io.*").get()
   private val UTILS = HWModule.make("Commons", "org.example.commons.*").get()
 
-  private def testee(root: ClasspathRootS, evidenceLimit: Option[Int]): ModuleAnalyser =
+  private def testee(root: ClasspathRoot, evidenceLimit: Option[Int]): ModuleAnalyser =
     ModuleAnalyser(classParser, root, evidenceLimit, factory)
 
   private def metric(name: String, fanIn: Int, fanOut: Int): Metric = Metric(name, fanIn, fanOut)

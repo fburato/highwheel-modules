@@ -1,14 +1,14 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName
-import com.github.fburato.highwheelmodules.model.classpath.ClasspathRootS
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
 
 import java.io.{File, FileInputStream, InputStream}
 import scala.annotation.tailrec
 import scala.collection.mutable
 import scala.util.Try
 
-class DirectoryClassPathRoot(root: File) extends ClasspathRootS {
+class DirectoryClassPathRoot(root: File) extends ClasspathRoot {
   override def getData(elementName: ElementName): Try[InputStream] =
     getResource(elementName.asJavaName.replace('.', File.separatorChar).concat(".class"))
 

@@ -11,24 +11,19 @@ import com.example.generics.HasCollectionOfFooParameter;
 import com.example.generics.ImplementsGenericisedInterface;
 import com.example.generics.ReturnsCollectionOfFoo;
 import com.example.innerclasses.CallsMethodFromFooWithinInnerClass;
-import com.github.fburato.highwheelmodules.bytecodeparser.classpath.ClassLoaderClassPathRootS;
+import com.github.fburato.highwheelmodules.bytecodeparser.classpath.SpecificClassPathRoot;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPoint;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessPointName;
 import com.github.fburato.highwheelmodules.model.bytecode.AccessType;
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
 import com.github.fburato.highwheelmodules.model.classpath.ClassParser;
-import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.objectweb.asm.Type;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.function.Predicate;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -270,60 +265,12 @@ public class ClassPathParserSystemTest {
     }
 
     private void parseClassPath(final Class<?>... classes) {
-        try {
-            this.testee = makeToSeeOnlyExampleDotCom();
-            this.testee.parse(createRootFor(classes), this.v);
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        this.testee = makeToSeeOnlyExampleDotCom();
+        this.testee.parse(new SpecificClassPathRoot(classes), this.v).get();
     }
 
     private ClassParser makeToSeeOnlyExampleDotCom() {
-        return new ClassPathParserS(matchOnlyExampleDotCom());
-    }
-
-    private ClasspathRoot createRootFor(final Class<?>[] classes) {
-        final Collection<ElementName> elements = new ArrayList<>();
-        final ClassLoaderClassPathRootS data = new ClassLoaderClassPathRootS(
-                Thread.currentThread().getContextClassLoader());
-
-        for (final Class<?> each : classes) {
-            final ElementName element = ElementName.fromClass(each);
-            elements.add(element);
-            elements.addAll(first3InnerClassesIfPresent(element, data));
-        }
-
-        return new ClasspathRoot() {
-            public InputStream getData(final ElementName name) throws IOException {
-                return data.getData(name);
-            }
-
-            public Collection<ElementName> classNames() {
-                return elements;
-            }
-
-            public InputStream getResource(final String name) throws IOException {
-                return data.getResource(name);
-            }
-
-        };
-
-    }
-
-    private Collection<? extends ElementName> first3InnerClassesIfPresent(final ElementName element,
-                                                                          final ClasspathRoot data) {
-        final Collection<ElementName> innerClasses = new ArrayList<>();
-        try {
-            for (int i = 1; i != 4; i++) {
-                final ElementName innerClass = ElementName.fromString(element.asJavaName() + "$" + i);
-                if (data.getData(innerClass) != null) {
-                    innerClasses.add(innerClass);
-                }
-            }
-            return innerClasses;
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
+        return new ClassPathParser(matchOnlyExampleDotCom());
     }
 
     private AccessPoint accessAType(final Class<?> type) {

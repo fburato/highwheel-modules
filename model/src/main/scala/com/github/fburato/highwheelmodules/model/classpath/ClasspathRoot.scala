@@ -6,7 +6,7 @@ import java.io.InputStream
 import scala.util.Try
 
 
-trait ClasspathRootS {
+trait ClasspathRoot {
 
   def getData(elementName: ElementName): Try[InputStream]
 

@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.bytecodeparser
 
 import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessPointName, AccessType, ElementName}
-import com.github.fburato.highwheelmodules.model.classpath.AccessVisitorS
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
 import org.apache.commons.lang3.RandomStringUtils
 import org.mockito.ArgumentCaptor
 import org.mockito.scalatest.MockitoSugar
@@ -20,7 +20,7 @@ class FilteringDecoratorSest extends AnyWordSpec with Matchers with MockitoSugar
   private val matchingAccessPoint = AccessPoint.create(matchingElement, AccessPointName.create(matchingString, "()V"))
   private val notMatchingAccessPoint = AccessPoint.create(notMatchingElement, AccessPointName.create(notMatchingString, "()V"))
 
-  private val delegate = mock[AccessVisitorS]
+  private val delegate = mock[AccessVisitor]
   private val testee = new FilteringDecorator(delegate, el => el.asInternalName() == matchingString)
 
 

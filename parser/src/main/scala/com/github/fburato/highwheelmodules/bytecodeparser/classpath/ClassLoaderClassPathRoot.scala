@@ -1,14 +1,12 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName
-import com.github.fburato.highwheelmodules.model.classpath.ClasspathRootS
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
 
 import java.io.InputStream
 import scala.util.{Success, Try}
 
-class ClassLoaderClassPathRootS(classLoader: ClassLoader) extends ClassPathRootDelegator(new InternalClassLoaderClassPathRoot(classLoader))
-
-class InternalClassLoaderClassPathRoot(classLoader: ClassLoader) extends ClasspathRootS {
+class ClassLoaderClassPathRoot(classLoader: ClassLoader) extends ClasspathRoot {
   override def getData(elementName: ElementName): Try[InputStream] =
     Try(classLoader.getResourceAsStream(elementName.asInternalName + ".class"))
 

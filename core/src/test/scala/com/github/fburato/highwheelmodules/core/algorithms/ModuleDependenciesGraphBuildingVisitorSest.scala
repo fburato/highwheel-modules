@@ -23,7 +23,7 @@ class ModuleDependenciesGraphBuildingVisitorSest extends AnyWordSpec with Matche
   private val moduleGraph = new GuavaModuleGraph(graph)
 
   private def makeTestee(whiteList: Option[String], blackList: Option[String]) =
-    ModuleDependenciesGraphBuildingVisitorS[ModuleDependency](modules, moduleGraph, OTHER,
+    ModuleDependenciesGraphBuildingVisitor[ModuleDependency](modules, moduleGraph, OTHER,
       (m1, m2, _, _, _) => new ModuleDependency(m1, m2), whiteList.flatMap(wl => AnonymousModule.make(wl).toScala),
       blackList.flatMap(bl => AnonymousModule.make(bl).toScala)
     )

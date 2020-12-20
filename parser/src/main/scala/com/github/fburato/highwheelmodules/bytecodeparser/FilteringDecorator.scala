@@ -1,13 +1,13 @@
 package com.github.fburato.highwheelmodules.bytecodeparser
 
 import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessType, ElementName}
-import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, AccessVisitorS}
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
 
 import java.util.function.Predicate
 
-class FilteringDecorator(child: AccessVisitorS, filter: ElementName => Boolean) extends AccessVisitor {
+class FilteringDecorator(child: AccessVisitor, filter: ElementName => Boolean) extends AccessVisitor {
 
-  def this(child: AccessVisitorS, filter: Predicate[ElementName]) = this(child, el => filter.test(el)) // TODO remove after rewrite
+  def this(child: AccessVisitor, filter: Predicate[ElementName]) = this(child, el => filter.test(el)) // TODO remove after rewrite
 
   override def apply(source: AccessPoint, dest: AccessPoint, `type`: AccessType): Unit = {
     if (filter(dest.getElementName) && filter(source.getElementName)) {

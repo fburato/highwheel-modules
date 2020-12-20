@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName
-import com.github.fburato.highwheelmodules.model.classpath.ClasspathRootS
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
 import com.github.fburato.highwheelmodules.utils.StreamUtil
 
 import java.io.{File, InputStream}
@@ -9,7 +9,7 @@ import java.util.zip.ZipFile
 import scala.jdk.CollectionConverters.EnumerationHasAsScala
 import scala.util.{Try, Using}
 
-class ArchiveClassPathRoot(file: File) extends ClasspathRootS {
+class ArchiveClassPathRoot(file: File) extends ClasspathRoot {
   override def getData(elementName: ElementName): Try[InputStream] = getResource(elementName.asInternalName() + ".class")
 
   override def classNames: Try[Seq[ElementName]] = {

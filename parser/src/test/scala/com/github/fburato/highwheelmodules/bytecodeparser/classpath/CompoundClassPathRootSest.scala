@@ -2,7 +2,7 @@ package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.bytecodeparser.TryMatchers._
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName
-import com.github.fburato.highwheelmodules.model.classpath.ClasspathRootS
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
 import org.apache.commons.lang3.RandomStringUtils
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -13,8 +13,8 @@ import java.io.ByteArrayInputStream
 import scala.util.{Failure, Success}
 
 class CompoundClassPathRootSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
-  private val child1 = mock[ClasspathRootS]
-  private val child2 = mock[ClasspathRootS]
+  private val child1 = mock[ClasspathRoot]
+  private val child2 = mock[ClasspathRoot]
   private val testee = new ClassPathRoot(Seq(child1, child2))
   private val inputStream1 = new ByteArrayInputStream(new Array[Byte](10))
   private val inputStream2 = new ByteArrayInputStream(new Array[Byte](20))

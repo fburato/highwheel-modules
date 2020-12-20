@@ -1,8 +1,8 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
-import com.github.fburato.highwheelmodules.core.algorithms.{CompoundAccessVisitor, ModuleDependenciesGraphBuildingVisitorS}
+import com.github.fburato.highwheelmodules.core.algorithms.{CompoundAccessVisitor, ModuleDependenciesGraphBuildingVisitor}
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
-import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitorS, ClassParserS, ClasspathRootS}
+import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, ClassParser, ClasspathRoot}
 import com.github.fburato.highwheelmodules.model.modules._
 import com.github.fburato.highwheelmodules.utils.TryUtils._
 
@@ -17,7 +17,7 @@ trait ModuleAnalyser {
 
 object ModuleAnalyser {
 
-  private class Implementation(classParser: ClassParserS, classpathRoot: ClasspathRootS, evidenceLimit: Option[Int], factory: ModuleGraphFactory) extends ModuleAnalyser {
+  private class Implementation(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory) extends ModuleAnalyser {
     private val strictAnalyser = StrictAnalyser
     private val looseAnalyser = LooseAnalyser
 
@@ -45,11 +45,11 @@ object ModuleAnalyser {
         val actualModuleGraph = factory.buildMetricModuleGraph()
         val auxTrackingBareGraph = factory.buildTrackingModuleGraph()
         val trackingGraph = factory.buildEvidenceModuleGraph(auxTrackingBareGraph, evidenceLimit.map(i => new Integer(i)).toJava)
-        val moduleGraphVisitor = ModuleDependenciesGraphBuildingVisitorS(modules, actualModuleGraph, other,
+        val moduleGraphVisitor = ModuleDependenciesGraphBuildingVisitor(modules, actualModuleGraph, other,
           (sourceModule, destModule, _, _, _) => new ModuleDependency(sourceModule, destModule),
           definition.whitelist.toScala, definition.blackList.toScala
         )
-        val evidenceGraphVisitor = ModuleDependenciesGraphBuildingVisitorS(modules, trackingGraph, other,
+        val evidenceGraphVisitor = ModuleDependenciesGraphBuildingVisitor(modules, trackingGraph, other,
           (sourceModule, destModule, sourceAP, destAP, _) => new EvidenceModuleDependency(sourceModule, destModule, sourceAP, destAP),
           definition.whitelist.toScala, definition.blackList.toScala
         )
@@ -63,7 +63,7 @@ object ModuleAnalyser {
       }
     }
 
-    private def visitorAndProcessors(definitions: Seq[Definition]): Try[(AccessVisitorS, Seq[() => AnalysisResult])] = {
+    private def visitorAndProcessors(definitions: Seq[Definition]): Try[(AccessVisitor, Seq[() => AnalysisResult])] = {
       val merged = definitions.map(d =>
         for {
           state <- initialiseState(d)
@@ -79,6 +79,6 @@ object ModuleAnalyser {
     }
   }
 
-  def apply(classParser: ClassParserS, classpathRoot: ClasspathRootS, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyser =
+  def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyser =
     new Implementation(classParser, classpathRoot, evidenceLimit, factory)
 }
