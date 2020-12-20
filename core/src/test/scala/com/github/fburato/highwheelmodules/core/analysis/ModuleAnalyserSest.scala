@@ -1,9 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
-import java.nio.file.Paths
-
-import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser
-import com.github.fburato.highwheelmodules.bytecodeparser.classpath.DirectoryClassPathRoot
+import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParserS
+import com.github.fburato.highwheelmodules.bytecodeparser.classpath.DirectoryClassPathRootS
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
 import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
@@ -14,13 +12,14 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.nio.file.Paths
 import scala.jdk.CollectionConverters._
 import scala.util.Failure
 
 class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
-  private val orgExamples = new DirectoryClassPathRoot(Paths.get("target", "test-classes").toFile)
-  private val realClassParser: ClassParser = new ClassPathParser(item => item.asJavaName() startsWith "org.example")
+  private val orgExamples = new DirectoryClassPathRootS(Paths.get("target", "test-classes").toFile)
+  private val realClassParser: ClassParser = new ClassPathParserS(item => item.asJavaName() startsWith "org.example")
   private val classParser = spy(realClassParser)
   private val factory: ModuleGraphFactory = new GuavaGraphFactory
 

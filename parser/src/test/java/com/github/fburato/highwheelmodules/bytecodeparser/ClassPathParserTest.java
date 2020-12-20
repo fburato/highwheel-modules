@@ -1,24 +1,25 @@
 package com.github.fburato.highwheelmodules.bytecodeparser;
 
-import static org.mockito.Mockito.*;
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
+import com.github.fburato.highwheelmodules.model.classpath.ClassParser;
+import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.function.Predicate;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor;
-import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot;
-import com.github.fburato.highwheelmodules.model.bytecode.ElementName;
+import static org.mockito.Mockito.*;
 
 public class ClassPathParserTest {
 
-    private ClassPathParser testee;
+    private ClassParser testee;
 
     @Mock
     private ClasspathRoot cp;
@@ -32,7 +33,7 @@ public class ClassPathParserTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.testee = new ClassPathParser(this.filter);
+        this.testee = new ClassPathParserS(this.filter);
     }
 
     @Test

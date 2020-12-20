@@ -1,10 +1,7 @@
 package com.github.fburato.highwheelmodules.core
 
-import java.io.File
-import java.util.{List => JList, Optional => JOptional}
-
-import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser
-import com.github.fburato.highwheelmodules.bytecodeparser.classpath.{ArchiveClassPathRoot, CompoundClassPathRoot, DirectoryClassPathRoot}
+import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParserS
+import com.github.fburato.highwheelmodules.bytecodeparser.classpath.{ArchiveClassPathRootS, CompoundClassPathRootS, DirectoryClassPathRootS}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.EventSink.{LooseAnalysisEventSink, MeasureEventSink, PathEventSink, StrictAnalysisEventSink}
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.Printer
 import com.github.fburato.highwheelmodules.core.analysis._
@@ -14,6 +11,8 @@ import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, Classpa
 import com.github.fburato.highwheelmodules.model.modules.{Definition, ModuleGraphFactory}
 import com.github.fburato.highwheelmodules.utils.Pair
 
+import java.io.File
+import java.util.{List => JList, Optional => JOptional}
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters._
@@ -34,7 +33,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
            strictAnalysisEventSink: StrictAnalysisEventSink,
            looseAnalysisEventSink: LooseAnalysisEventSink) = {
     this(printer, pathEventSink, measureEventSink, strictAnalysisEventSink, looseAnalysisEventSink,
-      new ClassPathParser(_ => true),
+      new ClassPathParserS(_ => true),
       new GuavaGraphFactory,
       SpecificationCompiler()
     )
@@ -101,9 +100,9 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     pathEventSink directories classification.dirs.map(_.getAbsolutePath).asJava
     pathEventSink jars classification.jars.map(_.getAbsolutePath).asJava
 
-    new CompoundClassPathRoot(
-      (classification.dirs.map(f => new DirectoryClassPathRoot(f).asInstanceOf[ClasspathRoot]) ++
-        classification.jars.map(f => new ArchiveClassPathRoot(f).asInstanceOf[ClasspathRoot])).asJava)
+    new CompoundClassPathRootS(
+      (classification.dirs.map(f => new DirectoryClassPathRootS(f).asInstanceOf[ClasspathRoot]) ++
+        classification.jars.map(f => new ArchiveClassPathRootS(f).asInstanceOf[ClasspathRoot])).asJava)
   }
 
   private def compileSpecification(specificationPath: String): Try[Definition] = {

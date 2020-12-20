@@ -1,13 +1,13 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
-import java.io.IOException
-import java.util.{List => JList}
-
 import com.github.fburato.highwheelmodules.core.algorithms.{CompoundAccessVisitor, ModuleDependenciesGraphBuildingVisitorS}
 import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
 import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, ClassParser, ClasspathRoot}
 import com.github.fburato.highwheelmodules.model.modules._
+import com.github.fburato.highwheelmodules.utils.TryUtils._
 
+import java.io.IOException
+import java.util.{List => JList}
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters._
 import scala.util.{Failure, Success, Try}
@@ -84,8 +84,4 @@ object ModuleAnalyser {
 
   def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyser =
     new Implementation(classParser, classpathRoot, evidenceLimit, factory)
-
-  private def sequence[T](xs: Seq[Try[T]]): Try[Seq[T]] = xs.foldLeft(Try(Seq[T]())) {
-    (a, b) => a flatMap (c => b map (d => c :+ d))
-  }
 }
