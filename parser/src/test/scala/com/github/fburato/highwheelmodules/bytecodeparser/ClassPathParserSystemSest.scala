@@ -2,6 +2,9 @@ package com.github.fburato.highwheelmodules.bytecodeparser
 
 import com.example._
 import com.example.annotated._
+import com.example.classliterals.{HasFieldOfTypeClassFoo, MethodAccessFooClassLiteral, StoresFooArrayClassLiteralAsField, StoresFooClassLiteralAsField}
+import com.example.generics.{BoundedByFoo, HasCollectionOfFooParameter, ImplementsGenericisedInterface, ReturnsCollectionOfFoo}
+import com.example.innerclasses.CallsMethodFromFooWithinInnerClass
 import com.github.fburato.highwheelmodules.bytecodeparser.classpath.SpecificClassPathRoot
 import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessPointName, AccessType, ElementName}
 import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, ClassParser}
@@ -140,6 +143,102 @@ class ClassPathParserSystemSest extends AnyWordSpec with Matchers with MockitoSu
       parseClasses(classOf[AnnotatedAtVariableLevel], classOf[AnAnnotation])
 
       verify(accessVisitor, never).apply(accessType(classOf[AnnotatedAtVariableLevel]), accessType(classOf[AnAnnotation]), AccessType.ANNOTATED)
+    }
+
+    "detect uses dependency when nested type calls parent class method" in {
+      parseClasses(classOf[CallsMethodFromFooWithinInnerClass], classOf[Foo])
+
+      checkApply(classOf[CallsMethodFromFooWithinInnerClass], method("foo", "()V"), classOf[Foo], method("aMethod", classOf[Object]), AccessType.USES)
+    }
+
+    "detect uses dependency when type writes to class field" in {
+      parseClasses(classOf[UsesFieldOnFoo], classOf[Foo])
+
+      checkApply(classOf[UsesFieldOnFoo], method("foo", "()V"), classOf[Foo], method("aField", "I"), AccessType.USES)
+    }
+
+    "detect uses dependency when type stores class literal as field" in {
+      parseClasses(classOf[StoresFooClassLiteralAsField], classOf[Foo])
+
+      checkApply(classOf[StoresFooClassLiteralAsField], method("<init>", "()V"), classOf[Foo], AccessType.USES)
+    }
+
+    "detect uses dependency when type stores class array literal in method" in {
+      parseClasses(classOf[StoresFooArrayClassLiteralAsField], classOf[Foo])
+
+      checkApply(classOf[StoresFooArrayClassLiteralAsField], method("<init>", "()V"), classOf[Foo], AccessType.USES)
+    }
+
+    "detect uses dependency when type uses class literal in method" in {
+      parseClasses(classOf[MethodAccessFooClassLiteral], classOf[Foo])
+
+      checkApply(classOf[MethodAccessFooClassLiteral], method("foo", classOf[Class[_]]), classOf[Foo], AccessType.USES)
+    }
+
+    "detect composition dependency when type declare field of another class" in {
+      parseClasses(classOf[HasFieldOfTypeClassFoo], classOf[Foo])
+
+      checkApply(classOf[HasFieldOfTypeClassFoo], classOf[Foo], AccessType.COMPOSED)
+    }
+
+    "detect signature dependency when type implements interface parametrised by another class" in {
+      parseClasses(classOf[ImplementsGenericisedInterface], classOf[Foo])
+
+      checkApply(classOf[ImplementsGenericisedInterface], classOf[Foo], AccessType.SIGNATURE)
+    }
+
+    "detect signature dependency when type returns generic type instantiated to another class" in {
+      parseClasses(classOf[ReturnsCollectionOfFoo], classOf[Foo])
+
+      checkApply(classOf[ReturnsCollectionOfFoo], classOf[Foo], AccessType.SIGNATURE)
+    }
+
+    "detect signature dependency when type uses a generic type instantiated to another class" in {
+      parseClasses(classOf[HasCollectionOfFooParameter], classOf[Foo])
+
+      checkApply(classOf[HasCollectionOfFooParameter], classOf[Foo], AccessType.SIGNATURE)
+    }
+
+    "detect signature dependency when generic parameter bounded by another class" in {
+      parseClasses(classOf[BoundedByFoo[_]], classOf[Foo])
+
+      checkApply(classOf[BoundedByFoo[_]], classOf[Foo], AccessType.SIGNATURE)
+    }
+
+    "detect unconnected types" in {
+      parseClasses(classOf[Unconnected])
+
+      verify(accessVisitor).newNode(ElementName.fromClass(classOf[Unconnected]))
+    }
+
+    "detect unconnected methods" in {
+      parseClasses(classOf[Foo])
+
+      verify(accessVisitor).newAccessPoint(AccessPoint.create(ElementName.fromClass(classOf[Foo]), method("aMethod", "()Ljava/lang/Object;")))
+    }
+
+    "detect entry point in type with main method" in {
+      parseClasses(classOf[HasMainMethod])
+
+      verify(accessVisitor).newEntryPoint(ElementName.fromClass(classOf[HasMainMethod]))
+    }
+
+    "not detect entry point in type without main method" in {
+      parseClasses(classOf[Foo])
+
+      verify(accessVisitor, never).newEntryPoint(any)
+    }
+
+    "detect uses dependency when method instantiates an anonymous interface instance" in {
+      parseClasses(classOf[UsesAnInterfaceInMethod], classOf[AnInterface])
+
+      checkApply(classOf[UsesAnInterfaceInMethod], method("foo", "()V"), classOf[AnInterface], AccessType.USES)
+    }
+
+    "detect uses dependency when type uses a method reference" in {
+      parseClasses(classOf[UsesMethodReference], classOf[Foo])
+
+      checkApply(classOf[UsesMethodReference], method("foo", "()V"), classOf[Foo], method("aMethod", "()Ljava/lang/Object;"), AccessType.USES)
     }
   }
 
