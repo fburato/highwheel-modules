@@ -7,14 +7,14 @@ import com.github.fburato.highwheelmodules.model.rules.{DependencyS, NoStrictDep
 
 package object analysis {
 
-  case class AnalysisState(modules: Seq[HWModuleS],
+  case class AnalysisState(modules: Seq[HWModule],
                            dependencies: Seq[DependencyS],
                            noStrictDependencies: Seq[NoStrictDependencyS],
-                           specGraph: MetricModuleGraphS[ModuleDependencyS],
-                           actualGraph: MetricModuleGraphS[ModuleDependencyS],
-                           actualTrackingGraph: ModuleGraphS[TrackingModuleDependencyS],
+                           specGraph: MetricModuleGraph[ModuleDependency],
+                           actualGraph: MetricModuleGraph[ModuleDependency],
+                           actualTrackingGraph: ModuleGraph[TrackingModuleDependency],
                            visitor: AccessVisitor,
-                           other: HWModuleS)
+                           other: HWModule)
 
   case class Metric(module: String, fanIn: Int, fanOut: Int)
 
@@ -26,18 +26,18 @@ package object analysis {
   case class AnalysisResult(evidenceBackedViolations: Seq[EvidenceBackedViolation],
                             moduleConnectionViolations: Seq[ModuleConnectionViolation], metrics: Seq[Metric])
 
-  def getMetrics(moduleMetrics: HWModuleMetricS, modules: Seq[HWModuleS], graph: ModuleGraphS[ModuleDependencyS],
-                 other: HWModuleS): Seq[Metric] = {
+  def getMetrics(moduleMetrics: ModuleMetric, modules: Seq[HWModule], graph: ModuleGraph[ModuleDependency],
+                 other: HWModule): Seq[Metric] = {
     modules.map(m => Metric(m.name,
       moduleMetrics.fanInOf(m).getOrElse(0) + graph.findDependency(other, m).map(_ => -1).getOrElse(0),
       moduleMetrics.fanOutOf(m).getOrElse(0) + graph.findDependency(m, other).map(_ => -1).getOrElse(0)
     ))
   }
 
-  @inline def getNames(modules: Seq[HWModuleS]): Seq[String] = modules.map(_.name)
+  @inline def getNames(modules: Seq[HWModule]): Seq[String] = modules.map(_.name)
 
-  def getEvidence(trackingGraph: ModuleGraphS[TrackingModuleDependencyS], source: HWModuleS,
-                  path: Seq[HWModuleS]): Seq[Seq[(String, String)]] = {
+  def getEvidence(trackingGraph: ModuleGraph[TrackingModuleDependency], source: HWModule,
+                  path: Seq[HWModule]): Seq[Seq[(String, String)]] = {
     val completePath = Seq(source) ++ path
     completePath.zip(path).map {
       case (first, second) =>
@@ -47,6 +47,7 @@ package object analysis {
             .flatMap(source => dependency.destinationsFromSource(source).toSeq
               .map(destination => (source.toString, destination.toString))))
           .getOrElse(Seq())
+          .sorted
     }
   }
 }

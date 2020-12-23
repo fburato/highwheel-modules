@@ -24,29 +24,29 @@ class ClassPathParserSystemSest extends AnyWordSpec with Matchers with MockitoSu
   def parseClasses(classes: Class[_]*): Unit =
     onlyExampleDotCom.parse(new SpecificClassPathRoot(classes.toArray), accessVisitor).get
 
-  def accessType(clazz: Class[_]): AccessPointS = AccessPointS(ElementNameS.fromClass(clazz))
+  def accessType(clazz: Class[_]): AccessPoint = AccessPoint(ElementName.fromClass(clazz))
 
 
-  def checkApply(source: Class[_], dest: Class[_], aType: AccessTypeS): Unit =
+  def checkApply(source: Class[_], dest: Class[_], aType: AccessType): Unit =
     verify(accessVisitor).apply(accessType(source), accessType(dest), aType)
 
-  def checkApply(source: Class[_], accessPointName: AccessPointNameS, dest: Class[_], aType: AccessTypeS): Unit =
-    verify(accessVisitor).apply(AccessPointS(ElementNameS.fromClass(source), accessPointName), accessType(dest), aType)
+  def checkApply(source: Class[_], accessPointName: AccessPointName, dest: Class[_], aType: AccessType): Unit =
+    verify(accessVisitor).apply(AccessPoint(ElementName.fromClass(source), accessPointName), accessType(dest), aType)
 
-  def method(name: String, retType: Class[_]): AccessPointNameS =
-    AccessPointNameS(name, Type.getMethodDescriptor(Type.getType(retType)))
+  def method(name: String, retType: Class[_]): AccessPointName =
+    AccessPointName(name, Type.getMethodDescriptor(Type.getType(retType)))
 
-  def method(name: String, descriptor: String): AccessPointNameS =
-    AccessPointNameS(name, descriptor)
+  def method(name: String, descriptor: String): AccessPointName =
+    AccessPointName(name, descriptor)
 
-  def methodWithParameter(name: String, paramType: Class[_]): AccessPointNameS =
-    AccessPointNameS(name, Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(paramType)))
+  def methodWithParameter(name: String, paramType: Class[_]): AccessPointName =
+    AccessPointName(name, Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(paramType)))
 
-  def checkApply(source: Class[_], dest: Class[_], accessPointName: AccessPointNameS, aType: AccessTypeS): Unit =
-    verify(accessVisitor).apply(accessType(source), AccessPointS(ElementNameS.fromClass(dest), accessPointName), aType)
+  def checkApply(source: Class[_], dest: Class[_], accessPointName: AccessPointName, aType: AccessType): Unit =
+    verify(accessVisitor).apply(accessType(source), AccessPoint(ElementName.fromClass(dest), accessPointName), aType)
 
-  def checkApply(source: Class[_], sourceAccessPointName: AccessPointNameS, dest: Class[_], destAccessPointName: AccessPointNameS, aType: AccessTypeS): Unit =
-    verify(accessVisitor).apply(AccessPointS(ElementNameS.fromClass(source), sourceAccessPointName), AccessPointS(ElementNameS.fromClass(dest), destAccessPointName), aType)
+  def checkApply(source: Class[_], sourceAccessPointName: AccessPointName, dest: Class[_], destAccessPointName: AccessPointName, aType: AccessType): Unit =
+    verify(accessVisitor).apply(AccessPoint(ElementName.fromClass(source), sourceAccessPointName), AccessPoint(ElementName.fromClass(dest), destAccessPointName), aType)
 
   "parse" should {
     "detect an inheritance dependency when one class extends another" in {
@@ -208,19 +208,19 @@ class ClassPathParserSystemSest extends AnyWordSpec with Matchers with MockitoSu
     "detect unconnected types" in {
       parseClasses(classOf[Unconnected])
 
-      verify(accessVisitor).newNode(ElementNameS.fromClass(classOf[Unconnected]))
+      verify(accessVisitor).newNode(ElementName.fromClass(classOf[Unconnected]))
     }
 
     "detect unconnected methods" in {
       parseClasses(classOf[Foo])
 
-      verify(accessVisitor).newAccessPoint(AccessPointS(ElementNameS.fromClass(classOf[Foo]), method("aMethod", "()Ljava/lang/Object;")))
+      verify(accessVisitor).newAccessPoint(AccessPoint(ElementName.fromClass(classOf[Foo]), method("aMethod", "()Ljava/lang/Object;")))
     }
 
     "detect entry point in type with main method" in {
       parseClasses(classOf[HasMainMethod])
 
-      verify(accessVisitor).newEntryPoint(ElementNameS.fromClass(classOf[HasMainMethod]))
+      verify(accessVisitor).newEntryPoint(ElementName.fromClass(classOf[HasMainMethod]))
     }
 
     "not detect entry point in type without main method" in {

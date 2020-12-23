@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure
-import com.github.fburato.highwheelmodules.model.modules.{HWModuleS, ModuleGraphS, TrackingModuleDependencyS}
+import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleGraph, TrackingModuleDependency}
 import com.github.fburato.highwheelmodules.model.rules.NoStrictDependencyS
 
 private[analysis] object StrictAnalyser extends Analyser {
@@ -15,8 +15,8 @@ private[analysis] object StrictAnalyser extends Analyser {
   }
 
   private def getDependenciesViolations(differences: Seq[ModuleGraphTransitiveClosure.PathDifference],
-                                        other: HWModuleS,
-                                        trackingGraph: ModuleGraphS[TrackingModuleDependencyS]): Seq[EvidenceBackedViolation] = {
+                                        other: HWModule,
+                                        trackingGraph: ModuleGraph[TrackingModuleDependency]): Seq[EvidenceBackedViolation] = {
     differences
       .filter(d => d.source != other && d.dest != other)
       .map(d => EvidenceBackedViolation(d.source.name, d.dest.name,
@@ -25,7 +25,7 @@ private[analysis] object StrictAnalyser extends Analyser {
         getEvidence(trackingGraph, d.source, d.secondPath)))
   }
 
-  private def getNoStrictDependencyViolation(transitiveClosure: ModuleGraphTransitiveClosure, rules: Seq[NoStrictDependencyS], other: HWModuleS): Seq[ModuleConnectionViolation] = {
+  private def getNoStrictDependencyViolation(transitiveClosure: ModuleGraphTransitiveClosure, rules: Seq[NoStrictDependencyS], other: HWModule): Seq[ModuleConnectionViolation] = {
     rules
       .filter(r => r.source != other && r.dest != other && transitiveClosure.minimumDistance(r.source, r.dest).head == 1)
       .map(r => ModuleConnectionViolation(r.source.name, r.dest.name))

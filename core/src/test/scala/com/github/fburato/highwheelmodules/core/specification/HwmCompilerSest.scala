@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.specification
 
 import com.github.fburato.highwheelmodules.model.analysis.{LOOSE, STRICT}
-import com.github.fburato.highwheelmodules.model.modules.{AnonymousModuleS, HWModuleS, DefinitionS => ModelDefinition}
+import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, HWModule, Definition => ModelDefinition}
 import com.github.fburato.highwheelmodules.model.rules.{DependencyS, NoStrictDependencyS}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -9,10 +9,10 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
-  private val CORE = HWModuleS.make("core", Seq("core")).get
-  private val COMMONS = HWModuleS.make("commons", Seq("commons")).get
-  private val MAIN = HWModuleS.make("main", Seq("main")).get
-  private val IO = HWModuleS.make("io", Seq("io")).get
+  private val CORE = HWModule.make("core", Seq("core")).get
+  private val COMMONS = HWModule.make("commons", Seq("commons")).get
+  private val MAIN = HWModule.make("main", Seq("main")).get
+  private val IO = HWModule.make("io", Seq("io")).get
   private val baseDefinition = Definition(None, None, None, None, List(), List())
 
   "compile minimal specification" in {
@@ -85,8 +85,8 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
     )
   }
 
-  def hwmModule(name: String, globs: String*): HWModuleS =
-    HWModuleS.make(name, globs.toList).get
+  def hwmModule(name: String, globs: String*): HWModule =
+    HWModule.make(name, globs.toList).get
 
   "fail if rules refer to undefined modules" in {
     HwmCompiler.compile(baseDefinition.copy(
@@ -235,8 +235,8 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
       )
     ))
 
-    result.blacklist.get shouldBe AnonymousModuleS.make(Seq("c", "d")).get
-    result.whitelist.get shouldBe AnonymousModuleS.make(Seq("a", "b")).get
+    result.blacklist.get shouldBe AnonymousModule.make(Seq("c", "d")).get
+    result.whitelist.get shouldBe AnonymousModule.make(Seq("a", "b")).get
     result.modules should contain theSameElementsAs List(
       hwmModule("Foo", "org.example.foo.*"),
       hwmModule("Bar", "org.example.bar.*")

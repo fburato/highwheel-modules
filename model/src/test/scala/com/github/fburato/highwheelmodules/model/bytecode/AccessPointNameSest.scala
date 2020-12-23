@@ -13,9 +13,9 @@ class AccessPointNameSest extends AnyWordSpec with Matchers with MockitoSugar wi
   "create" should {
     "replace all '<' for '(' and all '>' for ')' for name" in {
       val (ran1, ran2) = (random, random)
-      val testee = AccessPointNameS.create(s"<$ran1<><<>", ran2)
+      val testee = AccessPointName.create(s"<$ran1<><<>", ran2)
 
-      testee shouldEqual AccessPointNameS.create(s"($ran1()(()", ran2)
+      testee shouldEqual AccessPointName.create(s"($ran1()(()", ran2)
       testee.name shouldEqual s"($ran1()(()"
       testee.descriptor shouldEqual ran2
     }

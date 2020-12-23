@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
-import com.github.fburato.highwheelmodules.model.bytecode.ElementNameS
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
 import com.github.fburato.highwheelmodules.utils.TryUtils._
 
@@ -8,7 +8,7 @@ import java.io.InputStream
 import scala.util.Try
 
 class ClassPathRoot(roots: Seq[ClasspathRoot]) extends ClasspathRoot {
-  override def getData(elementName: ElementNameS): Try[InputStream] =
+  override def getData(elementName: ElementName): Try[InputStream] =
     sequence(roots.map(cpr => cpr.getData(elementName)))
       .map(getFirstNonNullOrNull)
 
@@ -17,7 +17,7 @@ class ClassPathRoot(roots: Seq[ClasspathRoot]) extends ClasspathRoot {
     .collectFirst(stream => stream)
     .orNull
 
-  override def classNames: Try[Seq[ElementNameS]] =
+  override def classNames: Try[Seq[ElementName]] =
     sequence(roots.map(cpr => cpr.classNames))
       .map(result => result.flatten)
 

@@ -1,8 +1,8 @@
 package com.github.fburato.highwheelmodules.core.algorithms
 
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaModuleGraph
-import com.github.fburato.highwheelmodules.model.bytecode.{AccessPointS, ElementNameS}
-import com.github.fburato.highwheelmodules.model.modules.{AnonymousModuleS, HWModuleS, ModuleDependencyS}
+import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, ElementName}
+import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, HWModule, ModuleDependency}
 import com.google.common.graph.{MutableNetwork, NetworkBuilder}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -13,23 +13,23 @@ import scala.jdk.CollectionConverters._
 
 class ModuleDependenciesGraphBuildingVisitorSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
-  private val SUPER_MODULE = HWModuleS.make("SuperModule", Seq("org.example.*")).get
-  private val CORE = HWModuleS.make("Core", Seq("org.example.core.*")).get
-  private val IO = HWModuleS.make("IO", Seq("org.example.io.*")).get
-  private val OTHER = HWModuleS.make("Other", Seq("")).get
+  private val SUPER_MODULE = HWModule.make("SuperModule", Seq("org.example.*")).get
+  private val CORE = HWModule.make("Core", Seq("org.example.core.*")).get
+  private val IO = HWModule.make("IO", Seq("org.example.io.*")).get
+  private val OTHER = HWModule.make("Other", Seq("")).get
   private val modules = List(CORE, IO, SUPER_MODULE)
-  private val graph: MutableNetwork[HWModuleS, ModuleDependencyS] = NetworkBuilder.directed().build()
+  private val graph: MutableNetwork[HWModule, ModuleDependency] = NetworkBuilder.directed().build()
   private val moduleGraph = new GuavaModuleGraph(graph)
 
   private def makeTestee(whiteList: Option[String], blackList: Option[String]) =
-    ModuleDependenciesGraphBuildingVisitor[ModuleDependencyS](modules, moduleGraph, OTHER,
-      (m1, m2, _, _, _) => ModuleDependencyS(m1, m2), whiteList.flatMap(wl => AnonymousModuleS.make(Seq(wl))),
-      blackList.flatMap(bl => AnonymousModuleS.make(Seq(bl)))
+    ModuleDependenciesGraphBuildingVisitor[ModuleDependency](modules, moduleGraph, OTHER,
+      (m1, m2, _, _, _) => ModuleDependency(m1, m2), whiteList.flatMap(wl => AnonymousModule.make(Seq(wl))),
+      blackList.flatMap(bl => AnonymousModule.make(Seq(bl)))
     )
 
   private val testee = makeTestee(None, None)
 
-  private def ap(source: String): AccessPointS = AccessPointS(ElementNameS.fromString(source))
+  private def ap(source: String): AccessPoint = AccessPoint(ElementName.fromString(source))
 
 
   "construction" should {

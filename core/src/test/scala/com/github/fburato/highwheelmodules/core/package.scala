@@ -1,19 +1,18 @@
 package com.github.fburato.highwheelmodules
 
-import java.util
-
 import com.github.fburato.highwheelmodules.utils.Pair
 
+import java.util
 import scala.collection.mutable.ArrayBuffer
 
 package object core {
 
-  class AccumulatorPrinter(private val accumulator: ArrayBuffer[String]) extends AnalyserFacade.Printer {
+  class AccumulatorPrinter(private val accumulator: ArrayBuffer[String]) extends Printer {
     override def info(msg: String): Unit =
       accumulator addOne s"INFO - $msg"
   }
 
-  class AccumulatorPathEventSink(private val accumulator: ArrayBuffer[String]) extends AnalyserFacade.EventSink.PathEventSink {
+  class AccumulatorPathEventSink(private val accumulator: ArrayBuffer[String]) extends PathEventSink {
     override def ignoredPaths(ignored: util.List[String]): Unit =
       accumulator addOne s"IGNORED_PATHS - ${String.join(",", ignored)}"
 
@@ -24,12 +23,12 @@ package object core {
       accumulator addOne s"JARS - ${String.join(",", jars)}"
   }
 
-  class AccumulatorMeasureEventSink(private val accumulator: ArrayBuffer[String]) extends AnalyserFacade.EventSink.MeasureEventSink {
+  class AccumulatorMeasureEventSink(private val accumulator: ArrayBuffer[String]) extends MeasureEventSink {
     override def fanInOutMeasure(module: String, fanIn: Int, fanOut: Int): Unit =
       accumulator addOne s"FAN_IN_OUT_MEASURE - $module,$fanIn,$fanOut"
   }
 
-  class AccumulatorStrictAnalysisEventSink(private val accumulator: ArrayBuffer[String]) extends AnalyserFacade.EventSink.StrictAnalysisEventSink {
+  class AccumulatorStrictAnalysisEventSink(private val accumulator: ArrayBuffer[String]) extends StrictAnalysisEventSink {
     override def dependenciesCorrect(): Unit =
       accumulator addOne "DEPENDENCIES_CORRECT"
 
@@ -53,7 +52,7 @@ package object core {
       accumulator addOne s"NO_DIRECT_DEPENDENCY_VIOLATION - $sourceModule,$destModule"
   }
 
-  class AccumulatorLooseAnalysisEventSink(private val accumulator: ArrayBuffer[String]) extends AnalyserFacade.EventSink.LooseAnalysisEventSink {
+  class AccumulatorLooseAnalysisEventSink(private val accumulator: ArrayBuffer[String]) extends LooseAnalysisEventSink {
     override def allDependenciesPresent(): Unit =
       accumulator addOne "ALL_DEPENDENCIES_PRESENT"
 

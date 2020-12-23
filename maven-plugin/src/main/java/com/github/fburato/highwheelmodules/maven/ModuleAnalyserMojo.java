@@ -1,7 +1,6 @@
 package com.github.fburato.highwheelmodules.maven;
 
-import com.github.fburato.highwheelmodules.core.AnalyserFacade;
-import com.github.fburato.highwheelmodules.core.AnalyserFacadeImpl;
+import com.github.fburato.highwheelmodules.core.*;
 import com.github.fburato.highwheelmodules.utils.Pair;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -16,12 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
-
 @Mojo(name = "analyse")
 public class ModuleAnalyserMojo extends AbstractMojo {
 
-    private class MavenPrinter implements AnalyserFacade.Printer {
+    private class MavenPrinter implements Printer {
 
         @Override
         public void info(String msg) {
@@ -29,11 +26,11 @@ public class ModuleAnalyserMojo extends AbstractMojo {
         }
     }
 
-    private class MavenPathEventSink implements AnalyserFacade.EventSink.PathEventSink {
+    private class MavenPathEventSink implements PathEventSink {
 
         @Override
         public void ignoredPaths(List<String> ignored) {
-            final String ignoredString = "Ignored: " + join(", ", ignored);
+            final String ignoredString = "Ignored: " + String.join(", ", ignored);
             if (ignored.isEmpty()) {
                 getLog().info(ignoredString);
             } else {
@@ -43,16 +40,16 @@ public class ModuleAnalyserMojo extends AbstractMojo {
 
         @Override
         public void directories(List<String> directories) {
-            getLog().info("Directories: " + join(", ", directories));
+            getLog().info("Directories: " + String.join(", ", directories));
         }
 
         @Override
         public void jars(List<String> jars) {
-            getLog().info("Jars: " + join(", ", jars));
+            getLog().info("Jars: " + String.join(", ", jars));
         }
     }
 
-    private class MavenMeasureSink implements AnalyserFacade.EventSink.MeasureEventSink {
+    private class MavenMeasureSink implements MeasureEventSink {
 
         @Override
         public void fanInOutMeasure(String module, int fanIn, int fanOut) {
@@ -60,7 +57,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
         }
     }
 
-    private class MavenStrictAnalysisSink implements AnalyserFacade.EventSink.StrictAnalysisEventSink {
+    private class MavenStrictAnalysisSink implements StrictAnalysisEventSink {
 
         @Override
         public void dependenciesCorrect() {
@@ -100,7 +97,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
         }
     }
 
-    private class MavenLooseAnalysisEventSink implements AnalyserFacade.EventSink.LooseAnalysisEventSink {
+    private class MavenLooseAnalysisEventSink implements LooseAnalysisEventSink {
 
         @Override
         public void allDependenciesPresent() {
@@ -143,7 +140,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
         if (pathComponents.isEmpty()) {
             return "(empty)";
         } else {
-            return join(" -> ", pathComponents);
+            return String.join(" -> ", pathComponents);
         }
     }
 
@@ -239,7 +236,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
 
     private void analyse(List<String> roots, String specFilePath) throws MojoFailureException {
         try {
-            final AnalyserFacade.Printer printer = new MavenPrinter();
+            final Printer printer = new MavenPrinter();
             final AnalyserFacade facade = new AnalyserFacadeImpl(printer, new MavenPathEventSink(),
                     new MavenMeasureSink(), new MavenStrictAnalysisSink(), new MavenLooseAnalysisEventSink());
             facade.runAnalysis(roots, Arrays.asList(specFilePath.split(",")), Optional.of(evidenceLimit));

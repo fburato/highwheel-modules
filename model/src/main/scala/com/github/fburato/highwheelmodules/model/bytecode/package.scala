@@ -2,31 +2,31 @@ package com.github.fburato.highwheelmodules.model
 
 package object bytecode {
 
-  sealed trait AccessTypeS {
+  sealed trait AccessType {
     def strength: Int
   }
 
-  case object USES extends AccessTypeS {
+  case object USES extends AccessType {
     override def strength: Int = 1
   }
 
-  case object COMPOSED extends AccessTypeS {
+  case object COMPOSED extends AccessType {
     override def strength: Int = 2
   }
 
-  case object INHERITANCE extends AccessTypeS {
+  case object INHERITANCE extends AccessType {
     override def strength: Int = 4
   }
 
-  case object IMPLEMENTS extends AccessTypeS {
+  case object IMPLEMENTS extends AccessType {
     override def strength: Int = 4
   }
 
-  case object ANNOTATED extends AccessTypeS {
+  case object ANNOTATED extends AccessType {
     override def strength: Int = 2
   }
 
-  case object SIGNATURE extends AccessTypeS {
+  case object SIGNATURE extends AccessType {
     override def strength: Int = 3
   }
 

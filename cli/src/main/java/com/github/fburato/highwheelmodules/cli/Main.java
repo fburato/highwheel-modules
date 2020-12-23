@@ -1,16 +1,13 @@
 package com.github.fburato.highwheelmodules.cli;
 
-import com.github.fburato.highwheelmodules.core.AnalyserFacade;
-import com.github.fburato.highwheelmodules.core.AnalyserFacadeImpl;
+import com.github.fburato.highwheelmodules.core.*;
 import com.github.fburato.highwheelmodules.utils.Pair;
 
 import java.util.List;
 
-import static com.github.fburato.highwheelmodules.utils.StringUtil.join;
-
 public class Main {
 
-    private static class SystemPrinter implements AnalyserFacade.Printer {
+    private static class SystemPrinter implements Printer {
 
         @Override
         public void info(String msg) {
@@ -18,25 +15,25 @@ public class Main {
         }
     }
 
-    private static class SystemPathEventSink implements AnalyserFacade.EventSink.PathEventSink {
+    private static class SystemPathEventSink implements PathEventSink {
 
         @Override
         public void ignoredPaths(List<String> ignored) {
-            System.out.println(" - Ignored: " + join(", ", ignored));
+            System.out.println(" - Ignored: " + String.join(", ", ignored));
         }
 
         @Override
         public void directories(List<String> directories) {
-            System.out.println(" - Directories: " + join(", ", directories));
+            System.out.println(" - Directories: " + String.join(", ", directories));
         }
 
         @Override
         public void jars(List<String> jars) {
-            System.out.println(" - Jars: " + join(", ", jars));
+            System.out.println(" - Jars: " + String.join(", ", jars));
         }
     }
 
-    private static class SystemMeasureSink implements AnalyserFacade.EventSink.MeasureEventSink {
+    private static class SystemMeasureSink implements MeasureEventSink {
 
         @Override
         public void fanInOutMeasure(String module, int fanIn, int fanOut) {
@@ -44,7 +41,7 @@ public class Main {
         }
     }
 
-    private static class SystemStrictAnalysisSink implements AnalyserFacade.EventSink.StrictAnalysisEventSink {
+    private static class SystemStrictAnalysisSink implements StrictAnalysisEventSink {
 
         @Override
         public void dependenciesCorrect() {
@@ -81,7 +78,7 @@ public class Main {
         }
     }
 
-    private static class SystemLooseAnalysisEventSink implements AnalyserFacade.EventSink.LooseAnalysisEventSink {
+    private static class SystemLooseAnalysisEventSink implements LooseAnalysisEventSink {
 
         @Override
         public void allDependenciesPresent() {
@@ -120,7 +117,7 @@ public class Main {
         if (pathComponents.isEmpty()) {
             return "(empty)";
         } else {
-            return join(" -> ", pathComponents);
+            return String.join(" -> ", pathComponents);
         }
     }
 
@@ -141,7 +138,7 @@ public class Main {
     public static void main(String[] argv) {
         try {
             final CmdParser cmdParser = new CmdParser(argv);
-            final AnalyserFacade.Printer printer = new SystemPrinter();
+            final Printer printer = new SystemPrinter();
             final AnalyserFacade facade = new AnalyserFacadeImpl(printer, new SystemPathEventSink(),
                     new SystemMeasureSink(), new SystemStrictAnalysisSink(), new SystemLooseAnalysisEventSink());
             facade.runAnalysis(cmdParser.argList, cmdParser.specificationFiles, cmdParser.evidenceLimit);

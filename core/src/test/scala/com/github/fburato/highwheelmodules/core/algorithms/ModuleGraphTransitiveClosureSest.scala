@@ -2,7 +2,7 @@ package com.github.fburato.highwheelmodules.core.algorithms
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure.{Difference, PathDifference}
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaModuleGraph
-import com.github.fburato.highwheelmodules.model.modules.{HWModuleS, ModuleDependencyS}
+import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleDependency}
 import com.google.common.graph.{MutableNetwork, NetworkBuilder}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -13,19 +13,19 @@ import scala.collection.mutable.ArrayBuffer
 
 
 class ModuleGraphTransitiveClosureSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
-  private val CORE = HWModuleS.make("Core", Seq("org.example.core.*")).get
-  private val FACADE = HWModuleS.make("Facade", Seq("org.example.core.external.*")).get
-  private val IO = HWModuleS.make("IO", Seq("org.example.io.*")).get
-  private val COMMONS = HWModuleS.make("Commons", Seq("org.example.commons.*")).get
-  private val ENDPOINTS = HWModuleS.make("Endpoints", Seq("org.example.endpoints.*")).get
-  private val MAIN = HWModuleS.make("Main", Seq("org.example.Main")).get
+  private val CORE = HWModule.make("Core", Seq("org.example.core.*")).get
+  private val FACADE = HWModule.make("Facade", Seq("org.example.core.external.*")).get
+  private val IO = HWModule.make("IO", Seq("org.example.io.*")).get
+  private val COMMONS = HWModule.make("Commons", Seq("org.example.commons.*")).get
+  private val ENDPOINTS = HWModule.make("Endpoints", Seq("org.example.endpoints.*")).get
+  private val MAIN = HWModule.make("Main", Seq("org.example.Main")).get
 
   private val modules = List(CORE, FACADE, IO, COMMONS, ENDPOINTS, MAIN)
-  private val graph: MutableNetwork[HWModuleS, ModuleDependencyS] = NetworkBuilder.directed().build()
+  private val graph: MutableNetwork[HWModule, ModuleDependency] = NetworkBuilder.directed().build()
   private val moduleGraph = new GuavaModuleGraph(graph)
 
   private def makeTestee(): ModuleGraphTransitiveClosure = {
-    def dep(source: HWModuleS, dest: HWModuleS): ModuleDependencyS = ModuleDependencyS(source, dest)
+    def dep(source: HWModule, dest: HWModule): ModuleDependency = ModuleDependency(source, dest)
 
     modules.foreach(moduleGraph.addModule)
     List(
@@ -130,19 +130,19 @@ class ModuleGraphTransitiveClosureSest extends AnyWordSpec with Matchers with Mo
   }
 
   class TransitiveClosureBuilder(init: TransitiveClosureBuilder => ()) {
-    private val modules = new ArrayBuffer[HWModuleS]()
-    private val mutableNetwork: MutableNetwork[HWModuleS, ModuleDependencyS] = NetworkBuilder.directed().allowsSelfLoops(true).build()
+    private val modules = new ArrayBuffer[HWModule]()
+    private val mutableNetwork: MutableNetwork[HWModule, ModuleDependency] = NetworkBuilder.directed().allowsSelfLoops(true).build()
     private val guavaModuleGraph = new GuavaModuleGraph(mutableNetwork)
 
-    def module(name: String, globs: String*): HWModuleS = {
-      val module = HWModuleS.make(name, globs.toList).get
+    def module(name: String, globs: String*): HWModule = {
+      val module = HWModule.make(name, globs.toList).get
       modules.addOne(module)
       guavaModuleGraph.addModule(module)
       module
     }
 
-    def dependency(source: HWModuleS, dest: HWModuleS): ModuleDependencyS = {
-      val dependency = ModuleDependencyS(source, dest)
+    def dependency(source: HWModule, dest: HWModule): ModuleDependency = {
+      val dependency = ModuleDependency(source, dest)
       guavaModuleGraph.addDependency(dependency)
       dependency
     }

@@ -7,8 +7,8 @@ import java.util
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters.RichOptional
 
-class GuavaModuleGraph(private val graph: MutableNetwork[HWModuleS, ModuleDependencyS]) extends MetricModuleGraphS[ModuleDependencyS] {
-  override def fanInOf(module: HWModuleS): Option[Int] = {
+class GuavaModuleGraph(private val graph: MutableNetwork[HWModule, ModuleDependency]) extends MetricModuleGraph[ModuleDependency] {
+  override def fanInOf(module: HWModule): Option[Int] = {
     if (!graph.nodes().contains(module)) {
       None
     } else {
@@ -19,7 +19,7 @@ class GuavaModuleGraph(private val graph: MutableNetwork[HWModuleS, ModuleDepend
     }
   }
 
-  override def fanOutOf(module: HWModuleS): Option[Int] = {
+  override def fanOutOf(module: HWModule): Option[Int] = {
     if (!graph.nodes().contains(module)) {
       None
     } else {
@@ -30,7 +30,7 @@ class GuavaModuleGraph(private val graph: MutableNetwork[HWModuleS, ModuleDepend
     }
   }
 
-  override def findDependency(vertex1: HWModuleS, vertex2: HWModuleS): Option[ModuleDependencyS] = {
+  override def findDependency(vertex1: HWModule, vertex2: HWModule): Option[ModuleDependency] = {
     if (graph.nodes().containsAll(list(vertex1, vertex2))) {
       graph.edgeConnecting(vertex1, vertex2).toScala
     } else {
@@ -40,7 +40,7 @@ class GuavaModuleGraph(private val graph: MutableNetwork[HWModuleS, ModuleDepend
 
   private def list[T](ts: T*): util.List[T] = ts.asJava
 
-  override def addDependency(dependency: ModuleDependencyS): Unit = {
+  override def addDependency(dependency: ModuleDependency): Unit = {
     if (Seq(dependency.dest, dependency.source).forall(graph.nodes().contains)) {
       val moduleDependency = graph.edgeConnecting(dependency.source, dependency.dest)
         .orElseGet(() => {
@@ -51,11 +51,11 @@ class GuavaModuleGraph(private val graph: MutableNetwork[HWModuleS, ModuleDepend
     }
   }
 
-  override def addModule(vertex: HWModuleS): Unit = graph.addNode(vertex)
+  override def addModule(vertex: HWModule): Unit = graph.addNode(vertex)
 
-  override def modules: Seq[HWModuleS] = graph.nodes().asScala.toSeq
+  override def modules: Seq[HWModule] = graph.nodes().asScala.toSeq
 
-  override def dependencies(vertex: HWModuleS): Seq[HWModuleS] = {
+  override def dependencies(vertex: HWModule): Seq[HWModule] = {
     if (graph.nodes().contains(vertex)) {
       graph.successors(vertex).asScala.toSeq
     } else {

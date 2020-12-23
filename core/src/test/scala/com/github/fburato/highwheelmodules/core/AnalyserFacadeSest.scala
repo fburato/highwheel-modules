@@ -178,9 +178,9 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
       verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", list(),
         list("IO", "Utils"),
         list(list(
-          pair("org.example.io.IOImplementaion:something", "org.example.commons.Utility:util"),
           pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"),
-          pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util1")
+          pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util1"),
+          pair("org.example.io.IOImplementaion:something", "org.example.commons.Utility:util")
         ))
       )
       verify(strictAnalysisEventSink).noDirectDependenciesViolationPresent()

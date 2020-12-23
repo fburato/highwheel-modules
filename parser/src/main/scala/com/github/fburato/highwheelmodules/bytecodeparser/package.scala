@@ -1,13 +1,13 @@
 package com.github.fburato.highwheelmodules
 
-import com.github.fburato.highwheelmodules.model.bytecode.ElementNameS
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import org.objectweb.asm.Type
 
 package object bytecodeparser {
-  def getElementNameForType(asmType: Type): ElementNameS =
+  def getElementNameForType(asmType: Type): ElementName =
     if (asmType.getSort == Type.ARRAY) {
-      ElementNameS.fromString(asmType.getElementType.getClassName)
+      ElementName.fromString(asmType.getElementType.getClassName)
     } else {
-      ElementNameS.fromString(asmType.getClassName)
+      ElementName.fromString(asmType.getClassName)
     }
 }

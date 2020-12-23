@@ -2,7 +2,7 @@ package com.github.fburato.highwheelmodules.core.algorithms
 
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure.{Difference, PathDifference}
-import com.github.fburato.highwheelmodules.model.modules.{HWModuleS, ModuleDependencyS, ModuleGraphS}
+import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleDependency, ModuleGraph}
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -12,11 +12,11 @@ import scala.collection.mutable.ArrayBuffer
  * ISBN 0-262-03141-8. See in particular Section 26.2, "The Floyd–Warshall algorithm" pp. 558–565
  */
 class ModuleGraphTransitiveClosure(
-                                    private val minimumPathMatrix: Array[Array[ArrayBuffer[HWModuleS]]],
-                                    private val indexMap: Map[HWModuleS, Int],
-                                    private val modules: Seq[HWModuleS]
+                                    private val minimumPathMatrix: Array[Array[ArrayBuffer[HWModule]]],
+                                    private val indexMap: Map[HWModule, Int],
+                                    private val modules: Seq[HWModule]
                                   ) {
-  def isReachable(vertex1: HWModuleS, vertex2: HWModuleS): Boolean =
+  def isReachable(vertex1: HWModule, vertex2: HWModule): Boolean =
     minimumDistance(vertex1, vertex2).exists(d => d < Int.MaxValue)
 
   def same(other: ModuleGraphTransitiveClosure): Boolean =
@@ -48,14 +48,14 @@ class ModuleGraphTransitiveClosure(
     }
   }
 
-  def minimumDistance(vertex1: HWModuleS, vertex2: HWModuleS): Option[Int] =
+  def minimumDistance(vertex1: HWModule, vertex2: HWModule): Option[Int] =
     for {
       v1Index <- indexMap.get(vertex1)
       v2Index <- indexMap.get(vertex2)
       distance = minimumPathMatrix(v1Index)(v2Index).size
     } yield if (distance == 0) Int.MaxValue else distance
 
-  def minimumDistancePath(vertex1: HWModuleS, vertex2: HWModuleS): Seq[HWModuleS] =
+  def minimumDistancePath(vertex1: HWModule, vertex2: HWModule): Seq[HWModule] =
     (for {
       v1Index <- indexMap.get(vertex1)
       v2Index <- indexMap.get(vertex2)
@@ -64,17 +64,17 @@ class ModuleGraphTransitiveClosure(
 
 object ModuleGraphTransitiveClosure {
 
-  case class Difference(source: HWModuleS, dest: HWModuleS, firstDistance: Int, secondDistance: Int)
+  case class Difference(source: HWModule, dest: HWModule, firstDistance: Int, secondDistance: Int)
 
-  case class PathDifference(source: HWModuleS, dest: HWModuleS, firstPath: Seq[HWModuleS], secondPath: Seq[HWModuleS])
+  case class PathDifference(source: HWModule, dest: HWModule, firstPath: Seq[HWModule], secondPath: Seq[HWModule])
 
-  def apply(moduleGraph: ModuleGraphS[ModuleDependencyS], modulesSeq: Seq[HWModuleS]): ModuleGraphTransitiveClosure = {
-    val minimumPathMatrix = Array.ofDim[ArrayBuffer[HWModuleS]](modulesSeq.size, modulesSeq.size)
+  def apply(moduleGraph: ModuleGraph[ModuleDependency], modulesSeq: Seq[HWModule]): ModuleGraphTransitiveClosure = {
+    val minimumPathMatrix = Array.ofDim[ArrayBuffer[HWModule]](modulesSeq.size, modulesSeq.size)
     for {
       i <- modulesSeq.indices
       j <- modulesSeq.indices
     } {
-      minimumPathMatrix(i)(j) = new ArrayBuffer[HWModuleS]()
+      minimumPathMatrix(i)(j) = new ArrayBuffer[HWModule]()
     }
     val mapModuleIndex = modulesSeq.zipWithIndex.toMap
     for {
@@ -87,7 +87,7 @@ object ModuleGraphTransitiveClosure {
     new ModuleGraphTransitiveClosure(minimumPathMatrix, mapModuleIndex, modulesSeq)
   }
 
-  private def applyFloydWarshallMainIteration(minimumPathMatrix: Array[Array[ArrayBuffer[HWModuleS]]], size: Int): Unit = {
+  private def applyFloydWarshallMainIteration(minimumPathMatrix: Array[Array[ArrayBuffer[HWModule]]], size: Int): Unit = {
     for {
       i <- 0 until size
       j <- 0 until size

@@ -10,16 +10,16 @@ import java.io.IOException
 import scala.util.{Failure, Success, Try}
 
 trait ModuleAnalyser {
-  def analyse(definitions: Seq[DefinitionS]): Try[Seq[AnalysisResult]]
+  def analyse(definitions: Seq[Definition]): Try[Seq[AnalysisResult]]
 }
 
 object ModuleAnalyser {
 
-  private class Implementation(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactoryS) extends ModuleAnalyser {
+  private class Implementation(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory) extends ModuleAnalyser {
     private val strictAnalyser = StrictAnalyser
     private val looseAnalyser = LooseAnalyser
 
-    override def analyse(definitions: Seq[DefinitionS]): Try[Seq[AnalysisResult]] =
+    override def analyse(definitions: Seq[Definition]): Try[Seq[AnalysisResult]] =
       if (definitions.isEmpty) {
         Success(Seq())
       } else {
@@ -33,22 +33,22 @@ object ModuleAnalyser {
         } yield results
       }
 
-    private def initialiseState(definition: DefinitionS): Try[AnalysisState] = {
-      val other = HWModuleS.make("(other)", List()).get
+    private def initialiseState(definition: Definition): Try[AnalysisState] = {
+      val other = HWModule.make("(other)", List()).get
 
-      def generateState(modules: Seq[HWModuleS]): AnalysisState = {
+      def generateState(modules: Seq[HWModule]): AnalysisState = {
         val specModuleGraph = factory.buildMetricModuleGraph
         definition.modules.foreach(m => specModuleGraph.addModule(m))
-        definition.dependencies.foreach(d => specModuleGraph.addDependency(ModuleDependencyS(d.source, d.dest)))
+        definition.dependencies.foreach(d => specModuleGraph.addDependency(ModuleDependency(d.source, d.dest)))
         val actualModuleGraph = factory.buildMetricModuleGraph
         val auxTrackingBareGraph = factory.buildTrackingModuleGraph
         val trackingGraph = factory.buildEvidenceModuleGraph(auxTrackingBareGraph, evidenceLimit)
         val moduleGraphVisitor = ModuleDependenciesGraphBuildingVisitor(modules, actualModuleGraph, other,
-          (sourceModule, destModule, _, _, _) => ModuleDependencyS(sourceModule, destModule),
+          (sourceModule, destModule, _, _, _) => ModuleDependency(sourceModule, destModule),
           definition.whitelist, definition.blacklist
         )
         val evidenceGraphVisitor = ModuleDependenciesGraphBuildingVisitor(modules, trackingGraph, other,
-          (sourceModule, destModule, sourceAP, destAP, _) => EvidenceModuleDependencyS(sourceModule, destModule, sourceAP, destAP),
+          (sourceModule, destModule, sourceAP, destAP, _) => EvidenceModuleDependency(sourceModule, destModule, sourceAP, destAP),
           definition.whitelist, definition.blacklist
         )
         val accessVisitor = CompoundAccessVisitor(Seq(moduleGraphVisitor, evidenceGraphVisitor))
@@ -61,7 +61,7 @@ object ModuleAnalyser {
       }
     }
 
-    private def visitorAndProcessors(definitions: Seq[DefinitionS]): Try[(AccessVisitor, Seq[() => AnalysisResult])] = {
+    private def visitorAndProcessors(definitions: Seq[Definition]): Try[(AccessVisitor, Seq[() => AnalysisResult])] = {
       val merged = definitions.map(d =>
         for {
           state <- initialiseState(d)
@@ -77,6 +77,6 @@ object ModuleAnalyser {
     }
   }
 
-  def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactoryS): ModuleAnalyser =
+  def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyser =
     new Implementation(classParser, classpathRoot, evidenceLimit, factory)
 }

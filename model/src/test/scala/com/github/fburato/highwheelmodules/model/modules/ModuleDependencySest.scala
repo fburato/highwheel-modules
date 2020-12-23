@@ -7,15 +7,15 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class ModuleDependencySest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
-  private val moduleA = HWModuleS.make("a", List("a")).get
-  private val moduleB = HWModuleS.make("b", List("b")).get
+  private val moduleA = HWModule.make("a", List("a")).get
+  private val moduleB = HWModule.make("b", List("b")).get
 
   "count should be 0 on new dependency" in {
-    ModuleDependencyS(moduleA, moduleB).count shouldBe 0
+    ModuleDependency(moduleA, moduleB).count shouldBe 0
   }
 
   "count should increase on incrementCount invocation" in {
-    val testee = ModuleDependencyS(moduleA, moduleB)
+    val testee = ModuleDependency(moduleA, moduleB)
 
     testee.incrementCount()
 
@@ -23,8 +23,8 @@ class ModuleDependencySest extends AnyWordSpec with Matchers with MockitoSugar w
   }
 
   "equals should compare all elements" in {
-    val testee = ModuleDependencyS(moduleA, moduleB)
-    val alternateTestee = ModuleDependencyS(moduleA, HWModuleS.make(moduleB.name, List("b")).get)
+    val testee = ModuleDependency(moduleA, moduleB)
+    val alternateTestee = ModuleDependency(moduleA, HWModule.make(moduleB.name, List("b")).get)
 
     testee shouldEqual alternateTestee
 

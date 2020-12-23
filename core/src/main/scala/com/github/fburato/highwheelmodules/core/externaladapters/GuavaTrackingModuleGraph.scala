@@ -1,15 +1,15 @@
 package com.github.fburato.highwheelmodules.core.externaladapters
 
-import com.github.fburato.highwheelmodules.model.modules.{HWModuleS, ModuleGraphS, TrackingModuleDependencyS}
+import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleGraph, TrackingModuleDependency}
 import com.google.common.graph.MutableNetwork
 
 import java.util
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters.RichOptional
 
-class GuavaTrackingModuleGraph(private val graph: MutableNetwork[HWModuleS, TrackingModuleDependencyS]) extends ModuleGraphS[TrackingModuleDependencyS] {
+class GuavaTrackingModuleGraph(private val graph: MutableNetwork[HWModule, TrackingModuleDependency]) extends ModuleGraph[TrackingModuleDependency] {
 
-  override def findDependency(vertex1: HWModuleS, vertex2: HWModuleS): Option[TrackingModuleDependencyS] = {
+  override def findDependency(vertex1: HWModule, vertex2: HWModule): Option[TrackingModuleDependency] = {
     if (graph.nodes().containsAll(list(vertex1, vertex2))) {
       graph.edgeConnecting(vertex1, vertex2).toScala
     } else {
@@ -19,11 +19,11 @@ class GuavaTrackingModuleGraph(private val graph: MutableNetwork[HWModuleS, Trac
 
   private def list[T](ts: T*): util.List[T] = ts.asJava
 
-  override def addDependency(dependency: TrackingModuleDependencyS): Unit = {
+  override def addDependency(dependency: TrackingModuleDependency): Unit = {
     if (graph.nodes().containsAll(list(dependency.source, dependency.dest))) {
       val dep = graph.edgeConnecting(dependency.source, dependency.dest)
         .orElseGet(() => {
-          val newDep = TrackingModuleDependencyS(dependency.source, dependency.dest)
+          val newDep = TrackingModuleDependency(dependency.source, dependency.dest)
           graph.addEdge(dependency.source, dependency.dest, newDep)
           newDep
         })
@@ -34,11 +34,11 @@ class GuavaTrackingModuleGraph(private val graph: MutableNetwork[HWModuleS, Trac
     }
   }
 
-  override def addModule(vertex: HWModuleS): Unit = graph.addNode(vertex)
+  override def addModule(vertex: HWModule): Unit = graph.addNode(vertex)
 
-  override def modules: Seq[HWModuleS] = graph.nodes().asScala.toSeq
+  override def modules: Seq[HWModule] = graph.nodes().asScala.toSeq
 
-  override def dependencies(vertex: HWModuleS): Seq[HWModuleS] = {
+  override def dependencies(vertex: HWModule): Seq[HWModule] = {
     if (graph.nodes().contains(vertex)) {
       graph.successors(vertex).asScala.toSeq
     } else {

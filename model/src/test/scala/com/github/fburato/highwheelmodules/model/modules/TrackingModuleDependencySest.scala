@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.model.modules
 
-import com.github.fburato.highwheelmodules.model.bytecode.{AccessPointS, ElementNameS}
+import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, ElementName}
 import org.apache.commons.lang3.RandomStringUtils
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -11,13 +11,13 @@ class TrackingModuleDependencySest extends AnyWordSpec with Matchers with Mockit
 
   private def randomString: String = RandomStringUtils.randomAlphanumeric(10)
 
-  private val moduleA = HWModuleS.make(randomString, List(randomString)).get
-  private val moduleB = HWModuleS.make(randomString, List(randomString)).get
-  private val exampleSource1 = AccessPointS(ElementNameS.fromString(randomString))
-  private val exampleSource2 = AccessPointS(ElementNameS.fromString(randomString))
-  private val exampleDest1 = AccessPointS(ElementNameS.fromString(randomString))
-  private val exampleDest2 = AccessPointS(ElementNameS.fromString(randomString))
-  private val testee = TrackingModuleDependencyS(moduleA, moduleB)
+  private val moduleA = HWModule.make(randomString, List(randomString)).get
+  private val moduleB = HWModule.make(randomString, List(randomString)).get
+  private val exampleSource1 = AccessPoint(ElementName.fromString(randomString))
+  private val exampleSource2 = AccessPoint(ElementName.fromString(randomString))
+  private val exampleDest1 = AccessPoint(ElementName.fromString(randomString))
+  private val exampleDest2 = AccessPoint(ElementName.fromString(randomString))
+  private val testee = TrackingModuleDependency(moduleA, moduleB)
 
   "evidences should be empty on empty tracking dependency" in {
     testee.sources shouldEqual Set()
@@ -50,7 +50,7 @@ class TrackingModuleDependencySest extends AnyWordSpec with Matchers with Mockit
   }
 
   "addEvidence" should {
-    val testee = TrackingModuleDependencyS(moduleA, moduleB)
+    val testee = TrackingModuleDependency(moduleA, moduleB)
 
     "save all evidence from same source" in {
       testee.addEvidence(exampleSource1, exampleDest1)

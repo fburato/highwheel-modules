@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.core.algorithms
 
-import com.github.fburato.highwheelmodules.model.bytecode.{AccessPointS, ElementNameS, USES}
+import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, ElementName, USES}
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
 import org.mockito.Mockito
 import org.mockito.scalatest.MockitoSugar
@@ -13,9 +13,9 @@ class CompoundAccessVistorSest extends AnyWordSpec with Matchers with MockitoSug
   private val av2 = mock[AccessVisitor]
   private val testee = CompoundAccessVisitor(Seq(av1, av2))
   private val order = Mockito.inOrder(av1, av2)
-  private val ap = AccessPointS(ElementNameS.fromString("a"))
+  private val ap = AccessPoint(ElementName.fromString("a"))
   private val at = USES
-  private val en = ElementNameS.fromString("b")
+  private val en = ElementName.fromString("b")
 
   "apply should call delegated apply in order" in {
     testee(ap, ap, at)

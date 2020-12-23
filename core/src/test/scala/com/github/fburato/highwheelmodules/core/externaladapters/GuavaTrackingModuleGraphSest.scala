@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.externaladapters
 
-import com.github.fburato.highwheelmodules.model.bytecode.{AccessPointS, ElementNameS}
-import com.github.fburato.highwheelmodules.model.modules.{HWModuleS, TrackingModuleDependencyS}
+import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, ElementName}
+import com.github.fburato.highwheelmodules.model.modules.{HWModule, TrackingModuleDependency}
 import com.google.common.graph.{MutableNetwork, NetworkBuilder}
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
@@ -10,18 +10,18 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.jdk.CollectionConverters._
 
 class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneInstancePerTest {
-  private val graph: MutableNetwork[HWModuleS, TrackingModuleDependencyS] = NetworkBuilder.directed()
+  private val graph: MutableNetwork[HWModule, TrackingModuleDependency] = NetworkBuilder.directed()
     .allowsSelfLoops(true).build()
   private val testee = new GuavaTrackingModuleGraph(graph)
 
-  def module(name: String, regex: String): HWModuleS = HWModuleS.make(name, Seq(regex)).get
+  def module(name: String, regex: String): HWModule = HWModule.make(name, Seq(regex)).get
 
   private val m1 = module("module a", "A")
   private val m2 = module("module b", "B")
   private val m3 = module("module c", "C")
-  private val ap1 = AccessPointS(ElementNameS.fromString("ap1"))
-  private val ap2 = AccessPointS(ElementNameS.fromString("ap2"))
-  private val ap3 = AccessPointS(ElementNameS.fromString("ap3"))
+  private val ap1 = AccessPoint(ElementName.fromString("ap1"))
+  private val ap2 = AccessPoint(ElementName.fromString("ap2"))
+  private val ap3 = AccessPoint(ElementName.fromString("ap3"))
 
   "addModule" should {
     "add node to network" in {
@@ -42,7 +42,7 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
     "create new edge if modules did not exist already" in {
       testee.addModule(m1)
       testee.addModule(m2)
-      val dep = TrackingModuleDependencyS(m1, m2)
+      val dep = TrackingModuleDependency(m1, m2)
       dep.addEvidence(ap1, ap2)
       testee.addDependency(dep)
 
@@ -52,9 +52,9 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
     "merge evidences from different access points" in {
       testee.addModule(m1)
       testee.addModule(m2)
-      val dep1 = TrackingModuleDependencyS(m1, m2)
+      val dep1 = TrackingModuleDependency(m1, m2)
       dep1.addEvidence(ap1, ap2)
-      val dep2 = TrackingModuleDependencyS(m1, m2)
+      val dep2 = TrackingModuleDependency(m1, m2)
       dep2.addEvidence(ap2, ap3)
 
       testee.addDependency(dep1)
@@ -70,9 +70,9 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
     "not add evidences already present" in {
       testee.addModule(m1)
       testee.addModule(m2)
-      val dep1 = TrackingModuleDependencyS(m1, m2)
+      val dep1 = TrackingModuleDependency(m1, m2)
       dep1.addEvidence(ap1, ap2)
-      val dep2 = TrackingModuleDependencyS(m1, m2)
+      val dep2 = TrackingModuleDependency(m1, m2)
       dep2.addEvidence(ap1, ap2)
 
       testee.addDependency(dep1)
@@ -87,9 +87,9 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
     "merge evidences from the same access point" in {
       testee.addModule(m1)
       testee.addModule(m2)
-      val dep1 = TrackingModuleDependencyS(m1, m2)
+      val dep1 = TrackingModuleDependency(m1, m2)
       dep1.addEvidence(ap1, ap2)
-      val dep2 = TrackingModuleDependencyS(m1, m2)
+      val dep2 = TrackingModuleDependency(m1, m2)
       dep2.addEvidence(ap1, ap3)
 
       testee.addDependency(dep1)
@@ -105,9 +105,9 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
       testee.addModule(m1)
       testee.addModule(m2)
       testee.addModule(m3)
-      val dep1 = TrackingModuleDependencyS(m1, m2)
+      val dep1 = TrackingModuleDependency(m1, m2)
       dep1.addEvidence(ap1, ap2)
-      val dep2 = TrackingModuleDependencyS(m1, m3)
+      val dep2 = TrackingModuleDependency(m1, m3)
       dep2.addEvidence(ap1, ap3)
 
       testee.addDependency(dep1)
@@ -125,7 +125,7 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
     "not add dependency if one of the nodes does not exist" in {
       testee.addModule(m1)
       testee.addModule(m2)
-      val dep = TrackingModuleDependencyS(m1, m3)
+      val dep = TrackingModuleDependency(m1, m3)
       testee.addDependency(dep)
 
       graph.edges().isEmpty shouldBe true
@@ -137,8 +137,8 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
       testee.addModule(m1)
       testee.addModule(m2)
       testee.addModule(m3)
-      val dep1 = TrackingModuleDependencyS(m1, m2)
-      val dep2 = TrackingModuleDependencyS(m1, m3)
+      val dep1 = TrackingModuleDependency(m1, m2)
+      val dep2 = TrackingModuleDependency(m1, m3)
       testee.addDependency(dep1)
       testee.addDependency(dep2)
 
@@ -151,7 +151,7 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
     "return expected dependency" in {
       testee.addModule(m1)
       testee.addModule(m2)
-      val dep = TrackingModuleDependencyS(m1, m2)
+      val dep = TrackingModuleDependency(m1, m2)
       dep.addEvidence(ap1, ap2)
 
       testee.addDependency(dep)
@@ -163,7 +163,7 @@ class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneIns
       testee.addModule(m1)
       testee.addModule(m2)
       testee.addModule(m3)
-      val dep = TrackingModuleDependencyS(m1, m2)
+      val dep = TrackingModuleDependency(m1, m2)
       dep.addEvidence(ap1, ap2)
 
       testee.addDependency(dep)

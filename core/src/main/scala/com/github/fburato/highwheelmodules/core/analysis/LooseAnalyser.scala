@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure
-import com.github.fburato.highwheelmodules.model.modules.{HWModuleS, ModuleGraphS, TrackingModuleDependencyS}
+import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleGraph, TrackingModuleDependency}
 import com.github.fburato.highwheelmodules.model.rules.{DependencyS, NoStrictDependencyS}
 
 private[analysis] object LooseAnalyser extends Analyser {
@@ -16,7 +16,7 @@ private[analysis] object LooseAnalyser extends Analyser {
 
   private def getAbsentDependencies(transitiveClosure: ModuleGraphTransitiveClosure,
                                     dependencies: Seq[DependencyS],
-                                    other: HWModuleS): Seq[ModuleConnectionViolation] = {
+                                    other: HWModule): Seq[ModuleConnectionViolation] = {
     dependencies
       .filter(d => d.source != other && d.dest != other && !transitiveClosure.isReachable(d.source, d.dest))
       .map(d => ModuleConnectionViolation(d.source.name, d.dest.name))
@@ -24,8 +24,8 @@ private[analysis] object LooseAnalyser extends Analyser {
 
   private def getUndesiredDependencies(transitiveClosure: ModuleGraphTransitiveClosure,
                                        noStrictDependencies: Seq[NoStrictDependencyS],
-                                       other: HWModuleS,
-                                       trackingGraph: ModuleGraphS[TrackingModuleDependencyS]): Seq[EvidenceBackedViolation] = {
+                                       other: HWModule,
+                                       trackingGraph: ModuleGraph[TrackingModuleDependency]): Seq[EvidenceBackedViolation] = {
     noStrictDependencies
       .filter(d => d.source != other && d.dest != other && transitiveClosure.isReachable(d.source, d.dest))
       .map(d => EvidenceBackedViolation(d.source.name, d.dest.name,

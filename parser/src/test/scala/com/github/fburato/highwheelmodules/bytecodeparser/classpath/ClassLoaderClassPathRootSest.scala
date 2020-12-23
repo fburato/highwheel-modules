@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.bytecodeparser.TryMatchers._
-import com.github.fburato.highwheelmodules.model.bytecode.ElementNameS
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
@@ -20,13 +20,13 @@ class ClassLoaderClassPathRootSest extends AnyWordSpec with Matchers with Mockit
 
   "getData" should {
     "return not null for classes visible to loader" in {
-      testee.getData(ElementNameS.fromClass(classOf[ClassLoaderClassPathRootSest])) should beSuccessWith[InputStream](stream =>
+      testee.getData(ElementName.fromClass(classOf[ClassLoaderClassPathRootSest])) should beSuccessWith[InputStream](stream =>
         stream should not be null
       )
     }
 
     "return null for classes not visible to loader" in {
-      testee.getData(ElementNameS.fromString("FooFoo")) shouldBe Success(null)
+      testee.getData(ElementName.fromString("FooFoo")) shouldBe Success(null)
     }
   }
 

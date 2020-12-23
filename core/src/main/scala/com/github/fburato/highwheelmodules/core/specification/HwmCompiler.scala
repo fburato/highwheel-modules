@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.core.specification
 
-import com.github.fburato.highwheelmodules.model.analysis.{AnalysisModeS, LOOSE, STRICT}
-import com.github.fburato.highwheelmodules.model.modules.{AnonymousModuleS, HWModuleS, DefinitionS => ModelDefinition}
+import com.github.fburato.highwheelmodules.model.analysis.{AnalysisMode, LOOSE, STRICT}
+import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, HWModule, Definition => ModelDefinition}
 import com.github.fburato.highwheelmodules.model.rules.{DependencyS, NoStrictDependencyS}
 
 object HwmCompiler {
@@ -26,14 +26,14 @@ object HwmCompiler {
     )
   }
 
-  private def compileModules(modules: List[ModuleDefinition], prefix: String): Either[CompilerException, Map[String, HWModuleS]] = {
-    val compiled: List[Either[CompilerException, HWModuleS]] = modules.map { module =>
-      HWModuleS.make(module.moduleName, module.moduleRegex.map(regex => prefix + regex))
+  private def compileModules(modules: List[ModuleDefinition], prefix: String): Either[CompilerException, Map[String, HWModule]] = {
+    val compiled: List[Either[CompilerException, HWModule]] = modules.map { module =>
+      HWModule.make(module.moduleName, module.moduleRegex.map(regex => prefix + regex))
         .map(hwm => Right(hwm))
         .getOrElse(Left(CompilerException(s"Regular expressions '${module.moduleRegex}' for module ${module.moduleName} are not well defined")))
     }
 
-    def checkRepetitions(modules: Map[String, List[HWModuleS]]): Either[CompilerException, Map[String, HWModuleS]] = {
+    def checkRepetitions(modules: Map[String, List[HWModule]]): Either[CompilerException, Map[String, HWModule]] = {
       val multiples = modules
         .filter(pair => pair._2.size > 1)
         .keys
@@ -62,7 +62,7 @@ object HwmCompiler {
         } yield x :: xs
     }
 
-  private def compileRules(rules: List[Rule], moduleMap: Map[String, HWModuleS]): Either[CompilerException, (List[DependencyS], List[NoStrictDependencyS])] = {
+  private def compileRules(rules: List[Rule], moduleMap: Map[String, HWModule]): Either[CompilerException, (List[DependencyS], List[NoStrictDependencyS])] = {
     def expandChainDependencyRule(ms: List[String]): Either[CompilerException, List[DependencyS]] = {
       val maybeDependencies = ms.zip(ms.tail).map {
         case (m1, m2) => if (!moduleMap.contains(m1)) {
@@ -135,10 +135,10 @@ object HwmCompiler {
     }
   }
 
-  private def compileRegexes(regexes: List[String]): Either[CompilerException, AnonymousModuleS] =
-    AnonymousModuleS.make(regexes) map (Right(_)) getOrElse Left(CompilerException(s"Regular expressions '${regexes.mkString(",")}' are not well defined"))
+  private def compileRegexes(regexes: List[String]): Either[CompilerException, AnonymousModule] =
+    AnonymousModule.make(regexes) map (Right(_)) getOrElse Left(CompilerException(s"Regular expressions '${regexes.mkString(",")}' are not well defined"))
 
-  private def compileMode(mode: String): Either[CompilerException, AnalysisModeS] = mode match {
+  private def compileMode(mode: String): Either[CompilerException, AnalysisMode] = mode match {
     case "STRICT" => Right(STRICT)
     case "LOOSE" => Right(LOOSE)
     case _ => Left(CompilerException(s"Mode '$mode' is not recognised"))

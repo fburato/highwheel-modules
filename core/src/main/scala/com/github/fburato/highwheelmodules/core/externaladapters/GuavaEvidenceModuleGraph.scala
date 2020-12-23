@@ -1,19 +1,19 @@
 package com.github.fburato.highwheelmodules.core.externaladapters
 
-import com.github.fburato.highwheelmodules.model.modules.{EvidenceModuleDependencyS, HWModuleS, ModuleGraphS, TrackingModuleDependencyS}
+import com.github.fburato.highwheelmodules.model.modules.{EvidenceModuleDependency, HWModule, ModuleGraph, TrackingModuleDependency}
 
-class GuavaEvidenceModuleGraph(private val graph: ModuleGraphS[TrackingModuleDependencyS], evidenceLimit: Option[Int]) extends ModuleGraphS[EvidenceModuleDependencyS] {
-  override def findDependency(vertex1: HWModuleS, vertex2: HWModuleS): Option[EvidenceModuleDependencyS] = {
+class GuavaEvidenceModuleGraph(private val graph: ModuleGraph[TrackingModuleDependency], evidenceLimit: Option[Int]) extends ModuleGraph[EvidenceModuleDependency] {
+  override def findDependency(vertex1: HWModule, vertex2: HWModule): Option[EvidenceModuleDependency] = {
     graph.findDependency(vertex1, vertex2)
-      .map(e => EvidenceModuleDependencyS(e.source, e.dest, head(e.sources), head(e.destinations)))
+      .map(e => EvidenceModuleDependency(e.source, e.dest, head(e.sources), head(e.destinations)))
   }
 
   private def head[T](s: Set[T]): T = s.toSeq.head
 
 
-  override def addDependency(dependency: EvidenceModuleDependencyS): Unit = {
+  override def addDependency(dependency: EvidenceModuleDependency): Unit = {
     if (Seq(dependency.destModule, dependency.sourceModule).forall(graph.modules.contains)) {
-      val trackingModuleDependency = TrackingModuleDependencyS(dependency.sourceModule, dependency.destModule)
+      val trackingModuleDependency = TrackingModuleDependency(dependency.sourceModule, dependency.destModule)
       val dependencyOptional = graph.findDependency(dependency.sourceModule, dependency.destModule)
       if (evidenceLimit.forall(limit => dependencyOptional.map(_.evidenceCounter).getOrElse(0) < limit)) {
         trackingModuleDependency.addEvidence(dependency.source, dependency.dest)
@@ -22,9 +22,9 @@ class GuavaEvidenceModuleGraph(private val graph: ModuleGraphS[TrackingModuleDep
     }
   }
 
-  override def addModule(vertex: HWModuleS): Unit = graph.addModule(vertex)
+  override def addModule(vertex: HWModule): Unit = graph.addModule(vertex)
 
-  override def modules: Seq[HWModuleS] = graph.modules
+  override def modules: Seq[HWModule] = graph.modules
 
-  override def dependencies(vertex: HWModuleS): Seq[HWModuleS] = graph.dependencies(vertex)
+  override def dependencies(vertex: HWModule): Seq[HWModule] = graph.dependencies(vertex)
 }

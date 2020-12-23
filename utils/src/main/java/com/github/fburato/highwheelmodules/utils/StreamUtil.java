@@ -8,10 +8,6 @@ import java.nio.channels.WritableByteChannel;
 
 public abstract class StreamUtil {
 
-    public static String toString(final InputStream in, final String encoding) throws IOException {
-        return new String(streamToByteArray(in), encoding);
-    }
-
     public static byte[] streamToByteArray(final InputStream in) throws IOException {
         final ByteArrayOutputStream result = new ByteArrayOutputStream();
         copy(in, result);
@@ -23,7 +19,7 @@ public abstract class StreamUtil {
         return new ByteArrayInputStream(bs);
     }
 
-    public static void copy(final InputStream input, final OutputStream output) throws IOException {
+    private static void copy(final InputStream input, final OutputStream output) throws IOException {
         final ReadableByteChannel src = Channels.newChannel(input);
         final WritableByteChannel dest = Channels.newChannel(output);
         final ByteBuffer buffer = ByteBuffer.allocateDirect(16 * 1024);

@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
-import com.github.fburato.highwheelmodules.model.bytecode.ElementNameS
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
 import com.github.fburato.highwheelmodules.utils.StreamUtil
 
@@ -10,11 +10,11 @@ import scala.jdk.CollectionConverters.EnumerationHasAsScala
 import scala.util.{Try, Using}
 
 class ArchiveClassPathRoot(file: File) extends ClasspathRoot {
-  override def getData(elementName: ElementNameS): Try[InputStream] = getResource(elementName.asInternalName + ".class")
+  override def getData(elementName: ElementName): Try[InputStream] = getResource(elementName.asInternalName + ".class")
 
-  override def classNames: Try[Seq[ElementNameS]] = {
-    def stringToClassName(name: String): ElementNameS =
-      ElementNameS.fromString(name.substring(0, name.length - ".class".length))
+  override def classNames: Try[Seq[ElementName]] = {
+    def stringToClassName(name: String): ElementName =
+      ElementName.fromString(name.substring(0, name.length - ".class".length))
 
     getRoot.map(root => {
       val entries = root.entries().asScala.toSeq

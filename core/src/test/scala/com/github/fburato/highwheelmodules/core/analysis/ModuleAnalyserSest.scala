@@ -5,7 +5,7 @@ import com.github.fburato.highwheelmodules.bytecodeparser.classpath.DirectoryCla
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
 import com.github.fburato.highwheelmodules.model.analysis.{LOOSE, STRICT}
 import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
-import com.github.fburato.highwheelmodules.model.modules.{AnonymousModuleS, DefinitionS, HWModuleS, ModuleGraphFactoryS}
+import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, Definition, HWModule, ModuleGraphFactory}
 import com.github.fburato.highwheelmodules.model.rules.{DependencyS, NoStrictDependencyS}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -20,25 +20,25 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
   private val orgExamples = new DirectoryClassPathRoot(Paths.get("target", "test-classes").toFile)
   private val realClassParser: ClassParser = new ClassPathParser(item => item.asJavaName startsWith "org.example")
   private val classParser = spy(realClassParser)
-  private val factory: ModuleGraphFactoryS = new GuavaGraphFactory
+  private val factory: ModuleGraphFactory = new GuavaGraphFactory
 
-  private val MAIN = HWModuleS.make("Main", Seq("org.example.Main")).get
-  private val CONTROLLER = HWModuleS.make("Controllers", Seq("org.example.controller.*")).get
-  private val FACADE = HWModuleS.make("Facade", Seq("org.example.core.CoreFacade")).get
-  private val COREINTERNALS = HWModuleS.make("CoreInternals", Seq("org.example.core.internals.*")).get
-  private val COREAPI = HWModuleS.make("CoreApi", Seq("org.example.core.api.*")).get
-  private val MODEL = HWModuleS.make("Model", Seq("org.example.core.model.*")).get
-  private val IO = HWModuleS.make("IO", Seq("org.example.io.*")).get
-  private val UTILS = HWModuleS.make("Commons", Seq("org.example.commons.*")).get
+  private val MAIN = HWModule.make("Main", Seq("org.example.Main")).get
+  private val CONTROLLER = HWModule.make("Controllers", Seq("org.example.controller.*")).get
+  private val FACADE = HWModule.make("Facade", Seq("org.example.core.CoreFacade")).get
+  private val COREINTERNALS = HWModule.make("CoreInternals", Seq("org.example.core.internals.*")).get
+  private val COREAPI = HWModule.make("CoreApi", Seq("org.example.core.api.*")).get
+  private val MODEL = HWModule.make("Model", Seq("org.example.core.model.*")).get
+  private val IO = HWModule.make("IO", Seq("org.example.io.*")).get
+  private val UTILS = HWModule.make("Commons", Seq("org.example.commons.*")).get
 
   private def testee(root: ClasspathRoot, evidenceLimit: Option[Int]): ModuleAnalyser =
     ModuleAnalyser(classParser, root, evidenceLimit, factory)
 
   private def metric(name: String, fanIn: Int, fanOut: Int): Metric = Metric(name, fanIn, fanOut)
 
-  private def dep(source: HWModuleS, dest: HWModuleS): DependencyS = DependencyS(source, dest)
+  private def dep(source: HWModule, dest: HWModule): DependencyS = DependencyS(source, dest)
 
-  private def noSD(source: HWModuleS, dest: HWModuleS): NoStrictDependencyS = NoStrictDependencyS(source, dest)
+  private def noSD(source: HWModule, dest: HWModule): NoStrictDependencyS = NoStrictDependencyS(source, dest)
 
   private def violation(source: String, dest: String, specPath: Seq[String], actualPath: Seq[String]): EvidenceBackedViolation =
     EvidenceBackedViolation(source, dest, specPath, actualPath, List())
@@ -51,7 +51,7 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
   "when definitions are all strict, analyse" should {
 
-    val strictBuilder = DefinitionS(mode = STRICT)
+    val strictBuilder = Definition(mode = STRICT)
 
     "analyse if sepcfication includes only one module and no rules" in {
       val definition = strictBuilder.copy(modules = List(MAIN))
@@ -118,17 +118,17 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       actual.evidenceBackedViolations should contain allElementsOf List(
         evidence(MAIN.name, CONTROLLER.name, List(), List(CONTROLLER.name), List(List(
           ("org.example.Main:main", "org.example.controller.Controller1"),
-          ("org.example.Main:main", "org.example.controller.Controller1:access"),
-          ("org.example.Main:main", "org.example.controller.Controller1:(init)")
+          ("org.example.Main:main", "org.example.controller.Controller1:(init)"),
+          ("org.example.Main:main", "org.example.controller.Controller1:access")
         ))),
         evidence(MAIN.name, FACADE.name, List(), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
-          ("org.example.Main:main", "org.example.core.CoreFacade")
+          ("org.example.Main:main", "org.example.core.CoreFacade"),
+          ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
         ))),
         evidence(CONTROLLER.name, FACADE.name, List(), List(FACADE.name), List(List(
           ("org.example.controller.Controller1", "org.example.core.CoreFacade"),
-          ("org.example.controller.Controller1:access", "org.example.core.CoreFacade:facadeMethod1"),
-          ("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade")
+          ("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade"),
+          ("org.example.controller.Controller1:access", "org.example.core.CoreFacade:facadeMethod1")
         )))
       )
     }
@@ -205,7 +205,7 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
     "consider only dependencies in the whitelist" in {
       val definition = strictBuilder.copy(
-        whitelist = AnonymousModuleS.make(Seq("org.example.Main", "org.example.controller.*")),
+        whitelist = AnonymousModule.make(Seq("org.example.Main", "org.example.controller.*")),
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(dep(MAIN, CONTROLLER))
       )
@@ -229,7 +229,7 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
     "consider dependencies not in the blacklist" in {
       val definition = strictBuilder.copy(
-        blacklist = AnonymousModuleS.make(Seq("org.example.Main", "org.example.commons.*")),
+        blacklist = AnonymousModule.make(Seq("org.example.Main", "org.example.commons.*")),
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(
           dep(CONTROLLER, FACADE),
@@ -261,8 +261,8 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
     "consider dependencies not in the blacklist and in the whitelist" in {
       val definition = strictBuilder.copy(
-        whitelist = AnonymousModuleS.make(Seq("org.example.*")),
-        blacklist = AnonymousModuleS.make(Seq("org.example.Main", "org.example.commons.*")),
+        whitelist = AnonymousModule.make(Seq("org.example.*")),
+        blacklist = AnonymousModule.make(Seq("org.example.Main", "org.example.commons.*")),
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(
           dep(CONTROLLER, FACADE),
@@ -344,7 +344,7 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
   "when definitions are all loose, analyse" should {
 
-    val looseBuilder = DefinitionS(mode = LOOSE)
+    val looseBuilder = Definition(mode = LOOSE)
 
     "analyse if specification has one module and no rule" in {
       val definition = looseBuilder.copy(modules = List(MAIN))
@@ -394,8 +394,8 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       )
       actual.evidenceBackedViolations should contain allElementsOf List(
         evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
-          ("org.example.Main:main", "org.example.core.CoreFacade")
+          ("org.example.Main:main", "org.example.core.CoreFacade"),
+          ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
         )))
       )
       actual.metrics should contain theSameElementsAs List(
@@ -416,8 +416,8 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       actual.evidenceBackedViolations should contain allElementsOf List(
         evidence(MAIN.name, CONTROLLER.name, List(MAIN.name, CONTROLLER.name), List(CONTROLLER.name), List(List(
           ("org.example.Main:main", "org.example.controller.Controller1"),
-          ("org.example.Main:main", "org.example.controller.Controller1:access"),
-          ("org.example.Main:main", "org.example.controller.Controller1:(init)")
+          ("org.example.Main:main", "org.example.controller.Controller1:(init)"),
+          ("org.example.Main:main", "org.example.controller.Controller1:access")
         )))
       )
     }
@@ -470,7 +470,7 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
     "consider only dependencies in the whitelist" in {
       val definition = looseBuilder.copy(
-        whitelist = AnonymousModuleS.make(Seq("org.example.controller.*", "org.example.core.CoreFacade", "org.example.core.model.*")),
+        whitelist = AnonymousModule.make(Seq("org.example.controller.*", "org.example.core.CoreFacade", "org.example.core.model.*")),
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(dep(CONTROLLER, FACADE), dep(FACADE, MODEL)),
         noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN))
@@ -494,7 +494,7 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
     "consider dependencies not in the blacklist" in {
       val definition = looseBuilder.copy(
-        blacklist = AnonymousModuleS.make(Seq("org.example.Main", "org.example.commons.*")),
+        blacklist = AnonymousModule.make(Seq("org.example.Main", "org.example.commons.*")),
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(
           dep(CONTROLLER, FACADE),
@@ -523,8 +523,8 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
     "consider dependencies in the whitelist and not in the blacklist" in {
       val definition = looseBuilder.copy(
-        whitelist = AnonymousModuleS.make(Seq("org.example.*")),
-        blacklist = AnonymousModuleS.make(Seq("org.example.Main", "org.example.commons.*")),
+        whitelist = AnonymousModule.make(Seq("org.example.*")),
+        blacklist = AnonymousModule.make(Seq("org.example.Main", "org.example.commons.*")),
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(
           dep(CONTROLLER, FACADE),
@@ -581,8 +581,8 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       )
       actual1.evidenceBackedViolations should contain allElementsOf List(
         evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
-          ("org.example.Main:main", "org.example.core.CoreFacade")
+          ("org.example.Main:main", "org.example.core.CoreFacade"),
+          ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
         )))
       )
       actual1.metrics should contain theSameElementsAs List(
@@ -607,14 +607,14 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
   }
 
   "analyse should change mode based on definition" in {
-    val definition1 = DefinitionS(
+    val definition1 = Definition(
       mode = STRICT,
       modules = List(MAIN, CONTROLLER, FACADE),
       dependencies = List(dep(MAIN, CONTROLLER),
         dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)),
       noStrictDependencies = List(noSD(MAIN, FACADE))
     )
-    val definition2 = DefinitionS(
+    val definition2 = Definition(
       mode = STRICT,
       modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
       dependencies = List(
@@ -626,13 +626,13 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
         dep(IO, COREAPI), dep(IO, MODEL), dep(IO, UTILS)),
       noStrictDependencies = List(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS))
     )
-    val definition3 = DefinitionS(
+    val definition3 = Definition(
       mode = LOOSE,
       modules = List(MAIN, CONTROLLER, FACADE),
       dependencies = List(dep(MAIN, CONTROLLER), dep(CONTROLLER, MAIN)),
       noStrictDependencies = List(noSD(MAIN, FACADE))
     )
-    val definition4 = DefinitionS(
+    val definition4 = Definition(
       mode = LOOSE,
       modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
       dependencies = List(
@@ -683,8 +683,8 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
     )
     actual3.evidenceBackedViolations should contain allElementsOf List(
       evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-        ("org.example.Main:main", "org.example.core.CoreFacade:(init)"),
-        ("org.example.Main:main", "org.example.core.CoreFacade")
+        ("org.example.Main:main", "org.example.core.CoreFacade"),
+        ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
       )))
     )
     actual3.metrics should contain theSameElementsAs List(

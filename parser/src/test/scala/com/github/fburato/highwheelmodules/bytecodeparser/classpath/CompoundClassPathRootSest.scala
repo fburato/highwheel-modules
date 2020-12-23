@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.bytecodeparser.TryMatchers._
-import com.github.fburato.highwheelmodules.model.bytecode.ElementNameS
+import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
 import org.apache.commons.lang3.RandomStringUtils
 import org.mockito.scalatest.MockitoSugar
@@ -20,7 +20,7 @@ class CompoundClassPathRootSest extends AnyWordSpec with Matchers with MockitoSu
   private val inputStream2 = new ByteArrayInputStream(new Array[Byte](20))
 
   "getData" should {
-    val elementName = ElementNameS.fromString(RandomStringUtils.randomAlphanumeric(20))
+    val elementName = ElementName.fromString(RandomStringUtils.randomAlphanumeric(20))
     "fail if any of the children fail" in {
       val exception = new RuntimeException
       when(child2.getData(any)) thenReturn Failure(exception)
@@ -104,8 +104,8 @@ class CompoundClassPathRootSest extends AnyWordSpec with Matchers with MockitoSu
   }
 
   "classNames" should {
-    def generateRandomElementNames(size: Int): Seq[ElementNameS] =
-      (0 until size) map (i => ElementNameS.fromString(RandomStringUtils.randomAlphanumeric(10 + i)))
+    def generateRandomElementNames(size: Int): Seq[ElementName] =
+      (0 until size) map (i => ElementName.fromString(RandomStringUtils.randomAlphanumeric(10 + i)))
 
     val child1ClassNames = generateRandomElementNames(5)
     val child2ClassNames = generateRandomElementNames(7)
@@ -132,7 +132,7 @@ class CompoundClassPathRootSest extends AnyWordSpec with Matchers with MockitoSu
       when(child1.classNames) thenReturn Success(child1ClassNames)
       when(child2.classNames) thenReturn Success(child2ClassNames)
 
-      testee.classNames should beSuccessWith[Seq[ElementNameS]] { results =>
+      testee.classNames should beSuccessWith[Seq[ElementName]] { results =>
         results should contain theSameElementsInOrderAs (child1ClassNames ++ child2ClassNames)
       }
     }
@@ -141,7 +141,7 @@ class CompoundClassPathRootSest extends AnyWordSpec with Matchers with MockitoSu
       when(child1.classNames) thenReturn Success(Seq())
       when(child2.classNames) thenReturn Success(child2ClassNames)
 
-      testee.classNames should beSuccessWith[Seq[ElementNameS]] { results =>
+      testee.classNames should beSuccessWith[Seq[ElementName]] { results =>
         results should contain theSameElementsInOrderAs child2ClassNames
       }
     }
@@ -150,7 +150,7 @@ class CompoundClassPathRootSest extends AnyWordSpec with Matchers with MockitoSu
       when(child1.classNames) thenReturn Success(Seq())
       when(child2.classNames) thenReturn Success(Seq())
 
-      testee.classNames should beSuccessWith[Seq[ElementNameS]] { results =>
+      testee.classNames should beSuccessWith[Seq[ElementName]] { results =>
         results should contain theSameElementsInOrderAs Seq()
       }
     }

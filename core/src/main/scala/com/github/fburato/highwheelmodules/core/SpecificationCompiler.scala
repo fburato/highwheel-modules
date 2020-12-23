@@ -3,7 +3,7 @@ package com.github.fburato.highwheelmodules.core
 import com.github.fburato.highwheelmodules.core.specification.HwmCompiler
 import com.github.fburato.highwheelmodules.core.specification.lexer.HwmLexer
 import com.github.fburato.highwheelmodules.core.specification.parser.HwmParser
-import com.github.fburato.highwheelmodules.model.modules.DefinitionS
+import com.github.fburato.highwheelmodules.model.modules.Definition
 
 import java.io.File
 import java.nio.charset.StandardCharsets
@@ -12,7 +12,7 @@ import scala.util.Try
 import scala.util.parsing.input.StreamReader
 
 trait SpecificationCompiler {
-  def compile(file: File): Try[DefinitionS]
+  def compile(file: File): Try[Definition]
 }
 
 object SpecificationCompiler {
