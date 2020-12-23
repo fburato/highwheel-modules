@@ -6,12 +6,9 @@ import com.github.fburato.highwheelmodules.utils.TryUtils._
 import org.objectweb.asm.ClassReader
 
 import java.io.InputStream
-import java.util.function.Predicate
 import scala.util.{Try, Using}
 
 class ClassPathParser(filter: ElementName => Boolean) extends ClassParser {
-
-  def this(predicate: Predicate[ElementName]) = this(el => predicate.test(el))
 
   private val nameTransformer: NameTransformer = s =>
     if (s.contains("$")) {
