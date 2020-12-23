@@ -2,7 +2,7 @@ package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
-import com.github.fburato.highwheelmodules.utils.StreamUtil
+import com.github.fburato.highwheelmodules.utils.StreamUtilS
 
 import java.io.{File, InputStream}
 import java.util.zip.ZipFile
@@ -30,7 +30,7 @@ class ArchiveClassPathRoot(file: File) extends ClasspathRoot {
       if (entry == null) {
         null
       } else {
-        StreamUtil.copyStream(zipFile.getInputStream(entry))
+        StreamUtilS.copyStream(zipFile.getInputStream(entry))
       }
     }
 

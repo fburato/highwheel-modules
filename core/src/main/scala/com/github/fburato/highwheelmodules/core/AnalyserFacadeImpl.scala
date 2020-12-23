@@ -194,7 +194,7 @@ private[core] object AnalyserFacadeImpl {
   }
 
   private def convertEvidences(evidences: Seq[Seq[(String, String)]]): JList[JList[Pair[String, String]]] = evidences.map(e => e.map({
-    case (p1, p2) => Pair.make(p1, p2)
+    case (p1, p2) => Pair(p1, p2)
   }).asJava).asJava
 
   private class DelegateLooseAnalysisEventSink(private val delegate: LooseAnalysisEventSink) extends AnalysisEventSink {

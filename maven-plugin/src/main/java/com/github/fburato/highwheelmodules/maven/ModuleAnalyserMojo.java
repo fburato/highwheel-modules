@@ -153,7 +153,7 @@ public class ModuleAnalyserMojo extends AbstractMojo {
             final int subListLimit = evidenceLimit < currentToNextEvidences.size() ? evidenceLimit
                     : currentToNextEvidences.size();
             for (Pair<String, String> evidence : currentToNextEvidences.subList(0, subListLimit)) {
-                getLog().error(String.format("        %s -> %s", evidence.first, evidence.second));
+                getLog().error(String.format("        %s -> %s", evidence.first(), evidence.second()));
             }
             if (subListLimit < currentToNextEvidences.size()) {
                 getLog().error(String.format("        (%d connections skipped)",

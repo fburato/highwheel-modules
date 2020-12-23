@@ -167,7 +167,7 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
       verifyLooseMetrics()
     }
 
-    def pair(one: String, two: String): Pair[String, String] = Pair.make(one, two)
+    def pair(one: String, two: String): Pair[String, String] = Pair(one, two)
 
     "print violations on failed strict analysis" in {
       assertThrows[AnalyserException] {

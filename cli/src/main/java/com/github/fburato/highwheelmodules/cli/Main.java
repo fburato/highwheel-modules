@@ -129,7 +129,7 @@ public class Main {
             final List<Pair<String, String>> currentToNextEvidences = evidences.get(i);
             result.append(String.format("      %s -> %s:\n", current, next));
             for (Pair<String, String> evidence : currentToNextEvidences) {
-                result.append(String.format("        %s -> %s\n", evidence.first, evidence.second));
+                result.append(String.format("        %s -> %s\n", evidence.first(), evidence.second()));
             }
         }
         return result.toString();
