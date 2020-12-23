@@ -1,46 +1,47 @@
 package com.github.fburato.highwheelmodules.core.externaladapters
 
-import java.util
-import java.util.{Collections, Optional}
-
-import com.github.fburato.highwheelmodules.model.modules.{HWModule, MetricModuleGraph, ModuleDependency}
+import com.github.fburato.highwheelmodules.model.modules._
 import com.google.common.graph.MutableNetwork
 
+import java.util
 import scala.jdk.CollectionConverters._
+import scala.jdk.OptionConverters.RichOptional
 
-class GuavaModuleGraph(private val graph: MutableNetwork[HWModule, ModuleDependency]) extends MetricModuleGraph[ModuleDependency] {
-  override def fanInOf(module: HWModule): Optional[Integer] = {
+class GuavaModuleGraph(private val graph: MutableNetwork[HWModuleS, ModuleDependencyS]) extends MetricModuleGraphS[ModuleDependencyS] {
+  override def fanInOf(module: HWModuleS): Option[Int] = {
     if (!graph.nodes().contains(module)) {
-      Optional.empty()
+      None
     } else {
-      Optional.of(findDependency(module, module)
+      Some(findDependency(module, module)
         .map(_ => graph.inDegree(module) - 1)
-        .orElseGet(() => graph.inDegree(module)))
+        .getOrElse(graph.inDegree(module))
+      )
     }
   }
 
-  override def fanOutOf(module: HWModule): Optional[Integer] = {
+  override def fanOutOf(module: HWModuleS): Option[Int] = {
     if (!graph.nodes().contains(module)) {
-      Optional.empty()
+      None
     } else {
-      Optional.of(findDependency(module, module)
+      Some(findDependency(module, module)
         .map(_ => graph.outDegree(module) - 1)
-        .orElseGet(() => graph.outDegree(module)))
+        .getOrElse(graph.outDegree(module))
+      )
     }
   }
 
-  override def findDependency(vertex1: HWModule, vertex2: HWModule): Optional[ModuleDependency] = {
+  override def findDependency(vertex1: HWModuleS, vertex2: HWModuleS): Option[ModuleDependencyS] = {
     if (graph.nodes().containsAll(list(vertex1, vertex2))) {
-      graph.edgeConnecting(vertex1, vertex2)
+      graph.edgeConnecting(vertex1, vertex2).toScala
     } else {
-      Optional.empty()
+      None
     }
   }
 
   private def list[T](ts: T*): util.List[T] = ts.asJava
 
-  override def addDependency(dependency: ModuleDependency): Unit = {
-    if (graph.nodes().containsAll(list(dependency.source, dependency.dest))) {
+  override def addDependency(dependency: ModuleDependencyS): Unit = {
+    if (Seq(dependency.dest, dependency.source).forall(graph.nodes().contains)) {
       val moduleDependency = graph.edgeConnecting(dependency.source, dependency.dest)
         .orElseGet(() => {
           graph.addEdge(dependency.source, dependency.dest, dependency)
@@ -50,15 +51,15 @@ class GuavaModuleGraph(private val graph: MutableNetwork[HWModule, ModuleDepende
     }
   }
 
-  override def addModule(vertex: HWModule): Unit = graph.addNode(vertex)
+  override def addModule(vertex: HWModuleS): Unit = graph.addNode(vertex)
 
-  override def modules(): util.Collection[HWModule] = graph.nodes()
+  override def modules: Seq[HWModuleS] = graph.nodes().asScala.toSeq
 
-  override def dependencies(vertex: HWModule): util.Collection[HWModule] = {
+  override def dependencies(vertex: HWModuleS): Seq[HWModuleS] = {
     if (graph.nodes().contains(vertex)) {
-      graph.successors(vertex)
+      graph.successors(vertex).asScala.toSeq
     } else {
-      Collections.emptySet()
+      Seq()
     }
   }
 }

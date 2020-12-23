@@ -1,13 +1,13 @@
 package com.github.fburato.highwheelmodules.model.classpath
 
-import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessType, ElementName}
+import com.github.fburato.highwheelmodules.model.bytecode.{AccessPointS, AccessTypeS, ElementNameS}
 
 trait AccessVisitor {
-  def apply(source: AccessPoint, dest: AccessPoint, accessType: AccessType): Unit
+  def apply(source: AccessPointS, dest: AccessPointS, accessType: AccessTypeS): Unit
 
-  def newNode(clazz: ElementName): Unit
+  def newNode(clazz: ElementNameS): Unit
 
-  def newAccessPoint(ap: AccessPoint): Unit
+  def newAccessPoint(ap: AccessPointS): Unit
 
-  def newEntryPoint(clazz: ElementName): Unit
+  def newEntryPoint(clazz: ElementNameS): Unit
 }

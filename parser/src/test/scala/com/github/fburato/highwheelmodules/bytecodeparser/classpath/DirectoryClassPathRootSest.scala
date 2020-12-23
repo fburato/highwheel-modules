@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.bytecodeparser.TryMatchers._
-import com.github.fburato.highwheelmodules.model.bytecode.ElementName
+import com.github.fburato.highwheelmodules.model.bytecode.ElementNameS
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
@@ -23,19 +23,19 @@ class DirectoryClassPathRootSest extends AnyWordSpec with Matchers with MockitoS
   "getData" should {
     "return an input stream for an existing class" in {
 
-      validRootTestee.getData(ElementName.fromClass(classOf[DirectoryClassPathRootSest])) should beSuccessWith[InputStream] { stream =>
+      validRootTestee.getData(ElementNameS.fromClass(classOf[DirectoryClassPathRootSest])) should beSuccessWith[InputStream] { stream =>
         stream should not be null
       }
     }
 
     "return null for unrecognised class" in {
 
-      validRootTestee.getData(ElementName.fromString("Foo")) shouldEqual Success(null)
+      validRootTestee.getData(ElementNameS.fromString("Foo")) shouldEqual Success(null)
     }
 
     "return null for not existing class" in {
 
-      invalidRootTestee.getData(ElementName.fromString("Foo")) shouldEqual Success(null)
+      invalidRootTestee.getData(ElementNameS.fromString("Foo")) shouldEqual Success(null)
     }
   }
 
@@ -47,8 +47,8 @@ class DirectoryClassPathRootSest extends AnyWordSpec with Matchers with MockitoS
 
     "return collection containing the expected elements" in {
 
-      validRootTestee.classNames should beSuccessWith[Seq[ElementName]] { names =>
-        names should contain(ElementName.fromClass(classOf[DirectoryClassPathRootSest]))
+      validRootTestee.classNames should beSuccessWith[Seq[ElementNameS]] { names =>
+        names should contain(ElementNameS.fromClass(classOf[DirectoryClassPathRootSest]))
       }
     }
   }

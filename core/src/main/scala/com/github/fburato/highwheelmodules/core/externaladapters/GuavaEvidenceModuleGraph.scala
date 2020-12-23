@@ -1,37 +1,30 @@
 package com.github.fburato.highwheelmodules.core.externaladapters
 
-import java.util
-import java.util.Optional
+import com.github.fburato.highwheelmodules.model.modules.{EvidenceModuleDependencyS, HWModuleS, ModuleGraphS, TrackingModuleDependencyS}
 
-import com.github.fburato.highwheelmodules.model.modules.{EvidenceModuleDependency, HWModule, ModuleGraph, TrackingModuleDependency}
-
-import scala.jdk.CollectionConverters._
-import scala.jdk.OptionConverters._
-
-class GuavaEvidenceModuleGraph(private val graph: ModuleGraph[TrackingModuleDependency], evidenceLimit: Option[Int]) extends ModuleGraph[EvidenceModuleDependency] {
-  override def findDependency(vertex1: HWModule, vertex2: HWModule): Optional[EvidenceModuleDependency] = {
+class GuavaEvidenceModuleGraph(private val graph: ModuleGraphS[TrackingModuleDependencyS], evidenceLimit: Option[Int]) extends ModuleGraphS[EvidenceModuleDependencyS] {
+  override def findDependency(vertex1: HWModuleS, vertex2: HWModuleS): Option[EvidenceModuleDependencyS] = {
     graph.findDependency(vertex1, vertex2)
-      .map(e => new EvidenceModuleDependency(e.source, e.dest, head(e.getSources), head(e.getDestinations)))
+      .map(e => EvidenceModuleDependencyS(e.source, e.dest, head(e.sources), head(e.destinations)))
   }
 
-  private def head[T](s: util.Set[T]): T = s.asScala.toSeq.head
+  private def head[T](s: Set[T]): T = s.toSeq.head
 
-  private def list[T](ts: T*): util.List[T] = ts.asJava
 
-  override def addDependency(dependency: EvidenceModuleDependency): Unit = {
-    if (graph.modules().containsAll(list(dependency.destModule, dependency.sourceModule))) {
-      val trackingModuleDependency = new TrackingModuleDependency(dependency.sourceModule, dependency.destModule)
-      val dependencyOptional = graph.findDependency(dependency.sourceModule, dependency.destModule).toScala
-      if (evidenceLimit.forall(limit => dependencyOptional.map(_.getEvidenceCounter).getOrElse(0) < limit)) {
+  override def addDependency(dependency: EvidenceModuleDependencyS): Unit = {
+    if (Seq(dependency.destModule, dependency.sourceModule).forall(graph.modules.contains)) {
+      val trackingModuleDependency = TrackingModuleDependencyS(dependency.sourceModule, dependency.destModule)
+      val dependencyOptional = graph.findDependency(dependency.sourceModule, dependency.destModule)
+      if (evidenceLimit.forall(limit => dependencyOptional.map(_.evidenceCounter).getOrElse(0) < limit)) {
         trackingModuleDependency.addEvidence(dependency.source, dependency.dest)
       }
       graph.addDependency(trackingModuleDependency)
     }
   }
 
-  override def addModule(vertex: HWModule): Unit = graph.addModule(vertex)
+  override def addModule(vertex: HWModuleS): Unit = graph.addModule(vertex)
 
-  override def modules(): util.Collection[HWModule] = graph.modules()
+  override def modules: Seq[HWModuleS] = graph.modules
 
-  override def dependencies(vertex: HWModule): util.Collection[HWModule] = graph.dependencies(vertex)
+  override def dependencies(vertex: HWModuleS): Seq[HWModuleS] = graph.dependencies(vertex)
 }

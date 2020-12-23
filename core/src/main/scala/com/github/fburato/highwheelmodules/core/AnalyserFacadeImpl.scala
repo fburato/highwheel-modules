@@ -6,9 +6,9 @@ import com.github.fburato.highwheelmodules.core.AnalyserFacade.EventSink.{LooseA
 import com.github.fburato.highwheelmodules.core.AnalyserFacade.Printer
 import com.github.fburato.highwheelmodules.core.analysis._
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
-import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
+import com.github.fburato.highwheelmodules.model.analysis.{LOOSE, STRICT}
 import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
-import com.github.fburato.highwheelmodules.model.modules.{Definition, ModuleGraphFactory}
+import com.github.fburato.highwheelmodules.model.modules.{DefinitionS, ModuleGraphFactoryS}
 import com.github.fburato.highwheelmodules.utils.Pair
 
 import java.io.File
@@ -24,7 +24,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
                                        strictAnalysisEventSink: StrictAnalysisEventSink,
                                        looseAnalysisEventSink: LooseAnalysisEventSink,
                                        classParser: ClassParser,
-                                       moduleGraphFactory: ModuleGraphFactory,
+                                       moduleGraphFactory: ModuleGraphFactoryS,
                                        specificationCompiler: SpecificationCompiler) extends AnalyserFacade {
 
   def this(printer: Printer,
@@ -44,9 +44,9 @@ class AnalyserFacadeImpl private[core](printer: Printer,
   private val strictEventSink = new DelegateStrictAnalysisEventSink(strictAnalysisEventSink)
   private val looseEventSink = new DelegateLooseAnalysisEventSink(looseAnalysisEventSink)
 
-  private def getEventSink(definition: Definition): AnalysisEventSink = definition.mode match {
-    case AnalysisMode.LOOSE => looseEventSink
-    case AnalysisMode.STRICT => strictEventSink
+  private def getEventSink(definition: DefinitionS): AnalysisEventSink = definition.mode match {
+    case LOOSE => looseEventSink
+    case STRICT => strictEventSink
   }
 
   override def runAnalysis(classPathRoots: JList[String], specificationPath: JList[String], evidenceLimit: JOptional[Integer]): Unit = {
@@ -55,7 +55,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
     val traversed = sequence(definitionsAndPaths)
     val analyser = ModuleAnalyser(classParser, classPathRoot, evidenceLimit.toScala.map(i => i.toInt), moduleGraphFactory)
 
-    def analyseAndCollect(pathDefinitions: Seq[(String, Definition)]): Try[Seq[(String, Definition, AnalysisResult)]] = {
+    def analyseAndCollect(pathDefinitions: Seq[(String, DefinitionS)]): Try[Seq[(String, DefinitionS, AnalysisResult)]] = {
       val definitions = pathDefinitions.map(_._2)
       val analysisResults = analyser.analyse(definitions)
       analysisResults.map(results => (pathDefinitions zip results) map {
@@ -105,7 +105,7 @@ class AnalyserFacadeImpl private[core](printer: Printer,
         classification.jars.map(f => new ArchiveClassPathRoot(f).asInstanceOf[ClasspathRoot]))
   }
 
-  private def compileSpecification(specificationPath: String): Try[Definition] = {
+  private def compileSpecification(specificationPath: String): Try[DefinitionS] = {
     val specificationFile = new File(specificationPath)
     if (!specificationFile.exists || specificationFile.isDirectory || !specificationFile.canRead) {
       Failure(AnalyserException(s"Cannot read from specification file '$specificationPath'"))

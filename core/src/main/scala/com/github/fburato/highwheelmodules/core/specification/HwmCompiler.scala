@@ -1,12 +1,8 @@
 package com.github.fburato.highwheelmodules.core.specification
 
-import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
-import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, HWModule, Definition => ModelDefinition}
-import com.github.fburato.highwheelmodules.model.rules.{Dependency, NoStrictDependency}
-
-import scala.jdk.CollectionConverters._
-import scala.jdk.OptionConverters._
-import scala.util.Try
+import com.github.fburato.highwheelmodules.model.analysis.{AnalysisModeS, LOOSE, STRICT}
+import com.github.fburato.highwheelmodules.model.modules.{AnonymousModuleS, HWModuleS, DefinitionS => ModelDefinition}
+import com.github.fburato.highwheelmodules.model.rules.{DependencyS, NoStrictDependencyS}
 
 object HwmCompiler {
 
@@ -19,26 +15,25 @@ object HwmCompiler {
       rules <- compileRules(definition.rules, moduleMap)
       whitelist <- definition.whitelist map (regexes => compileRegexes(regexes).map(Some(_))) getOrElse Right(None)
       blacklist <- definition.blacklist map (regexes => compileRegexes(regexes).map(Some(_))) getOrElse Right(None)
-      mode <- definition.mode map compileMode getOrElse Right(AnalysisMode.STRICT)
-    } yield ModelDefinition.DefinitionBuilder.baseBuilder().`with`(d => {
-      d.mode = mode
-      d.blackList = blacklist.toJava
-      d.whitelist = whitelist.toJava
-      d.modules = moduleMap.values.asJavaCollection
-      d.dependencies = rules._1.asJavaCollection
-      d.noStrictDependencies = rules._2.asJavaCollection
-    }).build()
+      mode <- definition.mode map compileMode getOrElse Right(STRICT)
+    } yield ModelDefinition(
+      mode = mode,
+      blacklist = blacklist,
+      whitelist = whitelist,
+      modules = moduleMap.values.toSeq,
+      dependencies = rules._1,
+      noStrictDependencies = rules._2
+    )
   }
 
-  private def compileModules(modules: List[ModuleDefinition], prefix: String): Either[CompilerException, Map[String, HWModule]] = {
-    val compiled: List[Either[CompilerException, HWModule]] = modules.map { module =>
-      HWModule.make(module.moduleName, module.moduleRegex.map(regex => prefix + regex).asJava)
-        .toScala
+  private def compileModules(modules: List[ModuleDefinition], prefix: String): Either[CompilerException, Map[String, HWModuleS]] = {
+    val compiled: List[Either[CompilerException, HWModuleS]] = modules.map { module =>
+      HWModuleS.make(module.moduleName, module.moduleRegex.map(regex => prefix + regex))
         .map(hwm => Right(hwm))
         .getOrElse(Left(CompilerException(s"Regular expressions '${module.moduleRegex}' for module ${module.moduleName} are not well defined")))
     }
 
-    def checkRepetitions(modules: Map[String, List[HWModule]]): Either[CompilerException, Map[String, HWModule]] = {
+    def checkRepetitions(modules: Map[String, List[HWModuleS]]): Either[CompilerException, Map[String, HWModuleS]] = {
       val multiples = modules
         .filter(pair => pair._2.size > 1)
         .keys
@@ -67,21 +62,21 @@ object HwmCompiler {
         } yield x :: xs
     }
 
-  private def compileRules(rules: List[Rule], moduleMap: Map[String, HWModule]): Either[CompilerException, (List[Dependency], List[NoStrictDependency])] = {
-    def expandChainDependencyRule(ms: List[String]): Either[CompilerException, List[Dependency]] = {
+  private def compileRules(rules: List[Rule], moduleMap: Map[String, HWModuleS]): Either[CompilerException, (List[DependencyS], List[NoStrictDependencyS])] = {
+    def expandChainDependencyRule(ms: List[String]): Either[CompilerException, List[DependencyS]] = {
       val maybeDependencies = ms.zip(ms.tail).map {
         case (m1, m2) => if (!moduleMap.contains(m1)) {
           Left(CompilerException(String.format(MODULE_HAS_NOT_BEEN_DEFINED, m1, s"$m1->$m2")))
         } else if (!moduleMap.contains(m2)) {
           Left(CompilerException(String.format(MODULE_HAS_NOT_BEEN_DEFINED, m2, s"$m1->$m2")))
         } else {
-          Right(new Dependency(moduleMap(m1), moduleMap(m2)))
+          Right(DependencyS(moduleMap(m1), moduleMap(m2)))
         }
       }
       sequence(maybeDependencies)
     }
 
-    def expandOneToManyRule(m: String, ms: List[String]): Either[CompilerException, List[Dependency]] = {
+    def expandOneToManyRule(m: String, ms: List[String]): Either[CompilerException, List[DependencyS]] = {
       val failure: String => CompilerException = f => CompilerException(String.format(MODULE_HAS_NOT_BEEN_DEFINED, f, s"$m->(${ms.mkString(",")})"))
       if (!moduleMap.contains(m)) {
         Left(failure(m))
@@ -90,14 +85,14 @@ object HwmCompiler {
           if (!moduleMap.contains(other)) {
             Left(failure(other))
           } else {
-            Right(new Dependency(moduleMap(m), moduleMap(other)))
+            Right(DependencyS(moduleMap(m), moduleMap(other)))
           }
         }
         sequence(maybeDependencies)
       }
     }
 
-    def expandManyToOneRule(ms: List[String], m: String): Either[CompilerException, List[Dependency]] = {
+    def expandManyToOneRule(ms: List[String], m: String): Either[CompilerException, List[DependencyS]] = {
       val failure: String => CompilerException = f => CompilerException(String.format(MODULE_HAS_NOT_BEEN_DEFINED, f, s"(${ms.mkString(",")})->$m"))
       if (!moduleMap.contains(m)) {
         Left(failure(m))
@@ -106,25 +101,25 @@ object HwmCompiler {
           if (!moduleMap.contains(other)) {
             Left(failure(other))
           } else {
-            Right(new Dependency(moduleMap(other), moduleMap(m)))
+            Right(DependencyS(moduleMap(other), moduleMap(m)))
           }
         }
         sequence(maybeDependencies)
       }
     }
 
-    def compileNoDependent(left: String, right: String): Either[CompilerException, List[NoStrictDependency]] = {
+    def compileNoDependent(left: String, right: String): Either[CompilerException, List[NoStrictDependencyS]] = {
       val failure: String => CompilerException = f => CompilerException(String.format(MODULE_HAS_NOT_BEEN_DEFINED, f, s"$left-/->$right"))
       if (!moduleMap.contains(left)) {
         Left(failure(left))
       } else if (!moduleMap.contains(right)) {
         Left(failure(right))
       } else {
-        Right(List(new NoStrictDependency(moduleMap(left), moduleMap(right))))
+        Right(List(NoStrictDependencyS(moduleMap(left), moduleMap(right))))
       }
     }
 
-    def compileSingleRule(rule: Rule): Either[CompilerException, (List[Dependency], List[NoStrictDependency])] = rule match {
+    def compileSingleRule(rule: Rule): Either[CompilerException, (List[DependencyS], List[NoStrictDependencyS])] = rule match {
       case ChainDependencyRule(moduleNameChain) => expandChainDependencyRule(moduleNameChain).map(d => (d, Nil))
       case ManyToOneRule(many, one) => expandManyToOneRule(many, one).map(d => (d, Nil))
       case OneToManyRule(one, many) => expandOneToManyRule(one, many).map(d => (d, Nil))
@@ -134,17 +129,18 @@ object HwmCompiler {
     val rulesSequenced = sequence(rules.map(compileSingleRule))
     rulesSequenced.map {
       l =>
-        l.foldRight((Nil, Nil): (List[Dependency], List[NoStrictDependency])) {
+        l.foldRight((Nil, Nil): (List[DependencyS], List[NoStrictDependencyS])) {
           case ((deps, noStrictDeps), (accDeps, accNoStrictDeps)) => (deps ::: accDeps, noStrictDeps ::: accNoStrictDeps)
         }
     }
   }
 
-  private def compileRegexes(regexes: List[String]): Either[CompilerException, AnonymousModule] =
-    AnonymousModule.make(regexes.toArray: _*).toScala map (Right(_)) getOrElse Left(CompilerException(s"Regular expressions '${regexes.mkString(",")}' are not well defined"))
+  private def compileRegexes(regexes: List[String]): Either[CompilerException, AnonymousModuleS] =
+    AnonymousModuleS.make(regexes) map (Right(_)) getOrElse Left(CompilerException(s"Regular expressions '${regexes.mkString(",")}' are not well defined"))
 
-  private def compileMode(mode: String): Either[CompilerException, AnalysisMode] =
-    Try {
-      AnalysisMode.valueOf(mode)
-    }.toEither.left.map(_ => CompilerException(s"Mode '$mode' is not recognised"))
+  private def compileMode(mode: String): Either[CompilerException, AnalysisModeS] = mode match {
+    case "STRICT" => Right(STRICT)
+    case "LOOSE" => Right(LOOSE)
+    case _ => Left(CompilerException(s"Mode '$mode' is not recognised"))
+  }
 }

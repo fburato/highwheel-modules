@@ -1,20 +1,18 @@
 package com.github.fburato.highwheelmodules.core.specification
 
-import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
-import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, HWModule, Definition => ModelDefinition}
-import com.github.fburato.highwheelmodules.model.rules.{Dependency, NoStrictDependency}
+import com.github.fburato.highwheelmodules.model.analysis.{LOOSE, STRICT}
+import com.github.fburato.highwheelmodules.model.modules.{AnonymousModuleS, HWModuleS, DefinitionS => ModelDefinition}
+import com.github.fburato.highwheelmodules.model.rules.{DependencyS, NoStrictDependencyS}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.jdk.CollectionConverters._
-
 class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
-  private val CORE = HWModule.make("core", "core").get
-  private val COMMONS = HWModule.make("commons", "commons").get
-  private val MAIN = HWModule.make("main", "main").get
-  private val IO = HWModule.make("io", "io").get
+  private val CORE = HWModuleS.make("core", Seq("core")).get
+  private val COMMONS = HWModuleS.make("commons", Seq("commons")).get
+  private val MAIN = HWModuleS.make("main", Seq("main")).get
+  private val IO = HWModuleS.make("io", Seq("io")).get
   private val baseDefinition = Definition(None, None, None, None, List(), List())
 
   "compile minimal specification" in {
@@ -25,9 +23,9 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
 
     result.modules.isEmpty shouldBe true
     result.dependencies.isEmpty shouldBe true
-    result.blackList.isPresent shouldBe false
-    result.whitelist.isPresent shouldBe false
-    result.mode shouldBe AnalysisMode.STRICT
+    result.blacklist.isDefined shouldBe false
+    result.whitelist.isDefined shouldBe false
+    result.mode shouldBe STRICT
     result.noStrictDependencies.isEmpty shouldBe true
   }
 
@@ -81,14 +79,14 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
       )
     ))
 
-    result.modules.asScala.toList should contain theSameElementsAs List(
+    result.modules should contain theSameElementsAs List(
       hwmModule("Foo", "org.example.foo.*", "org.example.foobar.*"),
       hwmModule("Bar", "org.example.bar.*")
     )
   }
 
-  def hwmModule(name: String, globs: String*): HWModule =
-    HWModule.make(name, globs: _*).get()
+  def hwmModule(name: String, globs: String*): HWModuleS =
+    HWModuleS.make(name, globs.toList).get
 
   "fail if rules refer to undefined modules" in {
     HwmCompiler.compile(baseDefinition.copy(
@@ -113,7 +111,7 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
   "return the expected modules" in {
     val result = compile(definitionWithModules)
 
-    result.modules.asScala.toList should contain theSameElementsAs List(
+    result.modules should contain theSameElementsAs List(
       CORE, COMMONS, MAIN, IO
     )
   }
@@ -125,9 +123,9 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
       )
     ))
 
-    result.dependencies.asScala.toList should contain theSameElementsAs List(
-      new Dependency(MAIN, CORE),
-      new Dependency(CORE, COMMONS)
+    result.dependencies should contain theSameElementsAs List(
+      DependencyS(MAIN, CORE),
+      DependencyS(CORE, COMMONS)
     )
   }
 
@@ -137,9 +135,9 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
         OneToManyRule("main", List("core", "commons"))
       )
     ))
-    result.dependencies.asScala.toList should contain theSameElementsAs List(
-      new Dependency(MAIN, CORE),
-      new Dependency(MAIN, COMMONS)
+    result.dependencies should contain theSameElementsAs List(
+      DependencyS(MAIN, CORE),
+      DependencyS(MAIN, COMMONS)
     )
   }
 
@@ -171,9 +169,9 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
         ManyToOneRule(List("core", "commons"), "main")
       )
     ))
-    result.dependencies.asScala.toList should contain theSameElementsAs List(
-      new Dependency(CORE, MAIN),
-      new Dependency(COMMONS, MAIN)
+    result.dependencies should contain theSameElementsAs List(
+      DependencyS(CORE, MAIN),
+      DependencyS(COMMONS, MAIN)
     )
   }
 
@@ -206,8 +204,8 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
       )
     ))
 
-    result.noStrictDependencies.asScala.toList should contain theSameElementsAs List(
-      new NoStrictDependency(MAIN, COMMONS)
+    result.noStrictDependencies should contain theSameElementsAs List(
+      NoStrictDependencyS(MAIN, COMMONS)
     )
   }
 
@@ -237,9 +235,9 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
       )
     ))
 
-    result.blackList.get shouldBe AnonymousModule.make("c", "d").get
-    result.whitelist.get shouldBe AnonymousModule.make("a", "b").get
-    result.modules.asScala.toList should contain theSameElementsAs List(
+    result.blacklist.get shouldBe AnonymousModuleS.make(Seq("c", "d")).get
+    result.whitelist.get shouldBe AnonymousModuleS.make(Seq("a", "b")).get
+    result.modules should contain theSameElementsAs List(
       hwmModule("Foo", "org.example.foo.*"),
       hwmModule("Bar", "org.example.bar.*")
     )
@@ -248,7 +246,7 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
   "set mode to strict if specification does not contain module explicitly" in {
     val result = compile(baseDefinition)
 
-    result.mode shouldBe AnalysisMode.STRICT
+    result.mode shouldBe STRICT
   }
 
   "set mode to strict if specification uses strict explicit as mode" in {
@@ -256,7 +254,7 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
       mode = Some("STRICT")
     ))
 
-    result.mode shouldBe AnalysisMode.STRICT
+    result.mode shouldBe STRICT
   }
 
   "set mode to loose if specification uses loose explicit as mode" in {
@@ -264,7 +262,7 @@ class HwmCompilerSest extends AnyWordSpec with Matchers with MockitoSugar with O
       mode = Some("LOOSE")
     ))
 
-    result.mode shouldBe AnalysisMode.LOOSE
+    result.mode shouldBe LOOSE
   }
 
   "fail to compile if mode is not recognised" in {

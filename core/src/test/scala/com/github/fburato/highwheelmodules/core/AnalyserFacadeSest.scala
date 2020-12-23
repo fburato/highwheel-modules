@@ -1,8 +1,5 @@
 package com.github.fburato.highwheelmodules.core
 
-import java.nio.file.Paths
-import java.util.{Optional, List => JList}
-
 import com.github.fburato.highwheelmodules.core.analysis.AnalyserException
 import com.github.fburato.highwheelmodules.core.specification.{CompilerException, ParserException}
 import com.github.fburato.highwheelmodules.utils.Pair
@@ -12,6 +9,8 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.nio.file.Paths
+import java.util.{Optional, List => JList}
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
@@ -212,8 +211,8 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
       verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model",
         list("IO", "Model"),
         list(list(
-          pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1:(init)"),
-          pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1")
+          pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1"),
+          pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1:(init)")
         ))
       )
     }

@@ -5,8 +5,8 @@ import com.github.fburato.highwheelmodules.model.bytecode.AccessPointS
 import scala.collection.mutable
 
 case class TrackingModuleDependencyS private(
-                                              private val source: HWModuleS,
-                                              private val dest: HWModuleS,
+                                              source: HWModuleS,
+                                              dest: HWModuleS,
                                               private val evidences: mutable.Map[AccessPointS, mutable.Set[AccessPointS]] = mutable.Map()
                                             ) {
   private var _evidenceCounter: Int = 0

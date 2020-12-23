@@ -1,6 +1,6 @@
 package com.github.fburato.highwheelmodules.bytecodeparser
 
-import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessPointName, AccessType, ElementName}
+import com.github.fburato.highwheelmodules.model.bytecode.{AccessPointNameS, AccessPointS, COMPOSED, ElementNameS}
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
 import org.apache.commons.lang3.RandomStringUtils
 import org.mockito.ArgumentCaptor
@@ -15,32 +15,32 @@ class FilteringDecoratorSest extends AnyWordSpec with Matchers with MockitoSugar
 
   private val matchingString = RandomStringUtils.randomAlphanumeric(20)
   private val notMatchingString = "NOT" + matchingString
-  private val matchingElement = ElementName.fromString(matchingString)
-  private val notMatchingElement = ElementName.fromString(notMatchingString)
-  private val matchingAccessPoint = AccessPoint.create(matchingElement, AccessPointName.create(matchingString, "()V"))
-  private val notMatchingAccessPoint = AccessPoint.create(notMatchingElement, AccessPointName.create(notMatchingString, "()V"))
+  private val matchingElement = ElementNameS.fromString(matchingString)
+  private val notMatchingElement = ElementNameS.fromString(notMatchingString)
+  private val matchingAccessPoint = AccessPointS(matchingElement, AccessPointNameS(matchingString, "()V"))
+  private val notMatchingAccessPoint = AccessPointS(notMatchingElement, AccessPointNameS(notMatchingString, "()V"))
 
   private val delegate = mock[AccessVisitor]
-  private val testee = new FilteringDecorator(delegate, el => el.asInternalName() == matchingString)
+  private val testee = new FilteringDecorator(delegate, el => el.asInternalName == matchingString)
 
 
   "FilteringDecorator" should {
     "not forward apply call when filter does not match source" in {
-      testee(notMatchingAccessPoint, matchingAccessPoint, AccessType.COMPOSED)
+      testee(notMatchingAccessPoint, matchingAccessPoint, COMPOSED)
 
       verify(delegate, never).apply(any, any, any)
     }
 
     "not forward apply call when filter does not match dest" in {
-      testee(matchingAccessPoint, notMatchingAccessPoint, AccessType.COMPOSED)
+      testee(matchingAccessPoint, notMatchingAccessPoint, COMPOSED)
 
       verify(delegate, never).apply(any, any, any)
     }
 
     "forward call apply when filter matches source and dest" in {
-      testee(matchingAccessPoint, matchingAccessPoint, AccessType.COMPOSED)
+      testee(matchingAccessPoint, matchingAccessPoint, COMPOSED)
 
-      verify(delegate).apply(matchingAccessPoint, matchingAccessPoint, AccessType.COMPOSED)
+      verify(delegate).apply(matchingAccessPoint, matchingAccessPoint, COMPOSED)
     }
 
     "not forward call newNode when filter does not match elementName" in {
@@ -71,7 +71,7 @@ class FilteringDecoratorSest extends AnyWordSpec with Matchers with MockitoSugar
       testee.newAccessPoint(matchingAccessPoint)
       testee.newAccessPoint(notMatchingAccessPoint)
 
-      val captor: ArgumentCaptor[AccessPoint] = ArgumentCaptor.forClass(classOf[AccessPoint])
+      val captor: ArgumentCaptor[AccessPointS] = ArgumentCaptor.forClass(classOf[AccessPointS])
       verify(delegate, times(2)).newAccessPoint(captor.capture)
 
       captor.getAllValues.asScala.toList should contain theSameElementsInOrderAs List(matchingAccessPoint, notMatchingAccessPoint)

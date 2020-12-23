@@ -1,7 +1,7 @@
 package com.github.fburato.highwheelmodules.bytecodeparser
 
 import com.github.fburato.highwheelmodules.bytecodeparser.TryMatchers._
-import com.github.fburato.highwheelmodules.model.bytecode.ElementName
+import com.github.fburato.highwheelmodules.model.bytecode.ElementNameS
 import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, ClasspathRoot}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -15,11 +15,11 @@ class ClassPathParserSest extends AnyWordSpec with Matchers with MockitoSugar wi
 
   private val classPathRoot = mock[ClasspathRoot]
   private val fooString = "foo"
-  private val testee = new ClassPathParser(element => element.asInternalName() == fooString)
+  private val testee = new ClassPathParser(element => element.asInternalName == fooString)
 
   "parse" should {
     "not parse classes that do not match filter" in {
-      val bar = ElementName.fromString("bar")
+      val bar = ElementNameS.fromString("bar")
       when(classPathRoot.classNames).thenReturn(Success(Seq(bar)))
 
       testee.parse(classPathRoot, mock[AccessVisitor]).get
@@ -28,7 +28,7 @@ class ClassPathParserSest extends AnyWordSpec with Matchers with MockitoSugar wi
     }
 
     "close class input streams even if they fail" in {
-      val foo = ElementName.fromString(fooString)
+      val foo = ElementNameS.fromString(fooString)
       when(classPathRoot.classNames).thenReturn(Success(Seq(foo)))
       val is = mock[InputStream]
       when(classPathRoot.getData(foo)).thenReturn(Success(is))

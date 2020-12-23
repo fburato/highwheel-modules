@@ -2,10 +2,9 @@ package com.github.fburato.highwheelmodules.core.algorithms
 
 
 import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure.{Difference, PathDifference}
-import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleDependency, ModuleGraph}
+import com.github.fburato.highwheelmodules.model.modules.{HWModuleS, ModuleDependencyS, ModuleGraphS}
 
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters._
 
 /**
  * Calculate the Transitive closure of a ModuleGraph using the Floyd-Warshall algorithm Ref Cormen, Thomas H.;
@@ -13,11 +12,11 @@ import scala.jdk.CollectionConverters._
  * ISBN 0-262-03141-8. See in particular Section 26.2, "The Floyd–Warshall algorithm" pp. 558–565
  */
 class ModuleGraphTransitiveClosure(
-                                    private val minimumPathMatrix: Array[Array[ArrayBuffer[HWModule]]],
-                                    private val indexMap: Map[HWModule, Int],
-                                    private val modules: Seq[HWModule]
+                                    private val minimumPathMatrix: Array[Array[ArrayBuffer[HWModuleS]]],
+                                    private val indexMap: Map[HWModuleS, Int],
+                                    private val modules: Seq[HWModuleS]
                                   ) {
-  def isReachable(vertex1: HWModule, vertex2: HWModule): Boolean =
+  def isReachable(vertex1: HWModuleS, vertex2: HWModuleS): Boolean =
     minimumDistance(vertex1, vertex2).exists(d => d < Int.MaxValue)
 
   def same(other: ModuleGraphTransitiveClosure): Boolean =
@@ -49,14 +48,14 @@ class ModuleGraphTransitiveClosure(
     }
   }
 
-  def minimumDistance(vertex1: HWModule, vertex2: HWModule): Option[Int] =
+  def minimumDistance(vertex1: HWModuleS, vertex2: HWModuleS): Option[Int] =
     for {
       v1Index <- indexMap.get(vertex1)
       v2Index <- indexMap.get(vertex2)
       distance = minimumPathMatrix(v1Index)(v2Index).size
     } yield if (distance == 0) Int.MaxValue else distance
 
-  def minimumDistancePath(vertex1: HWModule, vertex2: HWModule): Seq[HWModule] =
+  def minimumDistancePath(vertex1: HWModuleS, vertex2: HWModuleS): Seq[HWModuleS] =
     (for {
       v1Index <- indexMap.get(vertex1)
       v2Index <- indexMap.get(vertex2)
@@ -65,22 +64,22 @@ class ModuleGraphTransitiveClosure(
 
 object ModuleGraphTransitiveClosure {
 
-  case class Difference(source: HWModule, dest: HWModule, firstDistance: Int, secondDistance: Int)
+  case class Difference(source: HWModuleS, dest: HWModuleS, firstDistance: Int, secondDistance: Int)
 
-  case class PathDifference(source: HWModule, dest: HWModule, firstPath: Seq[HWModule], secondPath: Seq[HWModule])
+  case class PathDifference(source: HWModuleS, dest: HWModuleS, firstPath: Seq[HWModuleS], secondPath: Seq[HWModuleS])
 
-  def apply(moduleGraph: ModuleGraph[ModuleDependency], modulesSeq: Seq[HWModule]): ModuleGraphTransitiveClosure = {
-    val minimumPathMatrix = Array.ofDim[ArrayBuffer[HWModule]](modulesSeq.size, modulesSeq.size)
+  def apply(moduleGraph: ModuleGraphS[ModuleDependencyS], modulesSeq: Seq[HWModuleS]): ModuleGraphTransitiveClosure = {
+    val minimumPathMatrix = Array.ofDim[ArrayBuffer[HWModuleS]](modulesSeq.size, modulesSeq.size)
     for {
       i <- modulesSeq.indices
       j <- modulesSeq.indices
     } {
-      minimumPathMatrix(i)(j) = new ArrayBuffer[HWModule]()
+      minimumPathMatrix(i)(j) = new ArrayBuffer[HWModuleS]()
     }
     val mapModuleIndex = modulesSeq.zipWithIndex.toMap
     for {
       m <- modulesSeq
-      dependency <- moduleGraph.dependencies(m).asScala
+      dependency <- moduleGraph.dependencies(m)
     } {
       minimumPathMatrix(mapModuleIndex(m))(mapModuleIndex(dependency)) += dependency
     }
@@ -88,7 +87,7 @@ object ModuleGraphTransitiveClosure {
     new ModuleGraphTransitiveClosure(minimumPathMatrix, mapModuleIndex, modulesSeq)
   }
 
-  private def applyFloydWarshallMainIteration(minimumPathMatrix: Array[Array[ArrayBuffer[HWModule]]], size: Int): Unit = {
+  private def applyFloydWarshallMainIteration(minimumPathMatrix: Array[Array[ArrayBuffer[HWModuleS]]], size: Int): Unit = {
     for {
       i <- 0 until size
       j <- 0 until size

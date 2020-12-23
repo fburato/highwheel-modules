@@ -1,27 +1,25 @@
 package com.github.fburato.highwheelmodules.core.analysis
 
 import com.github.fburato.highwheelmodules.core.algorithms.{CompoundAccessVisitor, ModuleDependenciesGraphBuildingVisitor}
-import com.github.fburato.highwheelmodules.model.analysis.AnalysisMode
+import com.github.fburato.highwheelmodules.model.analysis.{LOOSE, STRICT}
 import com.github.fburato.highwheelmodules.model.classpath.{AccessVisitor, ClassParser, ClasspathRoot}
 import com.github.fburato.highwheelmodules.model.modules._
 import com.github.fburato.highwheelmodules.utils.TryUtils._
 
 import java.io.IOException
-import scala.jdk.CollectionConverters._
-import scala.jdk.OptionConverters._
 import scala.util.{Failure, Success, Try}
 
 trait ModuleAnalyser {
-  def analyse(definitions: Seq[Definition]): Try[Seq[AnalysisResult]]
+  def analyse(definitions: Seq[DefinitionS]): Try[Seq[AnalysisResult]]
 }
 
 object ModuleAnalyser {
 
-  private class Implementation(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory) extends ModuleAnalyser {
+  private class Implementation(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactoryS) extends ModuleAnalyser {
     private val strictAnalyser = StrictAnalyser
     private val looseAnalyser = LooseAnalyser
 
-    override def analyse(definitions: Seq[Definition]): Try[Seq[AnalysisResult]] =
+    override def analyse(definitions: Seq[DefinitionS]): Try[Seq[AnalysisResult]] =
       if (definitions.isEmpty) {
         Success(Seq())
       } else {
@@ -35,41 +33,41 @@ object ModuleAnalyser {
         } yield results
       }
 
-    private def initialiseState(definition: Definition): Try[AnalysisState] = {
-      val other = HWModule.make("(other)", "").get
+    private def initialiseState(definition: DefinitionS): Try[AnalysisState] = {
+      val other = HWModuleS.make("(other)", List()).get
 
-      def generateState(modules: Seq[HWModule]): AnalysisState = {
-        val specModuleGraph = factory.buildMetricModuleGraph()
-        definition.modules.forEach(m => specModuleGraph.addModule(m))
-        definition.dependencies.forEach(d => specModuleGraph.addDependency(new ModuleDependency(d.source, d.dest)))
-        val actualModuleGraph = factory.buildMetricModuleGraph()
-        val auxTrackingBareGraph = factory.buildTrackingModuleGraph()
-        val trackingGraph = factory.buildEvidenceModuleGraph(auxTrackingBareGraph, evidenceLimit.map(i => new Integer(i)).toJava)
+      def generateState(modules: Seq[HWModuleS]): AnalysisState = {
+        val specModuleGraph = factory.buildMetricModuleGraph
+        definition.modules.foreach(m => specModuleGraph.addModule(m))
+        definition.dependencies.foreach(d => specModuleGraph.addDependency(ModuleDependencyS(d.source, d.dest)))
+        val actualModuleGraph = factory.buildMetricModuleGraph
+        val auxTrackingBareGraph = factory.buildTrackingModuleGraph
+        val trackingGraph = factory.buildEvidenceModuleGraph(auxTrackingBareGraph, evidenceLimit)
         val moduleGraphVisitor = ModuleDependenciesGraphBuildingVisitor(modules, actualModuleGraph, other,
-          (sourceModule, destModule, _, _, _) => new ModuleDependency(sourceModule, destModule),
-          definition.whitelist.toScala, definition.blackList.toScala
+          (sourceModule, destModule, _, _, _) => ModuleDependencyS(sourceModule, destModule),
+          definition.whitelist, definition.blacklist
         )
         val evidenceGraphVisitor = ModuleDependenciesGraphBuildingVisitor(modules, trackingGraph, other,
-          (sourceModule, destModule, sourceAP, destAP, _) => new EvidenceModuleDependency(sourceModule, destModule, sourceAP, destAP),
-          definition.whitelist.toScala, definition.blackList.toScala
+          (sourceModule, destModule, sourceAP, destAP, _) => EvidenceModuleDependencyS(sourceModule, destModule, sourceAP, destAP),
+          definition.whitelist, definition.blacklist
         )
         val accessVisitor = CompoundAccessVisitor(Seq(moduleGraphVisitor, evidenceGraphVisitor))
-        AnalysisState(modules, definition.dependencies.asScala.toSeq, definition.noStrictDependencies.asScala.toSeq, specModuleGraph, actualModuleGraph, auxTrackingBareGraph, accessVisitor, other)
+        AnalysisState(modules, definition.dependencies, definition.noStrictDependencies, specModuleGraph, actualModuleGraph, auxTrackingBareGraph, accessVisitor, other)
       }
 
-      definition.modules.asScala.toSeq match {
+      definition.modules match {
         case Seq() => Failure(AnalyserException("No modules provided in definition"))
         case s => Success(generateState(s))
       }
     }
 
-    private def visitorAndProcessors(definitions: Seq[Definition]): Try[(AccessVisitor, Seq[() => AnalysisResult])] = {
+    private def visitorAndProcessors(definitions: Seq[DefinitionS]): Try[(AccessVisitor, Seq[() => AnalysisResult])] = {
       val merged = definitions.map(d =>
         for {
           state <- initialiseState(d)
         } yield (state.visitor, () => d.mode match {
-          case AnalysisMode.STRICT => strictAnalyser.analyse(state)
-          case AnalysisMode.LOOSE => looseAnalyser.analyse(state)
+          case STRICT => strictAnalyser.analyse(state)
+          case LOOSE => looseAnalyser.analyse(state)
         })
       )
       sequence(merged).map(sequence => {
@@ -79,6 +77,6 @@ object ModuleAnalyser {
     }
   }
 
-  def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactory): ModuleAnalyser =
+  def apply(classParser: ClassParser, classpathRoot: ClasspathRoot, evidenceLimit: Option[Int], factory: ModuleGraphFactoryS): ModuleAnalyser =
     new Implementation(classParser, classpathRoot, evidenceLimit, factory)
 }
