@@ -17,7 +17,7 @@ import scala.util.Failure
 
 class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
-  private val orgExamples = new DirectoryClassPathRoot(Paths.get("target", "test-classes").toFile)
+  private val orgExamples = new DirectoryClassPathRoot(Paths.get("core", "target", "scala-2.13", "test-classes").toFile)
   private val realClassParser: ClassParser = new ClassPathParser(item => item.asJavaName startsWith "org.example")
   private val classParser = spy(realClassParser)
   private val factory: ModuleGraphFactory = new GuavaGraphFactory

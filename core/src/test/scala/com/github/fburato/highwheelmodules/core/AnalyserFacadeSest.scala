@@ -23,19 +23,19 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
   private val looseAnalysisEventSink = spy(new AccumulatorLooseAnalysisEventSink(accumulator))
   private val testee = new AnalyserFacadeImpl(printer, pathEventSink, measureEventSink, strictAnalysisEventSink, looseAnalysisEventSink)
 
-  private val defaultSpec = Paths.get("src", "test", "resources", "spec.hwm").toString
-  private val defaultSpecWhiteBlack = Paths.get("src", "test", "resources", "spec-whiteblack.hwm").toString
-  private val wrongSpecWhiteBlack = Paths.get("src", "test", "resources", "wrong-spec-whiteblack.hwm").toString
-  private val alternativeStrictSpec = Paths.get("src", "test", "resources", "alternate-strict-spec.hwm").toString
-  private val jarPath = Paths.get("src", "test", "resources", "highwheel-model.jar").toString
-  private val wrongSpec = Paths.get("src", "test", "resources", "wrong-syntax-spec.hwm").toString
-  private val wrongSemanticsSpec = Paths.get("src", "test", "resources", "wrong-semantics-spec.hwm").toString
-  private val wrongStrictDefinitionSpec = Paths.get("src", "test", "resources", "wrong-strict-spec.hwm").toString
-  private val looseSpec = Paths.get("src", "test", "resources", "loose-spec.hwm").toString
-  private val looseSpecWhiteBlack = Paths.get("src", "test", "resources", "loose-spec-whiteblack.hwm").toString
-  private val wrongLooseSpecWhiteBlack = Paths.get("src", "test", "resources", "wrong-loose-spec-whiteblack.hwm").toString
-  private val orgExamplePath = Paths.get("target", "test-classes", "org").toString
-  private val wrongLooseDefinitionSpec = Paths.get("src", "test", "resources", "wrong-loose-spec.hwm").toString
+  private val defaultSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "spec.hwm").toString
+  private val defaultSpecWhiteBlack = Paths.get("core", "target", "scala-2.13", "test-classes", "spec-whiteblack.hwm").toString
+  private val wrongSpecWhiteBlack = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-spec-whiteblack.hwm").toString
+  private val alternativeStrictSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "alternate-strict-spec.hwm").toString
+  private val jarPath = Paths.get("core", "target", "scala-2.13", "test-classes", "highwheel-model.jar").toString
+  private val wrongSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-syntax-spec.hwm").toString
+  private val wrongSemanticsSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-semantics-spec.hwm").toString
+  private val wrongStrictDefinitionSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-strict-spec.hwm").toString
+  private val looseSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "loose-spec.hwm").toString
+  private val looseSpecWhiteBlack = Paths.get("core", "target", "scala-2.13", "test-classes", "loose-spec-whiteblack.hwm").toString
+  private val wrongLooseSpecWhiteBlack = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-loose-spec-whiteblack.hwm").toString
+  private val orgExamplePath = Paths.get("core", "target", "scala-2.13", "test-classes", "org").toString
+  private val wrongLooseDefinitionSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-loose-spec.hwm").toString
 
   def list[T](args: T*): JList[T] = args.asJava
 

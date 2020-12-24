@@ -8,12 +8,13 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import java.io.{File, InputStream}
+import java.nio.file.Paths
 import scala.util.Success
 
 class ArchiveClassPathRootSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
 
-  private val testee = new ArchiveClassPathRoot(new File("mytests.jar"))
+  private val testee = new ArchiveClassPathRoot(Paths.get("parser", "mytests.jar").toFile)
 
   "classNames" should {
     "return all classes in archive" in {

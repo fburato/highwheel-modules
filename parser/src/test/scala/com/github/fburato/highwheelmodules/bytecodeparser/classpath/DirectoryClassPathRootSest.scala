@@ -17,7 +17,7 @@ class DirectoryClassPathRootSest extends AnyWordSpec with Matchers with MockitoS
     new DirectoryClassPathRoot(new File("foo"))
 
   private val validRootTestee =
-    new DirectoryClassPathRoot(Paths.get("target", "test-classes").toFile)
+    new DirectoryClassPathRoot(Paths.get("parser", "target", "scala-2.13", "test-classes").toFile)
 
 
   "getData" should {
