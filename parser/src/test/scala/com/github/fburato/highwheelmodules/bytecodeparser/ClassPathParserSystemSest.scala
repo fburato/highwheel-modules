@@ -232,7 +232,7 @@ class ClassPathParserSystemSest extends AnyWordSpec with Matchers with MockitoSu
     "detect uses dependency when method instantiates an anonymous interface instance" in {
       parseClasses(classOf[UsesAnInterfaceInMethod], classOf[AnInterface])
 
-      checkApply(classOf[UsesAnInterfaceInMethod], method("foo", "()V"), classOf[AnInterface], USES)
+      checkApply(classOf[UsesAnInterfaceInMethod], method("foo", "()V"), classOf[AnInterface], method("bar", "()Ljava/lang/String;"), USES)
     }
 
     "detect uses dependency when type uses a method reference" in {

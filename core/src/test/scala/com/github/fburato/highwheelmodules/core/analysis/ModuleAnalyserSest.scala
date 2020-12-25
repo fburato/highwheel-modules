@@ -117,12 +117,10 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
       actual.evidenceBackedViolations should contain allElementsOf List(
         evidence(MAIN.name, CONTROLLER.name, List(), List(CONTROLLER.name), List(List(
-          ("org.example.Main:main", "org.example.controller.Controller1"),
           ("org.example.Main:main", "org.example.controller.Controller1:(init)"),
           ("org.example.Main:main", "org.example.controller.Controller1:access")
         ))),
         evidence(MAIN.name, FACADE.name, List(), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade"),
           ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
         ))),
         evidence(CONTROLLER.name, FACADE.name, List(), List(FACADE.name), List(List(
@@ -394,7 +392,6 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       )
       actual.evidenceBackedViolations should contain allElementsOf List(
         evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade"),
           ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
         )))
       )
@@ -415,7 +412,6 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
       actual.evidenceBackedViolations should contain allElementsOf List(
         evidence(MAIN.name, CONTROLLER.name, List(MAIN.name, CONTROLLER.name), List(CONTROLLER.name), List(List(
-          ("org.example.Main:main", "org.example.controller.Controller1"),
           ("org.example.Main:main", "org.example.controller.Controller1:(init)"),
           ("org.example.Main:main", "org.example.controller.Controller1:access")
         )))
@@ -581,7 +577,6 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       )
       actual1.evidenceBackedViolations should contain allElementsOf List(
         evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade"),
           ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
         )))
       )
@@ -683,7 +678,6 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
     )
     actual3.evidenceBackedViolations should contain allElementsOf List(
       evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-        ("org.example.Main:main", "org.example.core.CoreFacade"),
         ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
       )))
     )
