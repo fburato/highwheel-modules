@@ -28,7 +28,7 @@ lazy val enablingPublishingSettings = Seq(
   publishArtifact in Test := false,
 )
 
-lazy val root = (project in file("."))
+lazy val hwmParent = (project in file("."))
   .disablePlugins(AssemblyPlugin)
   .aggregate(
     utils,
@@ -46,10 +46,15 @@ lazy val root = (project in file("."))
       setReleaseVersion,
       commitReleaseVersion,
       tagRelease,
+      releaseStepCommand("publishM2"),
       releaseStepCommand("publishSigned"),
       releaseStepCommand("sonatypeRelease"),
       setNextVersion,
       commitNextVersion,
+      runClean,
+      runTest,
+      releaseStepCommand("publishM2"),
+      releaseStepCommand("publishSigned"),
       pushChanges
     )
   )
