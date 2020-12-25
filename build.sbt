@@ -1,5 +1,4 @@
 import sbtrelease.ReleaseStateTransformations._
-import PgpKeys.publishSigned
 val scalaLibraryVersion = "2.13.3"
 
 lazy val disablingPublishingSettings =
@@ -98,12 +97,26 @@ lazy val parser = (project in file("parser"))
     libraryDependencies ++= makeDependencies(
       dependencies.asm
     ),
-    excludeScalaAndDependencies,
+    assemblyOption in assembly := (assemblyOption in assembly).value.copy(
+      includeScala = false
+    ),
     assemblyShadeRules in assembly ++= Seq(
       ShadeRule.rename("org.objectweb.asm.**" -> "com.github.fburato.highwheelmodules.bytecodeparser.asm.@1")
         .inLibrary(dependencies.asm)
         .inProject
-    )
+    ),
+    assemblyMergeStrategy in assembly := {
+      case x @ PathList("com", "github", "fburato", "highwheelmodules", pack, _*) =>
+        if(pack == "bytecodeparser") {
+          val oldStrategy = (assemblyMergeStrategy in assembly).value
+          oldStrategy(x)
+        } else {
+          MergeStrategy.discard
+        }
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    }
   )
   .dependsOn(
     model
