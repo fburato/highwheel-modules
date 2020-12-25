@@ -1,6 +1,0 @@
-modules:
-  D1 = "d.D1"
-  D2 = "d.D2"
-
-rules:
-  D1 -> D2

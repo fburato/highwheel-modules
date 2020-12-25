@@ -1,3 +1,0 @@
-modules:
-    Maven = "com.github.fburato.highwheelmodulesmaven.*"
-rules:

@@ -1,6 +1,0 @@
-modules:
-  A1 = "a.A1"
-  A2 = "a.A2"
-
-rules:
-  A1 -> A2

@@ -1,4 +1,6 @@
-language: java
+language: scala
 jdk:
   - openjdk8
-script: mvn -Pintegration-tests clean install
+scala:
+  - 2.13.3
+script: sbt ++$TRAVIS_SCALA_VERSION test
