@@ -1,52 +1,132 @@
-lazy val root = (project in file("."))
-  .disablePlugins(AssemblyPlugin).aggregate(
-  utils,
-  model,
-  parser,
-  core
+import sbtrelease.ReleaseStateTransformations._
+import PgpKeys.publishSigned
+val scalaLibraryVersion = "2.13.3"
+
+lazy val disablingPublishingSettings =
+  Seq(skip in publish := true, publishArtifact := false)
+
+lazy val enablingPublishingSettings = Seq(
+  publishArtifact := true, // Enable publish
+  publishMavenStyle := true,
+  publishTo := {
+    val nexus = "https://oss.sonatype.org/"
+    if (isSnapshot.value)
+      Some("snapshots" at nexus + "content/repositories/snapshots")
+    else
+      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+  },
+  licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+
+  homepage := Some(url("https://github.com/fburato/highwheel-modules")),
+  scmInfo := Some(
+    ScmInfo(
+      url("https://github.com/fburato/highwheel-modules"),
+      "scm:git@github.com:fburato/highwheel-modules.git"
+    )),
+  developers := List(
+    Developer(id="fburato", name="Francesco Burato", email="francesco.burato@gmail.com", url=url("https://github.com/fburato"))
+  ),
+  publishArtifact in Test := false,
 )
 
+lazy val root = (project in file("."))
+  .disablePlugins(AssemblyPlugin)
+  .aggregate(
+    utils,
+    model,
+    parser,
+    core
+  )
+  .settings(
+    disablingPublishingSettings,
+    releaseProcess := Seq[ReleaseStep] (
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      runTest,
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      releaseStepTask(publishSigned),
+      releaseStepCommand("sonatypeRelease"),
+      setNextVersion,
+      commitNextVersion,
+      pushChanges
+    )
+  )
+
 lazy val core = (project in file("core"))
-  .settings(commonSettings ++ Seq(
-    name := "highwheel-modules-core",
-    libraryDependencies ++= Seq(
+  .settings(
+    enablingPublishingSettings,
+    commonSettings,
+    setName("highwheel-modules-core"),
+    libraryDependencies ++= makeDependencies(
       dependencies.guava,
       dependencies.parserCombinators
-    ) ++ commonDependencies
-  ))
+    ),
+    excludeScalaAndDependencies
+  )
   .dependsOn(
     parser
   )
 
 lazy val model = (project in file("model"))
-  .settings(commonSettings ++ Seq(
-    name := "highwheel-modules-model",
-    libraryDependencies ++= commonDependencies
-  ))
+  .settings(commonSettings,
+    enablingPublishingSettings,
+    setName("highwheel-modules-model"),
+    libraryDependencies ++= commonDependencies,
+    excludeScalaAndDependencies
+  )
   .dependsOn(
     utils
   )
 
 lazy val utils = (project in file("utils"))
-  .settings(commonSettings ++ Seq(
-    name := "highwheel-modules-utils",
-    libraryDependencies ++= commonDependencies
-  ))
+  .settings(
+    enablingPublishingSettings,
+    commonSettings,
+    setName("highwheel-modules-utils"),
+    libraryDependencies ++= commonDependencies,
+    excludeScalaAndDependencies
+  )
 
 lazy val parser = (project in file("parser"))
-  .settings(commonSettings ++ Seq(
-    name := "highwheel-modules-parser",
-    libraryDependencies ++= Seq(
+  .settings(
+    enablingPublishingSettings,
+    commonSettings,
+    setName("highwheel-modules-parser"),
+    libraryDependencies ++= makeDependencies(
       dependencies.asm
-    ) ++ commonDependencies
-  ))
+    ),
+    excludeScalaAndDependencies,
+    assemblyShadeRules in assembly ++= Seq(
+      ShadeRule.rename("org.objectweb.asm.**" -> "com.github.fburato.highwheelmodules.bytecodeparser.asm.@1")
+        .inLibrary(dependencies.asm)
+        .inProject
+    )
+  )
   .dependsOn(
     model
   )
 
+def setName(artifactName: String) =
+  Seq(
+    name := artifactName,
+    assemblyJarName in assembly := s"$artifactName-${version.value}.jar"
+  )
+
+def makeDependencies(dependencies: ModuleID*): Seq[ModuleID] =
+  dependencies.toSeq ++ commonDependencies
+
+def excludeScalaAndDependencies = {
+  assemblyOption in assembly := (assemblyOption in assembly).value.copy(
+    includeScala = false,
+    includeDependency = false
+  )
+}
 
 lazy val commonSettings = Seq(
-  scalaVersion := "2.13.3",
+  scalaVersion := scalaLibraryVersion,
   organization := "com.github.fburato",
   resolvers ++= Seq(
     Resolver.mavenLocal,
@@ -57,14 +137,16 @@ lazy val commonSettings = Seq(
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= compilerOptions,
-  javacOptions in (Compile, compile) ++= Seq("-source", "1.8", "-target", "1.8")
+  compileOrder := CompileOrder.JavaThenScala,
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 )
 
 lazy val compilerOptions = Seq(
   "-encoding", "utf8",
   "-language:implicitConversions",
   "-language:higherKinds",
-  "-language:postfixOps"
+  "-language:postfixOps",
+  "-target:jvm-1.8"
 )
 
 lazy val dependencies = new {
@@ -93,5 +175,6 @@ lazy val commonDependencies = Seq(
   testDependencies.scalaTest,
   testDependencies.mockitoScalaTest,
   testDependencies.mockito,
-  testDependencies.apacheCommonsLang
+  testDependencies.apacheCommonsLang,
+  "org.scala-lang" % "scala-library" % scalaLibraryVersion
 )
