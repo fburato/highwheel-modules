@@ -47,7 +47,7 @@ lazy val root = (project in file("."))
       setReleaseVersion,
       commitReleaseVersion,
       tagRelease,
-      releaseStepTask(publishSigned),
+      releaseStepCommand("publishSigned"),
       releaseStepCommand("sonatypeRelease"),
       setNextVersion,
       commitNextVersion,
