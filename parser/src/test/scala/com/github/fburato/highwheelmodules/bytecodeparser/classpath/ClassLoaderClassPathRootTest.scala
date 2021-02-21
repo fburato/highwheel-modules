@@ -10,7 +10,11 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.io.InputStream
 import scala.util.Success
 
-class ClassLoaderClassPathRootSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class ClassLoaderClassPathRootTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
   private val testee = new ClassLoaderClassPathRoot(this.getClass.getClassLoader)
 
@@ -20,9 +24,9 @@ class ClassLoaderClassPathRootSest extends AnyWordSpec with Matchers with Mockit
 
   "getData" should {
     "return not null for classes visible to loader" in {
-      testee.getData(ElementName.fromClass(classOf[ClassLoaderClassPathRootSest])) should beSuccessWith[InputStream](stream =>
-        stream should not be null
-      )
+      testee.getData(
+        ElementName.fromClass(classOf[ClassLoaderClassPathRootTest])
+      ) should beSuccessWith[InputStream](stream => stream should not be null)
     }
 
     "return null for classes not visible to loader" in {

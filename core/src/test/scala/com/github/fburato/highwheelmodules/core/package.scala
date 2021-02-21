@@ -12,7 +12,8 @@ package object core {
       accumulator addOne s"INFO - $msg"
   }
 
-  class AccumulatorPathEventSink(private val accumulator: ArrayBuffer[String]) extends PathEventSink {
+  class AccumulatorPathEventSink(private val accumulator: ArrayBuffer[String])
+      extends PathEventSink {
     override def ignoredPaths(ignored: util.List[String]): Unit =
       accumulator addOne s"IGNORED_PATHS - ${String.join(",", ignored)}"
 
@@ -23,12 +24,14 @@ package object core {
       accumulator addOne s"JARS - ${String.join(",", jars)}"
   }
 
-  class AccumulatorMeasureEventSink(private val accumulator: ArrayBuffer[String]) extends MeasureEventSink {
+  class AccumulatorMeasureEventSink(private val accumulator: ArrayBuffer[String])
+      extends MeasureEventSink {
     override def fanInOutMeasure(module: String, fanIn: Int, fanOut: Int): Unit =
       accumulator addOne s"FAN_IN_OUT_MEASURE - $module,$fanIn,$fanOut"
   }
 
-  class AccumulatorStrictAnalysisEventSink(private val accumulator: ArrayBuffer[String]) extends StrictAnalysisEventSink {
+  class AccumulatorStrictAnalysisEventSink(private val accumulator: ArrayBuffer[String])
+      extends StrictAnalysisEventSink {
     override def dependenciesCorrect(): Unit =
       accumulator addOne "DEPENDENCIES_CORRECT"
 
@@ -38,12 +41,15 @@ package object core {
     override def dependencyViolationsPresent(): Unit =
       accumulator addOne "DEPENDENCY_VIOLATION_PRESENT"
 
-    override def dependencyViolation(sourceModule: String,
-                                     destModule: String,
-                                     expectedPath: util.List[String],
-                                     actualPath: util.List[String],
-                                     evidences: util.List[util.List[Pair[String, String]]]): Unit =
-      accumulator addOne s"DEPENDENCY_VIOLATION - {$sourceModule,$destModule,[${String.join(",", expectedPath)}],[${String.join(",", actualPath)}],[${evidences.size()}]}"
+    override def dependencyViolation(
+      sourceModule: String,
+      destModule: String,
+      expectedPath: util.List[String],
+      actualPath: util.List[String],
+      evidences: util.List[util.List[Pair[String, String]]]
+    ): Unit =
+      accumulator addOne s"DEPENDENCY_VIOLATION - {$sourceModule,$destModule,[${String.join(",", expectedPath)}],[${String
+        .join(",", actualPath)}],[${evidences.size()}]}"
 
     override def noDirectDependenciesViolationPresent(): Unit =
       accumulator addOne "NO_DIRECT_DEPENDENCIES_VIOLATION_PRESENT"
@@ -52,7 +58,8 @@ package object core {
       accumulator addOne s"NO_DIRECT_DEPENDENCY_VIOLATION - $sourceModule,$destModule"
   }
 
-  class AccumulatorLooseAnalysisEventSink(private val accumulator: ArrayBuffer[String]) extends LooseAnalysisEventSink {
+  class AccumulatorLooseAnalysisEventSink(private val accumulator: ArrayBuffer[String])
+      extends LooseAnalysisEventSink {
     override def allDependenciesPresent(): Unit =
       accumulator addOne "ALL_DEPENDENCIES_PRESENT"
 
@@ -68,11 +75,14 @@ package object core {
     override def undesiredDependencyViolationsPresent(): Unit =
       accumulator addOne "UNDESIRED_DEPENDENCY_VIOLATION_PRESENT"
 
-    override def undesiredDependencyViolation(sourceModule: String,
-                                              destModule: String,
-                                              path: util.List[String],
-                                              evidences: util.List[util.List[Pair[String, String]]]): Unit =
-      accumulator addOne s"UNDESIRED_DEPENDENCY_VIOLATION - {$sourceModule,$destModule,[${String.join(",", path)}],[${evidences.size()}]}"
+    override def undesiredDependencyViolation(
+      sourceModule: String,
+      destModule: String,
+      path: util.List[String],
+      evidences: util.List[util.List[Pair[String, String]]]
+    ): Unit =
+      accumulator addOne s"UNDESIRED_DEPENDENCY_VIOLATION - {$sourceModule,$destModule,[${String
+        .join(",", path)}],[${evidences.size()}]}"
   }
 
 }

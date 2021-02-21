@@ -1,15 +1,24 @@
 package com.github.fburato.highwheelmodules.core.externaladapters
 
-import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleGraph, TrackingModuleDependency}
+import com.github.fburato.highwheelmodules.model.modules.{
+  HWModule,
+  ModuleGraph,
+  TrackingModuleDependency
+}
 import com.google.common.graph.MutableNetwork
 
 import java.util
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters.RichOptional
 
-class GuavaTrackingModuleGraph(private val graph: MutableNetwork[HWModule, TrackingModuleDependency]) extends ModuleGraph[TrackingModuleDependency] {
+class GuavaTrackingModuleGraph(
+  private val graph: MutableNetwork[HWModule, TrackingModuleDependency]
+) extends ModuleGraph[TrackingModuleDependency] {
 
-  override def findDependency(vertex1: HWModule, vertex2: HWModule): Option[TrackingModuleDependency] = {
+  override def findDependency(
+    vertex1: HWModule,
+    vertex2: HWModule
+  ): Option[TrackingModuleDependency] = {
     if (graph.nodes().containsAll(list(vertex1, vertex2))) {
       graph.edgeConnecting(vertex1, vertex2).toScala
     } else {
@@ -21,7 +30,8 @@ class GuavaTrackingModuleGraph(private val graph: MutableNetwork[HWModule, Track
 
   override def addDependency(dependency: TrackingModuleDependency): Unit = {
     if (graph.nodes().containsAll(list(dependency.source, dependency.dest))) {
-      val dep = graph.edgeConnecting(dependency.source, dependency.dest)
+      val dep = graph
+        .edgeConnecting(dependency.source, dependency.dest)
         .orElseGet(() => {
           val newDep = TrackingModuleDependency(dependency.source, dependency.dest)
           graph.addEdge(dependency.source, dependency.dest, newDep)

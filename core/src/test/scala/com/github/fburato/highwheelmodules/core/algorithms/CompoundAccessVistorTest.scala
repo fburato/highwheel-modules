@@ -7,7 +7,7 @@ import org.mockito.scalatest.MockitoSugar
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class CompoundAccessVistorSest extends AnyWordSpec with Matchers with MockitoSugar {
+class CompoundAccessVistorTest extends AnyWordSpec with Matchers with MockitoSugar {
 
   private val av1 = mock[AccessVisitor]
   private val av2 = mock[AccessVisitor]

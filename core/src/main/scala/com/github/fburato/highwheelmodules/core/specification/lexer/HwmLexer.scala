@@ -15,7 +15,9 @@ object HwmLexer extends RegexParsers {
   def keywordParser(keyword: String, token: HwmToken): Parser[HwmToken] =
     keyword.r ^^ { _ => token }
 
-  private def identifier: Parser[Identifier] = "[a-zA-Z_][a-zA-Z0-9_]*".r ^^ { str => Identifier(str) }
+  private def identifier: Parser[Identifier] = "[a-zA-Z_][a-zA-Z0-9_]*".r ^^ { str =>
+    Identifier(str)
+  }
 
   private def backslash: Parser[HwmToken] = "(\\\\\r?\n)+".r ^^ { _ => Backslash }
 
@@ -30,26 +32,32 @@ object HwmLexer extends RegexParsers {
     }
 
   def apply(in: Reader[Char]): Either[ParserException, List[HwmToken]] =
-    parse(phrase(rep1(
-      keywordParser("modules", Keywords.Modules) |
-        keywordParser("rules", Keywords.Rules) |
-        keywordParser("prefix", Keywords.Prefix) |
-        keywordParser("whitelist", Keywords.Whitelist) |
-        keywordParser("blacklist", Keywords.Blacklist) |
-        keywordParser("mode", Keywords.Mode) |
-        keywordParser("=", Operators.Equals) |
-        keywordParser(",", Operators.Comma) |
-        keywordParser("->", Operators.Arrow) |
-        keywordParser("-/->", Operators.NotArrow) |
-        keywordParser(":", Operators.DefinedAs) |
-        keywordParser("\\(", Operators.OpenParenthesis) |
-        keywordParser("\\)", Operators.CloseParenthesis) |
-        newline |
-        backslash |
-        comment |
-        identifier |
-        literal)), in) match {
-      case Success(r, _) => Right(r filterNot (t => t == Comment || t == Backslash))
+    parse(
+      phrase(
+        rep1(
+          keywordParser("modules", Keywords.Modules) |
+            keywordParser("rules", Keywords.Rules) |
+            keywordParser("prefix", Keywords.Prefix) |
+            keywordParser("whitelist", Keywords.Whitelist) |
+            keywordParser("blacklist", Keywords.Blacklist) |
+            keywordParser("mode", Keywords.Mode) |
+            keywordParser("=", Operators.Equals) |
+            keywordParser(",", Operators.Comma) |
+            keywordParser("->", Operators.Arrow) |
+            keywordParser("-/->", Operators.NotArrow) |
+            keywordParser(":", Operators.DefinedAs) |
+            keywordParser("\\(", Operators.OpenParenthesis) |
+            keywordParser("\\)", Operators.CloseParenthesis) |
+            newline |
+            backslash |
+            comment |
+            identifier |
+            literal
+        )
+      ),
+      in
+    ) match {
+      case Success(r, _)        => Right(r filterNot (t => t == Comment || t == Backslash))
       case NoSuccess(msg, next) => Left(ParserException(s"$msg at ${next.pos}"))
     }
 }

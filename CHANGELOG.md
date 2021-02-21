@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2020-12-25
+
+Version `2.0.0` includes a complete rewrite of the tool from Java to Scala. The migration has produced no
+major behavioural updates on the tool but, together with the migration, a few quality of life changes have been
+introduced in the specification parser (allowing the escaping of new-lines). The facade interfaces have also been changed
+slightly (they are all top level interfaces rather than nested interfaces)
+
+### Added
+
+- **Support for new lines break in the specification**. Now it is possible to add a `\` character before a new-line
+  to break up long specification lines.
+  
+### Changed
+
+- **AnalyserFacade interfaces**. All the interfaces that where originally nested interface in [AnalyserFacade](https://github.com/fburato/highwheel-modules/blob/2a8f1f02549fe1eb9be6e619030e99e504bbe584/core/src/main/java/com/github/fburato/highwheelmodules/core/AnalyserFacade.java)
+  have been moved to the top level. This entails that external tools using highwheel-modules would have to change the import
+  statement for their `Printer`, `PathEventSink`, `MeasureEventSink`, `StrictAnalysisEventSink` and `LooseAnalysisEventSink`,
+  removing the `AnalyserFacade` specifier.
+- **Parser library**. JParsec has been dropped in favour of the [scala-parser-combinators](https://github.com/scala/scala-parser-combinators)
+  library, which is still actively maintained and it is more idiomatic to a scala project.
+  
+### Deleted
+
+- **Command line tool**. The command line tool has been discontinued. I plan on releasing a new version in a separate
+  repository.
+- **Maven plugin**. The maven plugin has been extracted in a different repository at [highwheel-modules-maven-plugin](https://github.com/fburato/highwheel-modules-maven-plugin).
+
 ## [1.6.2] - 2020-08-09
 Version `1.6.2` bumps the version of ASM from 7.1 to 8.0.1, which enables highwheel-modules to parse bytecode up
 to JDK 14. Please note that RecordComponents are parsed as regular classes and not as new entities, so annotation

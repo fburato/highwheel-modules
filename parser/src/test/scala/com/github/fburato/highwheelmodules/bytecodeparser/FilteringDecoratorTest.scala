@@ -1,6 +1,11 @@
 package com.github.fburato.highwheelmodules.bytecodeparser
 
-import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessPointName, COMPOSED, ElementName}
+import com.github.fburato.highwheelmodules.model.bytecode.{
+  AccessPoint,
+  AccessPointName,
+  COMPOSED,
+  ElementName
+}
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
 import org.apache.commons.lang3.RandomStringUtils
 import org.mockito.ArgumentCaptor
@@ -11,18 +16,23 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
-class FilteringDecoratorSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class FilteringDecoratorTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
   private val matchingString = RandomStringUtils.randomAlphanumeric(20)
   private val notMatchingString = "NOT" + matchingString
   private val matchingElement = ElementName.fromString(matchingString)
   private val notMatchingElement = ElementName.fromString(notMatchingString)
-  private val matchingAccessPoint = AccessPoint(matchingElement, AccessPointName(matchingString, "()V"))
-  private val notMatchingAccessPoint = AccessPoint(notMatchingElement, AccessPointName(notMatchingString, "()V"))
+  private val matchingAccessPoint =
+    AccessPoint(matchingElement, AccessPointName(matchingString, "()V"))
+  private val notMatchingAccessPoint =
+    AccessPoint(notMatchingElement, AccessPointName(notMatchingString, "()V"))
 
   private val delegate = mock[AccessVisitor]
   private val testee = new FilteringDecorator(delegate, el => el.asInternalName == matchingString)
-
 
   "FilteringDecorator" should {
     "not forward apply call when filter does not match source" in {
@@ -74,7 +84,10 @@ class FilteringDecoratorSest extends AnyWordSpec with Matchers with MockitoSugar
       val captor: ArgumentCaptor[AccessPoint] = ArgumentCaptor.forClass(classOf[AccessPoint])
       verify(delegate, times(2)).newAccessPoint(captor.capture)
 
-      captor.getAllValues.asScala.toList should contain theSameElementsInOrderAs List(matchingAccessPoint, notMatchingAccessPoint)
+      captor.getAllValues.asScala.toList should contain theSameElementsInOrderAs List(
+        matchingAccessPoint,
+        notMatchingAccessPoint
+      )
     }
   }
 

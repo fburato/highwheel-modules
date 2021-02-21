@@ -15,12 +15,12 @@ package object specification {
   case class ManyToOneRule(many: List[String], one: String) extends Rule
 
   case class Definition(
-                         prefix: Option[String],
-                         whitelist: Option[List[String]],
-                         blacklist: Option[List[String]],
-                         mode: Option[String],
-                         moduleDefinitions: List[ModuleDefinition],
-                         rules: List[Rule]
-                       )
+    prefix: Option[String],
+    whitelist: Option[List[String]],
+    blacklist: Option[List[String]],
+    mode: Option[String],
+    moduleDefinitions: List[ModuleDefinition],
+    rules: List[Rule]
+  )
 
 }

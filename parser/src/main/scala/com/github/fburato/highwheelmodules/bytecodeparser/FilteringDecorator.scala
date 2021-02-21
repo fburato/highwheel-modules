@@ -3,7 +3,8 @@ package com.github.fburato.highwheelmodules.bytecodeparser
 import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, AccessType, ElementName}
 import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
 
-class FilteringDecorator(child: AccessVisitor, filter: ElementName => Boolean) extends AccessVisitor {
+class FilteringDecorator(child: AccessVisitor, filter: ElementName => Boolean)
+    extends AccessVisitor {
 
   override def apply(source: AccessPoint, dest: AccessPoint, `type`: AccessType): Unit = {
     if (filter(dest.elementName) && filter(source.elementName)) {

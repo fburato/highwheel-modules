@@ -6,7 +6,11 @@ import java.util
 import java.util.Optional
 
 trait AnalyserFacade {
-  def runAnalysis(classPathRoots: util.List[String], specificationPath: util.List[String], evidenceLimit: Optional[Integer]): Unit
+  def runAnalysis(
+    classPathRoots: util.List[String],
+    specificationPath: util.List[String],
+    evidenceLimit: Optional[Integer]
+  ): Unit
 }
 
 trait Printer {
@@ -32,7 +36,13 @@ trait StrictAnalysisEventSink {
 
   def dependencyViolationsPresent(): Unit
 
-  def dependencyViolation(sourceModule: String, destModule: String, expectedPath: util.List[String], actualPath: util.List[String], evidences: util.List[util.List[Pair[String, String]]]): Unit
+  def dependencyViolation(
+    sourceModule: String,
+    destModule: String,
+    expectedPath: util.List[String],
+    actualPath: util.List[String],
+    evidences: util.List[util.List[Pair[String, String]]]
+  ): Unit
 
   def noDirectDependenciesViolationPresent(): Unit
 
@@ -50,5 +60,10 @@ trait LooseAnalysisEventSink {
 
   def undesiredDependencyViolationsPresent(): Unit
 
-  def undesiredDependencyViolation(sourceModule: String, destModule: String, path: util.List[String], evidences: util.List[util.List[Pair[String, String]]]): Unit
+  def undesiredDependencyViolation(
+    sourceModule: String,
+    destModule: String,
+    path: util.List[String],
+    evidences: util.List[util.List[Pair[String, String]]]
+  ): Unit
 }

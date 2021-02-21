@@ -9,7 +9,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.util.{Failure, Success}
 
-class TryUtilsSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class TryUtilsTest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
   "sequence of empty should be Success of empty" in {
     sequence(Seq()) shouldEqual Success(Seq())
   }

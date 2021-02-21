@@ -12,7 +12,11 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.io.ByteArrayInputStream
 import scala.util.{Failure, Success}
 
-class CompoundClassPathRootSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class CompoundClassPathRootTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
   private val child1 = mock[ClasspathRoot]
   private val child2 = mock[ClasspathRoot]
   private val testee = new ClassPathRoot(Seq(child1, child2))

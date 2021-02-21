@@ -11,7 +11,11 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.io.{IOException, InputStream}
 import scala.util.Success
 
-class ClassPathParserSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class ClassPathParserTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
   private val classPathRoot = mock[ClasspathRoot]
   private val fooString = "foo"
