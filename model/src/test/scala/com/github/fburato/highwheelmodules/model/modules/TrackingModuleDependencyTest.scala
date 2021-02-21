@@ -7,7 +7,11 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class TrackingModuleDependencySest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class TrackingModuleDependencyTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
   private def randomString: String = RandomStringUtils.randomAlphanumeric(10)
 
@@ -45,7 +49,9 @@ class TrackingModuleDependencySest extends AnyWordSpec with Matchers with Mockit
     "return the expected evidence" in {
       testee.addEvidence(exampleSource1, exampleDest1)
 
-      testee.destinationsFromSource(exampleSource1) should contain theSameElementsAs Set(exampleDest1)
+      testee.destinationsFromSource(exampleSource1) should contain theSameElementsAs Set(
+        exampleDest1
+      )
     }
   }
 

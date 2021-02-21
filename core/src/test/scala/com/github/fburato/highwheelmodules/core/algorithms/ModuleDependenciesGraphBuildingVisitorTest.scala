@@ -2,7 +2,11 @@ package com.github.fburato.highwheelmodules.core.algorithms
 
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaModuleGraph
 import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, ElementName}
-import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, HWModule, ModuleDependency}
+import com.github.fburato.highwheelmodules.model.modules.{
+  AnonymousModule,
+  HWModule,
+  ModuleDependency
+}
 import com.google.common.graph.{MutableNetwork, NetworkBuilder}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -11,7 +15,11 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.jdk.CollectionConverters._
 
-class ModuleDependenciesGraphBuildingVisitorSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class ModuleDependenciesGraphBuildingVisitorTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
   private val SUPER_MODULE = HWModule.make("SuperModule", Seq("org.example.*")).get
   private val CORE = HWModule.make("Core", Seq("org.example.core.*")).get
@@ -22,15 +30,18 @@ class ModuleDependenciesGraphBuildingVisitorSest extends AnyWordSpec with Matche
   private val moduleGraph = new GuavaModuleGraph(graph)
 
   private def makeTestee(whiteList: Option[String], blackList: Option[String]) =
-    ModuleDependenciesGraphBuildingVisitor[ModuleDependency](modules, moduleGraph, OTHER,
-      (m1, m2, _, _, _) => ModuleDependency(m1, m2), whiteList.flatMap(wl => AnonymousModule.make(Seq(wl))),
+    ModuleDependenciesGraphBuildingVisitor[ModuleDependency](
+      modules,
+      moduleGraph,
+      OTHER,
+      (m1, m2, _, _, _) => ModuleDependency(m1, m2),
+      whiteList.flatMap(wl => AnonymousModule.make(Seq(wl))),
       blackList.flatMap(bl => AnonymousModule.make(Seq(bl)))
     )
 
   private val testee = makeTestee(None, None)
 
   private def ap(source: String): AccessPoint = AccessPoint(ElementName.fromString(source))
-
 
   "construction" should {
     "add all modules to the modules graph" in {

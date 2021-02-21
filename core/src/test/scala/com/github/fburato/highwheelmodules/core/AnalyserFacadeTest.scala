@@ -14,28 +14,52 @@ import java.util.{Optional, List => JList}
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters._
 
-class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class AnalyserFacadeTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
   private val accumulator = new ArrayBuffer[String]()
   private val printer = spy(new AccumulatorPrinter(accumulator))
   private val pathEventSink = spy(new AccumulatorPathEventSink(accumulator))
   private val measureEventSink = spy(new AccumulatorMeasureEventSink(accumulator))
   private val strictAnalysisEventSink = spy(new AccumulatorStrictAnalysisEventSink(accumulator))
   private val looseAnalysisEventSink = spy(new AccumulatorLooseAnalysisEventSink(accumulator))
-  private val testee = new AnalyserFacadeImpl(printer, pathEventSink, measureEventSink, strictAnalysisEventSink, looseAnalysisEventSink)
+  private val testee = new AnalyserFacadeImpl(
+    printer,
+    pathEventSink,
+    measureEventSink,
+    strictAnalysisEventSink,
+    looseAnalysisEventSink
+  )
 
-  private val defaultSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "spec.hwm").toString
-  private val defaultSpecWhiteBlack = Paths.get("core", "target", "scala-2.13", "test-classes", "spec-whiteblack.hwm").toString
-  private val wrongSpecWhiteBlack = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-spec-whiteblack.hwm").toString
-  private val alternativeStrictSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "alternate-strict-spec.hwm").toString
-  private val jarPath = Paths.get("core", "target", "scala-2.13", "test-classes", "highwheel-model.jar").toString
-  private val wrongSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-syntax-spec.hwm").toString
-  private val wrongSemanticsSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-semantics-spec.hwm").toString
-  private val wrongStrictDefinitionSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-strict-spec.hwm").toString
-  private val looseSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "loose-spec.hwm").toString
-  private val looseSpecWhiteBlack = Paths.get("core", "target", "scala-2.13", "test-classes", "loose-spec-whiteblack.hwm").toString
-  private val wrongLooseSpecWhiteBlack = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-loose-spec-whiteblack.hwm").toString
-  private val orgExamplePath = Paths.get("core", "target", "scala-2.13", "test-classes", "org").toString
-  private val wrongLooseDefinitionSpec = Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-loose-spec.hwm").toString
+  private val defaultSpec =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "spec.hwm").toString
+  private val defaultSpecWhiteBlack =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "spec-whiteblack.hwm").toString
+  private val wrongSpecWhiteBlack =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-spec-whiteblack.hwm").toString
+  private val alternativeStrictSpec =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "alternate-strict-spec.hwm").toString
+  private val jarPath =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "highwheel-model.jar").toString
+  private val wrongSpec =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-syntax-spec.hwm").toString
+  private val wrongSemanticsSpec =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-semantics-spec.hwm").toString
+  private val wrongStrictDefinitionSpec =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-strict-spec.hwm").toString
+  private val looseSpec =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "loose-spec.hwm").toString
+  private val looseSpecWhiteBlack =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "loose-spec-whiteblack.hwm").toString
+  private val wrongLooseSpecWhiteBlack = Paths
+    .get("core", "target", "scala-2.13", "test-classes", "wrong-loose-spec-whiteblack.hwm")
+    .toString
+  private val orgExamplePath =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "org").toString
+  private val wrongLooseDefinitionSpec =
+    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-loose-spec.hwm").toString
 
   def list[T](args: T*): JList[T] = args.asJava
 
@@ -67,7 +91,11 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
     }
 
     "print ignored directories and jars as info" in {
-      testee.runAnalysis(list(jarPath, orgExamplePath, "foobar"), list(defaultSpec), Optional.empty())
+      testee.runAnalysis(
+        list(jarPath, orgExamplePath, "foobar"),
+        list(defaultSpec),
+        Optional.empty()
+      )
 
       verify(pathEventSink).jars(anyContains(".*highwheel-model\\.jar.*"))
       verify(pathEventSink).directories(anyContains(".*test-classes.*org.*"))
@@ -107,7 +135,8 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
       }
 
       verify(strictAnalysisEventSink).dependencyViolationsPresent()
-      verify(strictAnalysisEventSink).dependencyViolation("Main", "Facade", list("Main", "Controller", "Facade"), list(), list())
+      verify(strictAnalysisEventSink)
+        .dependencyViolation("Main", "Facade", list("Main", "Controller", "Facade"), list(), list())
     }
 
     "produce loose output when no violation occurs" in {
@@ -175,13 +204,18 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
       }
 
       verify(strictAnalysisEventSink).dependencyViolationsPresent()
-      verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", list(),
+      verify(strictAnalysisEventSink).dependencyViolation(
+        "IO",
+        "Utils",
+        list(),
         list("IO", "Utils"),
-        list(list(
-          pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"),
-          pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util1"),
-          pair("org.example.io.IOImplementaion:something", "org.example.commons.Utility:util")
-        ))
+        list(
+          list(
+            pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"),
+            pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util1"),
+            pair("org.example.io.IOImplementaion:something", "org.example.commons.Utility:util")
+          )
+        )
       )
       verify(strictAnalysisEventSink).noDirectDependenciesViolationPresent()
       verify(strictAnalysisEventSink).noDirectDependencyViolation("Facade", "CoreInternals")
@@ -192,10 +226,14 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
         testee.runAnalysis(list(orgExamplePath), list(wrongStrictDefinitionSpec), Optional.of(1))
       }
       verify(strictAnalysisEventSink).dependencyViolationsPresent()
-      verify(strictAnalysisEventSink).dependencyViolation("IO", "Utils", list(), list("IO", "Utils"),
-        list(list(
-          pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util")
-        ))
+      verify(strictAnalysisEventSink).dependencyViolation(
+        "IO",
+        "Utils",
+        list(),
+        list("IO", "Utils"),
+        list(
+          list(pair("org.example.io.IOImplementaion:reader", "org.example.commons.Utility:util"))
+        )
       )
       verify(strictAnalysisEventSink).noDirectDependenciesViolationPresent()
       verify(strictAnalysisEventSink).noDirectDependencyViolation("Facade", "CoreInternals")
@@ -208,12 +246,16 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
       verify(looseAnalysisEventSink).absentDependencyViolationsPresent()
       verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent()
       verify(looseAnalysisEventSink).absentDependencyViolation("IO", "CoreInternals")
-      verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model",
+      verify(looseAnalysisEventSink).undesiredDependencyViolation(
+        "IO",
+        "Model",
         list("IO", "Model"),
-        list(list(
-          pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1"),
-          pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1:(init)")
-        ))
+        list(
+          list(
+            pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1"),
+            pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1:(init)")
+          )
+        )
       )
     }
 
@@ -224,11 +266,11 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
       verify(looseAnalysisEventSink).absentDependencyViolationsPresent()
       verify(looseAnalysisEventSink).undesiredDependencyViolationsPresent()
       verify(looseAnalysisEventSink).absentDependencyViolation("IO", "CoreInternals")
-      verify(looseAnalysisEventSink).undesiredDependencyViolation("IO", "Model",
+      verify(looseAnalysisEventSink).undesiredDependencyViolation(
+        "IO",
+        "Model",
         list("IO", "Model"),
-        list(list(
-          pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1")
-        ))
+        list(list(pair("org.example.io.IOImplementaion:reader", "org.example.core.model.Entity1")))
       )
     }
 
@@ -247,7 +289,11 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
     }
 
     "analyse all specifications successfully on strict analysis" in {
-      testee.runAnalysis(list(orgExamplePath), list(defaultSpec, alternativeStrictSpec), Optional.empty())
+      testee.runAnalysis(
+        list(orgExamplePath),
+        list(defaultSpec, alternativeStrictSpec),
+        Optional.empty()
+      )
 
       accumulator should contain theSameElementsAs List(
         "IGNORED_PATHS - ",
@@ -280,7 +326,11 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
     "fail if one specification but complete successful anlyses on strict" in {
       assertThrows[AnalyserException] {
-        testee.runAnalysis(list(orgExamplePath), list(wrongStrictDefinitionSpec, alternativeStrictSpec), Optional.empty())
+        testee.runAnalysis(
+          list(orgExamplePath),
+          list(wrongStrictDefinitionSpec, alternativeStrictSpec),
+          Optional.empty()
+        )
       }
 
       accumulator should contain theSameElementsAs List(
@@ -300,7 +350,8 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
         "FAN_IN_OUT_MEASURE - CoreApi,4,1",
         "FAN_IN_OUT_MEASURE - Controller,1,1",
         "FAN_IN_OUT_MEASURE - Main,0,4",
-        "DEPENDENCY_VIOLATION_PRESENT", "DEPENDENCY_VIOLATION - {IO,Utils,[],[IO,Utils],[1]}",
+        "DEPENDENCY_VIOLATION_PRESENT",
+        "DEPENDENCY_VIOLATION - {IO,Utils,[],[IO,Utils],[1]}",
         "DEPENDENCY_VIOLATION - {Main,Utils,[Main,Facade,CoreInternals,Utils],[Main,IO,Utils],[2]}",
         "NO_DIRECT_DEPENDENCIES_VIOLATION_PRESENT",
         "NO_DIRECT_DEPENDENCY_VIOLATION - Facade,CoreInternals",
@@ -315,7 +366,11 @@ class AnalyserFacadeSest extends AnyWordSpec with Matchers with MockitoSugar wit
     }
 
     "make alternate analyses successfully" in {
-      testee.runAnalysis(list(orgExamplePath), list(looseSpec, alternativeStrictSpec), Optional.of(0))
+      testee.runAnalysis(
+        list(orgExamplePath),
+        list(looseSpec, alternativeStrictSpec),
+        Optional.of(0)
+      )
 
       accumulator should contain theSameElementsAs List(
         "IGNORED_PATHS - ",

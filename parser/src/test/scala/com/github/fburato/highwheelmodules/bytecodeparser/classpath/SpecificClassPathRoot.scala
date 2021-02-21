@@ -7,7 +7,9 @@ import java.io.InputStream
 import scala.util.Try
 
 class SpecificClassPathRoot(classes: Array[Class[_]]) extends ClasspathRoot {
-  private val internalClassLoaderClassPathRoot = new ClassLoaderClassPathRoot(getClass.getClassLoader)
+  private val internalClassLoaderClassPathRoot = new ClassLoaderClassPathRoot(
+    getClass.getClassLoader
+  )
 
   private def first3InnerClassesIfPresent(element: ElementName): List[ElementName] =
     (1 to 3)
@@ -15,7 +17,8 @@ class SpecificClassPathRoot(classes: Array[Class[_]]) extends ClasspathRoot {
       .filter(el => internalClassLoaderClassPathRoot.getData(el).get != null)
       .toList
 
-  override def getData(elementName: ElementName): Try[InputStream] = internalClassLoaderClassPathRoot.getData(elementName)
+  override def getData(elementName: ElementName): Try[InputStream] =
+    internalClassLoaderClassPathRoot.getData(elementName)
 
   override def classNames: Try[Seq[ElementName]] = Try {
     classes
@@ -24,5 +27,6 @@ class SpecificClassPathRoot(classes: Array[Class[_]]) extends ClasspathRoot {
       .toIndexedSeq
   }
 
-  override def getResource(name: String): Try[InputStream] = internalClassLoaderClassPathRoot.getResource(name)
+  override def getResource(name: String): Try[InputStream] =
+    internalClassLoaderClassPathRoot.getResource(name)
 }

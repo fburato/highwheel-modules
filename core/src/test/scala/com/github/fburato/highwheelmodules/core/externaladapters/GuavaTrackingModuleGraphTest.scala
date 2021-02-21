@@ -9,9 +9,11 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.jdk.CollectionConverters._
 
-class GuavaTrackingModuleGraphSest extends AnyWordSpec with Matchers with OneInstancePerTest {
-  private val graph: MutableNetwork[HWModule, TrackingModuleDependency] = NetworkBuilder.directed()
-    .allowsSelfLoops(true).build()
+class GuavaTrackingModuleGraphTest extends AnyWordSpec with Matchers with OneInstancePerTest {
+  private val graph: MutableNetwork[HWModule, TrackingModuleDependency] = NetworkBuilder
+    .directed()
+    .allowsSelfLoops(true)
+    .build()
   private val testee = new GuavaTrackingModuleGraph(graph)
 
   def module(name: String, regex: String): HWModule = HWModule.make(name, Seq(regex)).get

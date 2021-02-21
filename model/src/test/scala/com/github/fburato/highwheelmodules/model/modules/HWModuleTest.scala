@@ -1,34 +1,37 @@
 package com.github.fburato.highwheelmodules.model.modules
 
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName
+import org.apache.commons.lang3.RandomStringUtils
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class AnonymousModuleSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class HWModuleTest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
   "make" should {
+    val name = RandomStringUtils.randomAlphanumeric(20)
     "be empty if regex passed is invalid" in {
-      AnonymousModule.make(List("[asdf")) shouldBe None
+      HWModule.make(name, List("[asdf")) shouldBe None
     }
 
     "be empty if any regex passed is invalid" in {
-      AnonymousModule.make(List("valid", "[asdf")) shouldBe None
+      HWModule.make(name, List("valid", "[asdf")) shouldBe None
     }
 
     "be defined if regex passed is valid" in {
-      AnonymousModule.make(List("org.example.*")).isDefined shouldBe true
+      HWModule.make(name, List("org.example.*")).isDefined shouldBe true
     }
 
     "be defined if all regexes passed are valid" in {
-      AnonymousModule.make(List("org.example.*", "valid")).isDefined shouldBe true
+      HWModule.make(name, List("org.example.*", "valid")).isDefined shouldBe true
     }
   }
 
   "contains" should {
     val globPattern = List("org.example.foo*", "org.example.bar*")
-    val testee = AnonymousModule.make(globPattern).get
+    val name = RandomStringUtils.randomAlphanumeric(20)
+    val testee = HWModule.make(name, globPattern).get
 
     "match if name matches any pattern" in {
       testee.contains(ElementName.fromString("org.example.foo.Something")) shouldBe true
@@ -62,9 +65,17 @@ class AnonymousModuleSest extends AnyWordSpec with Matchers with MockitoSugar wi
   }
 
   "equals should work on pattern literals irrespective of order" in {
-    AnonymousModule.make(List("a")).get shouldEqual AnonymousModule.make(List("a")).get
-    AnonymousModule.make(List("a", "b")).get shouldEqual AnonymousModule.make(List("b", "a")).get
-    AnonymousModule.make(List("a")).get should not equal AnonymousModule.make(List("a", "b")).get
-    AnonymousModule.make(List("a", "b")).get should not equal AnonymousModule.make(List("a")).get
+    val name = RandomStringUtils.randomAlphanumeric(20)
+
+    HWModule.make(name, List("a")).get shouldEqual HWModule.make(name, List("a")).get
+    HWModule.make(name, List("a", "b")).get shouldEqual HWModule.make(name, List("b", "a")).get
+    HWModule.make(name, List("a")).get should not equal HWModule.make(name, List("a", "b")).get
+    HWModule.make(name, List("a", "b")).get should not equal HWModule.make(name, List("a")).get
+  }
+
+  "equals should distinguish between modules with different names" in {
+    val name = RandomStringUtils.randomAlphanumeric(20)
+
+    HWModule.make(name, List("a")).get should not equal HWModule.make("NOT" + name, List("a")).get
   }
 }

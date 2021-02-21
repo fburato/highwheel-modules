@@ -10,7 +10,9 @@ import scala.jdk.CollectionConverters.EnumerationHasAsScala
 import scala.util.{Try, Using}
 
 class ArchiveClassPathRoot(file: File) extends ClasspathRoot {
-  override def getData(elementName: ElementName): Try[InputStream] = getResource(elementName.asInternalName + ".class")
+  override def getData(elementName: ElementName): Try[InputStream] = getResource(
+    elementName.asInternalName + ".class"
+  )
 
   override def classNames: Try[Seq[ElementName]] = {
     def stringToClassName(name: String): ElementName =
@@ -18,11 +20,11 @@ class ArchiveClassPathRoot(file: File) extends ClasspathRoot {
 
     getRoot.map(root => {
       val entries = root.entries().asScala.toSeq
-      entries.filter(entry => !entry.isDirectory && entry.getName.endsWith(".class"))
+      entries
+        .filter(entry => !entry.isDirectory && entry.getName.endsWith(".class"))
         .map(entry => stringToClassName(entry.getName))
     })
   }
-
 
   override def getResource(name: String): Try[InputStream] = {
     def readAndCopyStream(zipFile: ZipFile): InputStream = {

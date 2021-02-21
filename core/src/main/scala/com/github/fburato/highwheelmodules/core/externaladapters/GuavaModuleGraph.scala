@@ -7,14 +7,16 @@ import java.util
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters.RichOptional
 
-class GuavaModuleGraph(private val graph: MutableNetwork[HWModule, ModuleDependency]) extends MetricModuleGraph[ModuleDependency] {
+class GuavaModuleGraph(private val graph: MutableNetwork[HWModule, ModuleDependency])
+    extends MetricModuleGraph[ModuleDependency] {
   override def fanInOf(module: HWModule): Option[Int] = {
     if (!graph.nodes().contains(module)) {
       None
     } else {
-      Some(findDependency(module, module)
-        .map(_ => graph.inDegree(module) - 1)
-        .getOrElse(graph.inDegree(module))
+      Some(
+        findDependency(module, module)
+          .map(_ => graph.inDegree(module) - 1)
+          .getOrElse(graph.inDegree(module))
       )
     }
   }
@@ -23,9 +25,10 @@ class GuavaModuleGraph(private val graph: MutableNetwork[HWModule, ModuleDepende
     if (!graph.nodes().contains(module)) {
       None
     } else {
-      Some(findDependency(module, module)
-        .map(_ => graph.outDegree(module) - 1)
-        .getOrElse(graph.outDegree(module))
+      Some(
+        findDependency(module, module)
+          .map(_ => graph.outDegree(module) - 1)
+          .getOrElse(graph.outDegree(module))
       )
     }
   }
@@ -42,7 +45,8 @@ class GuavaModuleGraph(private val graph: MutableNetwork[HWModule, ModuleDepende
 
   override def addDependency(dependency: ModuleDependency): Unit = {
     if (Seq(dependency.dest, dependency.source).forall(graph.nodes().contains)) {
-      val moduleDependency = graph.edgeConnecting(dependency.source, dependency.dest)
+      val moduleDependency = graph
+        .edgeConnecting(dependency.source, dependency.dest)
         .orElseGet(() => {
           graph.addEdge(dependency.source, dependency.dest, dependency)
           dependency

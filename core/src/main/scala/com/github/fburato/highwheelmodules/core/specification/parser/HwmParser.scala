@@ -41,51 +41,51 @@ object HwmParser extends Parsers {
 
   private[parser] def prefixParser: Parser[String] = {
     val prefix = accept("prefix", { case Keywords.Prefix => () })
-    (prefix ~ definedAs ~ rep(newLine) ~ literal ~ newlines) ^^ {
-      case _ ~ _ ~ _ ~ prefix ~ _ => prefix
+    (prefix ~ definedAs ~ rep(newLine) ~ literal ~ newlines) ^^ { case _ ~ _ ~ _ ~ prefix ~ _ =>
+      prefix
     }
   }
 
   private[parser] def whitelistParser: Parser[List[String]] = {
     val whitelist = accept("whitelist", { case Keywords.Whitelist => () })
-    (whitelist ~ definedAs ~ rep(newLine) ~ literals ~ newlines) ^^ {
-      case _ ~ _ ~ _ ~ l ~ _ => l
+    (whitelist ~ definedAs ~ rep(newLine) ~ literals ~ newlines) ^^ { case _ ~ _ ~ _ ~ l ~ _ =>
+      l
     }
   }
 
   private[parser] def blacklistParser: Parser[List[String]] = {
     val blacklist = accept("blacklist", { case Keywords.Blacklist => () })
-    (blacklist ~ definedAs ~ rep(newLine) ~ literals ~ newlines) ^^ {
-      case _ ~ _ ~ _ ~ l ~ _ => l
+    (blacklist ~ definedAs ~ rep(newLine) ~ literals ~ newlines) ^^ { case _ ~ _ ~ _ ~ l ~ _ =>
+      l
     }
   }
 
   private[parser] def modeParser: Parser[String] = {
     val mode = accept("mode", { case Keywords.Mode => () })
-    (mode ~ definedAs ~ rep(newLine) ~ identifier ~ newlines) ^^ {
-      case _ ~ _ ~ _ ~ id ~ _ => id
+    (mode ~ definedAs ~ rep(newLine) ~ identifier ~ newlines) ^^ { case _ ~ _ ~ _ ~ id ~ _ =>
+      id
     }
   }
 
   private[parser] def moduleDefinitionParser: Parser[ModuleDefinition] = {
     val equals = accept("equals", { case Operators.Equals => () })
-    (identifier ~ equals ~ literals ~ newLine) ^^ {
-      case i ~ _ ~ l ~ _ => ModuleDefinition(i, l)
+    (identifier ~ equals ~ literals ~ newLine) ^^ { case i ~ _ ~ l ~ _ =>
+      ModuleDefinition(i, l)
     }
   }
 
   private[parser] def chainDependencyRuleParser: Parser[ChainDependencyRule] = {
-    val chainedDependency = (arrow ~ identifier) ^^ {
-      case _ ~ l => l
+    val chainedDependency = (arrow ~ identifier) ^^ { case _ ~ l =>
+      l
     }
-    (identifier ~ rep1(chainedDependency)) ^^ {
-      case first ~ rest => ChainDependencyRule(first :: rest)
+    (identifier ~ rep1(chainedDependency)) ^^ { case first ~ rest =>
+      ChainDependencyRule(first :: rest)
     }
   }
 
   private[parser] def noDependencyRuleParser: Parser[NoDependentRule] = {
-    (identifier ~ notArrow ~ identifier) ^^ {
-      case id1 ~ _ ~ id2 => NoDependentRule(id1, id2)
+    (identifier ~ notArrow ~ identifier) ^^ { case id1 ~ _ ~ id2 =>
+      NoDependentRule(id1, id2)
     }
   }
 
@@ -103,20 +103,23 @@ object HwmParser extends Parsers {
 
   private[parser] def interpret[T](p: Parser[T], input: Input): Either[String, T] =
     p(input) match {
-      case Success(r, _) => Right(r)
+      case Success(r, _)     => Right(r)
       case NoSuccess(msg, _) => Left(msg)
     }
 
   private val definitionParser = {
     val moduleKeywordParser = accept("modules", { case Keywords.Modules => () })
     val rulesKeywordParser = accept("rules", { case Keywords.Rules => () })
-    val modulesPreambleParser = (moduleKeywordParser ~ definedAs ~ newlines) ^^ {
-      case _ ~ _ ~ _ => ()
+    val modulesPreambleParser = (moduleKeywordParser ~ definedAs ~ newlines) ^^ { case _ ~ _ ~ _ =>
+      ()
     }
-    val rulesPreambleParser = (rulesKeywordParser ~ definedAs ~ newlines) ^^ {
-      case _ ~ _ ~ _ => ()
+    val rulesPreambleParser = (rulesKeywordParser ~ definedAs ~ newlines) ^^ { case _ ~ _ ~ _ =>
+      ()
     }
-    val allRulesParser = repsep(chainDependencyRuleParser | noDependencyRuleParser | oneToManyRuleParser | manyToOneRuleParser, newlines)
+    val allRulesParser = repsep(
+      chainDependencyRuleParser | noDependencyRuleParser | oneToManyRuleParser | manyToOneRuleParser,
+      newlines
+    )
     (opt(prefixParser) ~
       opt(whitelistParser) ~
       opt(blacklistParser) ~
@@ -124,23 +127,17 @@ object HwmParser extends Parsers {
       modulesPreambleParser ~
       rep(moduleDefinitionParser) ~
       rulesPreambleParser ~
-      allRulesParser ~ rep(newLine)
-      ) ^^ {
-      case prefix ~ whitelist ~ blacklist ~ mode ~ _ ~ modules ~ _ ~ rules ~ _ => Definition(
-        prefix,
-        whitelist,
-        blacklist,
-        mode,
-        modules,
-        rules
-      )
+      allRulesParser ~ rep(newLine)) ^^ {
+      case prefix ~ whitelist ~ blacklist ~ mode ~ _ ~ modules ~ _ ~ rules ~ _ =>
+        Definition(prefix, whitelist, blacklist, mode, modules, rules)
     }
   }
 
   def parse(tokens: Seq[HwmToken]): Either[ParserException, Definition] = {
     val reader = new HwmReader(tokens)
     phrase(definitionParser)(reader) match {
-      case NoSuccess(msg, next) => Left(ParserException(s"$msg at ${next.pos}, content ${next.first}"))
+      case NoSuccess(msg, next) =>
+        Left(ParserException(s"$msg at ${next.pos}, content ${next.first}"))
       case Success(result, _) => Right(result)
     }
   }

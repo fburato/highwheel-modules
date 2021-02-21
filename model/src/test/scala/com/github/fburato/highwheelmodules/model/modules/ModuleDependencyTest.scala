@@ -5,7 +5,11 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class ModuleDependencySest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class ModuleDependencyTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
   private val moduleA = HWModule.make("a", List("a")).get
   private val moduleB = HWModule.make("b", List("b")).get

@@ -6,7 +6,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class ElementNameSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class ElementNameTest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
 
   private def random: String = RandomStringUtils.randomAlphanumeric(20)
 
@@ -23,13 +23,16 @@ class ElementNameSest extends AnyWordSpec with Matchers with MockitoSugar with O
   }
 
   "fromClass internal representation should be the fully qualified string name with '.' converted to '/'" in {
-    ElementName.fromClass(classOf[String]).asInternalName shouldEqual classOf[String].getName.replace('.', '/')
+    ElementName.fromClass(classOf[String]).asInternalName shouldEqual classOf[String].getName
+      .replace('.', '/')
   }
 
   "elements that resolve to same internal name should be equal" in {
     val (ran1, ran2, ran3) = (random, random, random)
 
-    ElementName.fromString(s"$ran1.$ran2.$ran3") shouldEqual ElementName.fromString(s"$ran1/$ran2/$ran3")
+    ElementName.fromString(s"$ran1.$ran2.$ran3") shouldEqual ElementName.fromString(
+      s"$ran1/$ran2/$ran3"
+    )
   }
 
   "javaName of ElementName should be equal to internal representation with '/' converted to '.'" in {
@@ -46,8 +49,8 @@ class ElementNameSest extends AnyWordSpec with Matchers with MockitoSugar with O
     val elementNames = names.map(ElementName.fromString)
 
     val zipped = names.sorted zip elementNames.sorted
-    zipped.foreach {
-      case (name, elementName) => elementName.asInternalName shouldEqual name
+    zipped.foreach { case (name, elementName) =>
+      elementName.asInternalName shouldEqual name
     }
   }
 }

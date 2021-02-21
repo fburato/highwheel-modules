@@ -6,7 +6,7 @@ import com.github.fburato.highwheelmodules.utils.TryUtils._
 import org.objectweb.asm.ClassReader
 
 import java.io.InputStream
-import scala.util.{Try, Using}
+import scala.util.{Success, Try, Using}
 
 class ClassPathParser(filter: ElementName => Boolean) extends ClassParser {
 
@@ -18,7 +18,11 @@ class ClassPathParser(filter: ElementName => Boolean) extends ClassParser {
     }
 
   override def parse(cpr: ClasspathRoot, accessVisitor: AccessVisitor): Try[Unit] = {
-    val dependencyClassVisitor = new DependencyClassVisitor(null, new FilteringDecorator(accessVisitor, filter), nameTransformer)
+    val dependencyClassVisitor = new DependencyClassVisitor(
+      null,
+      new FilteringDecorator(accessVisitor, filter),
+      nameTransformer
+    )
 
     def readAndVisitClassStream(is: InputStream): Try[Unit] =
       for {

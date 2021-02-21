@@ -14,12 +14,16 @@ class DirectoryClassPathRoot(root: File) extends ClasspathRoot {
 
   override def classNames: Try[Seq[ElementName]] = Try {
     def fileToClassName(f: File): ElementName = ElementName.fromString(
-      f.getAbsolutePath.substring(root.getAbsolutePath.length + 1, f.getAbsolutePath.length - ".class".length)
+      f.getAbsolutePath
+        .substring(root.getAbsolutePath.length + 1, f.getAbsolutePath.length - ".class".length)
         .replace(File.separatorChar, '.')
     )
 
     @tailrec
-    def classNames(accumulated: mutable.ArrayBuffer[ElementName], toProcess: mutable.ArrayBuffer[File]): mutable.ArrayBuffer[ElementName] = toProcess.headOption match {
+    def classNames(
+      accumulated: mutable.ArrayBuffer[ElementName],
+      toProcess: mutable.ArrayBuffer[File]
+    ): mutable.ArrayBuffer[ElementName] = toProcess.headOption match {
       case None => accumulated
       case Some(f) =>
         if (!f.exists) {

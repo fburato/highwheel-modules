@@ -7,7 +7,10 @@ class GuavaGraphFactory extends ModuleGraphFactory {
   override def buildMetricModuleGraph: MetricModuleGraph[ModuleDependency] =
     new GuavaModuleGraph(NetworkBuilder.directed.allowsSelfLoops(true).build)
 
-  override def buildEvidenceModuleGraph(trackingGraph: ModuleGraph[TrackingModuleDependency], evidenceLimit: Option[Int]): ModuleGraph[EvidenceModuleDependency] =
+  override def buildEvidenceModuleGraph(
+    trackingGraph: ModuleGraph[TrackingModuleDependency],
+    evidenceLimit: Option[Int]
+  ): ModuleGraph[EvidenceModuleDependency] =
     new GuavaEvidenceModuleGraph(trackingGraph, evidenceLimit)
 
   override def buildTrackingModuleGraph: ModuleGraph[TrackingModuleDependency] =

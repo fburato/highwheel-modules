@@ -172,92 +172,9 @@ rules:
 
 The default mode is `STRICT`, but the mode can be explicitly indicated with `mode: STRICT` in the same position.
 
-## Command line tool
+## Usage 
 
-The highwheel modules command line tool is contained in the module `cli`. In order to
-build the tool just build the entire project with 
+Highwheel modules can be used by including in your build the appropriate plugin, depending on your build tool of choice:
 
-```
-mvn clean install
-```
-
-The executable jar will be available at `cli/target/modulesAnalyser-jar-with-dependencies.jar`.
-
-### Using the command line tool
-
-The command line tool base syntax is
-
-```
-java -jar moduleAnalyser-jar-with-dependencies.jar <directories and jar to analyse>
-```
-
-The tool will:
-
-* Read a module specification file named `spec.hwm` in the current working directory and compile it, reporting any 
-errors.
-* Read all `*.class` files in the directories and jars passed as argument
-* Start a strict analysis using the specification read from `spec.hwm` on the resources passed.
-* Provide the result of the analysis and the fan-in/fan-out measurement on all modules.
-
-It is possible to change both the specification file and the mode with the following options:
-
-* `--spec | -s`: path to the specification file to use. Add multiple of these options to include more specification
-in the analysis.
-
-## Highwheel modules maven plugin
-
-The highwheel modules maven plugin is contained in the module `maven-plugin`. In order to build the tool,
-just build the entire project with:
-
-```
-mvn clean install
-```
-
-### Using the plugin
-
-In order to run the plugin on a project execute:
-
-```
-mvn com.github.fburato:highwheel-modules-maven-plugin:analyse
-```
-
-You can also run a specific version of the plugin without including it in your build with:
-
-```
-mvn com.github.fburato:highwheel-modules-maven-plugin:1.6.1:analyse
-```
-The plugin will:
-
-* Read a module specification file named `spec.hwm` in the project base-directory and compile it, reporting any 
-errors.
-* Read all `*.class` files in the project output directory (`target/classes`)
-* Start a strict analysis using the specification read from `spec.hwm` on the resources passed.
-* Provide the result of the analysis and the fan-in/fan-out measurement on all modules.
-* The build will fail if any of the rules are violated
-
-It is possible to change the behaviour of the plugin as follows:
-
-* `-DhwmSpecFiles=<comma separated list of paths to spec files>`: use the paths provided instead of `spec.hwm` from the base dir if the path is 
-relative, otherwise use the path as is if the path is absolute.
-* `-DhwmChildOnly=true`: in a multi-module build, run the analysis only on the child modules (skips pom packaging modules).
-* `-DhwmParentOnly=true`: in a multi-module build, run the analysis only on the parent (skips non-pom packaging modules).
-* `-DhwmEvidenceLimit=<integer>`: limit the pieces of evidence that are displayed when the analysis fails (i.e. code
-dependencies between the modules that make the dependency hold or not hold). 
-
-In a multi-module build, the plugin will use all the child output directories as elements of the analysis.
-
-If you want to prevent one module from being analysed, add the `<hwmSkip>true</hwmSkip>` property to the configuration of the
-plugin. 
-
-### Add the plugin to your build
-Add the following dependency to your build/plugins section:
-
-```xml
-<dependency>
-    <groupId>com.github.fburato</groupId>
-    <artifactId>highwheel-modules-maven-plugin</artifactId>
-    <version>1.6.2</version>
-</dependency>
-```
-
-And configure it to run the appropriate phase.
+- Maven: include in your build the [highwheel-modules-maven-plugin](https://github.com/fburato/highwheel-modules-maven-plugin).
+- SBT: include in your build the [sbt-highwheel](https://github.com/fburato/sbt-highwheel) plugin.

@@ -5,7 +5,6 @@ import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import java.io.InputStream
 import scala.util.Try
 
-
 trait ClasspathRoot {
 
   def getData(elementName: ElementName): Try[InputStream]

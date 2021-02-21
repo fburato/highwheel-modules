@@ -6,12 +6,22 @@ import com.github.fburato.highwheelmodules.model.classpath.AccessVisitor
 import org.objectweb.asm._
 import org.objectweb.asm.signature.SignatureReader
 
-private[bytecodeparser] class DependencyClassVisitor(classVisitor: ClassVisitor, typeReceiver: AccessVisitor, nameTransformer: NameTransformer)
-  extends ClassVisitor(Opcodes.ASM8, classVisitor) {
+private[bytecodeparser] class DependencyClassVisitor(
+  classVisitor: ClassVisitor,
+  typeReceiver: AccessVisitor,
+  nameTransformer: NameTransformer
+) extends ClassVisitor(Opcodes.ASM8, classVisitor) {
   private val dependencyVisitor = filterOutJavaLangObject(typeReceiver)
   private var parent: AccessPoint = null
 
-  override def visit(version: Int, access: Int, name: String, signature: String, superName: String, interfaces: Array[String]): Unit = {
+  override def visit(
+    version: Int,
+    access: Int,
+    name: String,
+    signature: String,
+    superName: String,
+    interfaces: Array[String]
+  ): Unit = {
     parent = AccessPoint(nameTransformer.transform(name))
     dependencyVisitor.newNode(parent.elementName)
 
@@ -32,11 +42,21 @@ private[bytecodeparser] class DependencyClassVisitor(classVisitor: ClassVisitor,
   }
 
   override def visitAnnotation(descriptor: String, visible: Boolean): AnnotationVisitor = {
-    dependencyVisitor(parent, AccessPoint(ElementName.fromString(Type.getType(descriptor).getClassName)), ANNOTATED)
+    dependencyVisitor(
+      parent,
+      AccessPoint(ElementName.fromString(Type.getType(descriptor).getClassName)),
+      ANNOTATED
+    )
     null
   }
 
-  override def visitField(access: Int, name: String, descriptor: String, signature: String, value: Object): FieldVisitor = {
+  override def visitField(
+    access: Int,
+    name: String,
+    descriptor: String,
+    signature: String,
+    value: Object
+  ): FieldVisitor = {
     val asmType = Type.getType(descriptor)
     dependencyVisitor(parent, AccessPoint(getElementNameForType(asmType)), COMPOSED)
     visitSignatureWithAccessType(signature, COMPOSED)
@@ -52,7 +72,13 @@ private[bytecodeparser] class DependencyClassVisitor(classVisitor: ClassVisitor,
     }
   }
 
-  override def visitMethod(access: Int, name: String, descriptor: String, signature: String, exceptions: Array[String]): MethodVisitor = {
+  override def visitMethod(
+    access: Int,
+    name: String,
+    descriptor: String,
+    signature: String,
+    exceptions: Array[String]
+  ): MethodVisitor = {
     def pickAccessPointForMethod: AccessPoint = {
       if (parent.attribute != null) {
         parent
@@ -64,7 +90,11 @@ private[bytecodeparser] class DependencyClassVisitor(classVisitor: ClassVisitor,
     def examineParameters(method: AccessPoint): Unit = {
       val parameters = Type.getArgumentTypes(descriptor)
       parameters.foreach(param =>
-        dependencyVisitor(method, AccessPoint(nameTransformer.transform(getElementNameForType(param).asInternalName)), SIGNATURE)
+        dependencyVisitor(
+          method,
+          AccessPoint(nameTransformer.transform(getElementNameForType(param).asInternalName)),
+          SIGNATURE
+        )
       )
     }
 
@@ -78,7 +108,11 @@ private[bytecodeparser] class DependencyClassVisitor(classVisitor: ClassVisitor,
 
     def examineReturnType(method: AccessPoint): Unit = {
       val returnType = Type.getMethodType(descriptor).getReturnType
-      dependencyVisitor(method, AccessPoint(nameTransformer.transform(getElementNameForType(returnType).asInternalName)), SIGNATURE)
+      dependencyVisitor(
+        method,
+        AccessPoint(nameTransformer.transform(getElementNameForType(returnType).asInternalName)),
+        SIGNATURE
+      )
     }
 
     def isEntryPoint: Boolean = {

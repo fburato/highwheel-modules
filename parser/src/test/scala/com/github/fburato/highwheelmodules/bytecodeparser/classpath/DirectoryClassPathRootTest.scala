@@ -11,7 +11,11 @@ import java.io.{File, InputStream}
 import java.nio.file.Paths
 import scala.util.Success
 
-class DirectoryClassPathRootSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class DirectoryClassPathRootTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
   private val invalidRootTestee: DirectoryClassPathRoot =
     new DirectoryClassPathRoot(new File("foo"))
@@ -19,11 +23,12 @@ class DirectoryClassPathRootSest extends AnyWordSpec with Matchers with MockitoS
   private val validRootTestee =
     new DirectoryClassPathRoot(Paths.get("parser", "target", "scala-2.13", "test-classes").toFile)
 
-
   "getData" should {
     "return an input stream for an existing class" in {
 
-      validRootTestee.getData(ElementName.fromClass(classOf[DirectoryClassPathRootSest])) should beSuccessWith[InputStream] { stream =>
+      validRootTestee.getData(
+        ElementName.fromClass(classOf[DirectoryClassPathRootTest])
+      ) should beSuccessWith[InputStream] { stream =>
         stream should not be null
       }
     }
@@ -48,7 +53,7 @@ class DirectoryClassPathRootSest extends AnyWordSpec with Matchers with MockitoS
     "return collection containing the expected elements" in {
 
       validRootTestee.classNames should beSuccessWith[Seq[ElementName]] { names =>
-        names should contain(ElementName.fromClass(classOf[DirectoryClassPathRootSest]))
+        names should contain(ElementName.fromClass(classOf[DirectoryClassPathRootTest]))
       }
     }
   }

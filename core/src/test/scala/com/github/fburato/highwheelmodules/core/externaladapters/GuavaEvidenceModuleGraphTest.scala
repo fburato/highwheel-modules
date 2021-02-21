@@ -1,7 +1,11 @@
 package com.github.fburato.highwheelmodules.core.externaladapters
 
 import com.github.fburato.highwheelmodules.model.bytecode.{AccessPoint, ElementName}
-import com.github.fburato.highwheelmodules.model.modules.{EvidenceModuleDependency, HWModule, TrackingModuleDependency}
+import com.github.fburato.highwheelmodules.model.modules.{
+  EvidenceModuleDependency,
+  HWModule,
+  TrackingModuleDependency
+}
 import com.google.common.graph.{MutableNetwork, NetworkBuilder}
 import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
@@ -9,9 +13,11 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.jdk.CollectionConverters._
 
-class GuavaEvidenceModuleGraphSest extends AnyWordSpec with Matchers with OneInstancePerTest {
-  private val graph: MutableNetwork[HWModule, TrackingModuleDependency] = NetworkBuilder.directed()
-    .allowsSelfLoops(true).build()
+class GuavaEvidenceModuleGraphTest extends AnyWordSpec with Matchers with OneInstancePerTest {
+  private val graph: MutableNetwork[HWModule, TrackingModuleDependency] = NetworkBuilder
+    .directed()
+    .allowsSelfLoops(true)
+    .build()
   private val aux = new GuavaTrackingModuleGraph(graph)
   private val testee = new GuavaEvidenceModuleGraph(aux, None)
 
@@ -102,11 +108,17 @@ class GuavaEvidenceModuleGraphSest extends AnyWordSpec with Matchers with OneIns
       testee.addModule(m2)
       testee.addDependency(EvidenceModuleDependency(m1, m2, ap1, ap2))
 
-      graph.edgeConnecting(m1, m2).get.destinationsFromSource(ap1) should contain theSameElementsAs List(ap2)
+      graph
+        .edgeConnecting(m1, m2)
+        .get
+        .destinationsFromSource(ap1) should contain theSameElementsAs List(ap2)
 
       testee.addDependency(EvidenceModuleDependency(m1, m2, ap1, ap3))
 
-      graph.edgeConnecting(m1, m2).get.destinationsFromSource(ap1) should contain theSameElementsAs List(ap2, ap3)
+      graph
+        .edgeConnecting(m1, m2)
+        .get
+        .destinationsFromSource(ap1) should contain theSameElementsAs List(ap2, ap3)
     }
 
     "skip addition if access point already exists" in {
@@ -114,11 +126,17 @@ class GuavaEvidenceModuleGraphSest extends AnyWordSpec with Matchers with OneIns
       testee.addModule(m2)
       testee.addDependency(EvidenceModuleDependency(m1, m2, ap1, ap2))
 
-      graph.edgeConnecting(m1, m2).get.destinationsFromSource(ap1) should contain theSameElementsAs List(ap2)
+      graph
+        .edgeConnecting(m1, m2)
+        .get
+        .destinationsFromSource(ap1) should contain theSameElementsAs List(ap2)
 
       testee.addDependency(EvidenceModuleDependency(m1, m2, ap1, ap2))
 
-      graph.edgeConnecting(m1, m2).get.destinationsFromSource(ap1) should contain theSameElementsAs List(ap2)
+      graph
+        .edgeConnecting(m1, m2)
+        .get
+        .destinationsFromSource(ap1) should contain theSameElementsAs List(ap2)
     }
   }
 

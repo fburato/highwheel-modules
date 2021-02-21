@@ -6,7 +6,11 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class AccessPointNameSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class AccessPointNameTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
   private def random: String = RandomStringUtils.randomAlphanumeric(20)
 

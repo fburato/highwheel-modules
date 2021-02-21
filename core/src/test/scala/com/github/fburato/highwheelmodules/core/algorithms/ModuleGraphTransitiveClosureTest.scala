@@ -1,6 +1,9 @@
 package com.github.fburato.highwheelmodules.core.algorithms
 
-import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure.{Difference, PathDifference}
+import com.github.fburato.highwheelmodules.core.algorithms.ModuleGraphTransitiveClosure.{
+  Difference,
+  PathDifference
+}
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaModuleGraph
 import com.github.fburato.highwheelmodules.model.modules.{HWModule, ModuleDependency}
 import com.google.common.graph.{MutableNetwork, NetworkBuilder}
@@ -11,8 +14,11 @@ import org.scalatest.wordspec.AnyWordSpec
 
 import scala.collection.mutable.ArrayBuffer
 
-
-class ModuleGraphTransitiveClosureSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class ModuleGraphTransitiveClosureTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
   private val CORE = HWModule.make("Core", Seq("org.example.core.*")).get
   private val FACADE = HWModule.make("Facade", Seq("org.example.core.external.*")).get
   private val IO = HWModule.make("IO", Seq("org.example.io.*")).get
@@ -89,28 +95,28 @@ class ModuleGraphTransitiveClosureSest extends AnyWordSpec with Matchers with Mo
 
   "minimum distance" should {
 
-    nonDependent foreach {
-      case (source, dest) => s"be max int for not dependent modules (${source.name}, ${dest.name})" in {
+    nonDependent foreach { case (source, dest) =>
+      s"be max int for not dependent modules (${source.name}, ${dest.name})" in {
         testee.minimumDistance(source, dest).get shouldEqual Int.MaxValue
       }
     }
 
-    dependent foreach {
-      case (source, dest, deps) => s"be ${deps.size} between ${source.name} and ${dest.name}" in {
+    dependent foreach { case (source, dest, deps) =>
+      s"be ${deps.size} between ${source.name} and ${dest.name}" in {
         testee.minimumDistance(source, dest).get shouldEqual deps.size
       }
     }
   }
 
   "minimum path distance" should {
-    nonDependent foreach {
-      case (source, dest) => s"be empty for not dependent modules (${source.name}, ${dest.name})" in {
+    nonDependent foreach { case (source, dest) =>
+      s"be empty for not dependent modules (${source.name}, ${dest.name})" in {
         testee.minimumDistancePath(source, dest).toList.isEmpty shouldBe true
       }
     }
 
-    dependent foreach {
-      case (source, dest, deps) => s"be $deps between ${source.name} and ${dest.name}" in {
+    dependent foreach { case (source, dest, deps) =>
+      s"be $deps between ${source.name} and ${dest.name}" in {
         testee.minimumDistancePath(source, dest).toList should contain theSameElementsInOrderAs deps
       }
     }
@@ -131,7 +137,8 @@ class ModuleGraphTransitiveClosureSest extends AnyWordSpec with Matchers with Mo
 
   class TransitiveClosureBuilder(init: TransitiveClosureBuilder => ()) {
     private val modules = new ArrayBuffer[HWModule]()
-    private val mutableNetwork: MutableNetwork[HWModule, ModuleDependency] = NetworkBuilder.directed().allowsSelfLoops(true).build()
+    private val mutableNetwork: MutableNetwork[HWModule, ModuleDependency] =
+      NetworkBuilder.directed().allowsSelfLoops(true).build()
     private val guavaModuleGraph = new GuavaModuleGraph(mutableNetwork)
 
     def module(name: String, globs: String*): HWModule = {
@@ -247,7 +254,9 @@ class ModuleGraphTransitiveClosureSest extends AnyWordSpec with Matchers with Mo
     "return the expected differences for missinig dependency" in {
       val diffs = testee.diffPath(missingDependencyBuilder.build()).get
 
-      diffs should contain theSameElementsAs List(PathDifference(MAIN, CORE, Seq(CORE), Seq(IO, CORE)))
+      diffs should contain theSameElementsAs List(
+        PathDifference(MAIN, CORE, Seq(CORE), Seq(IO, CORE))
+      )
     }
   }
 }

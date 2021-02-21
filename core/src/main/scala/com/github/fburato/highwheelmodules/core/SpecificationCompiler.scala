@@ -17,11 +17,14 @@ trait SpecificationCompiler {
 
 object SpecificationCompiler {
 
-  def apply(): SpecificationCompiler = (file: File) => (for {
-    maybeTokens <- Try(HwmLexer(StreamReader(Source.fromFile(file, StandardCharsets.UTF_8.toString).reader()))).toEither
-    tokens <- maybeTokens
-    parsedDefinition <- HwmParser.parse(tokens)
-    definition <- HwmCompiler.compile(parsedDefinition)
-  } yield definition).toTry
+  def apply(): SpecificationCompiler = (file: File) =>
+    (for {
+      maybeTokens <- Try(
+        HwmLexer(StreamReader(Source.fromFile(file, StandardCharsets.UTF_8.toString).reader()))
+      ).toEither
+      tokens <- maybeTokens
+      parsedDefinition <- HwmParser.parse(tokens)
+      definition <- HwmCompiler.compile(parsedDefinition)
+    } yield definition).toTry
 
 }

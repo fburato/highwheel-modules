@@ -5,7 +5,12 @@ import com.github.fburato.highwheelmodules.bytecodeparser.classpath.DirectoryCla
 import com.github.fburato.highwheelmodules.core.externaladapters.GuavaGraphFactory
 import com.github.fburato.highwheelmodules.model.analysis.{LOOSE, STRICT}
 import com.github.fburato.highwheelmodules.model.classpath.{ClassParser, ClasspathRoot}
-import com.github.fburato.highwheelmodules.model.modules.{AnonymousModule, Definition, HWModule, ModuleGraphFactory}
+import com.github.fburato.highwheelmodules.model.modules.{
+  AnonymousModule,
+  Definition,
+  HWModule,
+  ModuleGraphFactory
+}
 import com.github.fburato.highwheelmodules.model.rules.{DependencyS, NoStrictDependencyS}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OneInstancePerTest
@@ -15,17 +20,26 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.nio.file.Paths
 import scala.util.Failure
 
-class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar with OneInstancePerTest {
+class ModuleAnalyserTest
+    extends AnyWordSpec
+    with Matchers
+    with MockitoSugar
+    with OneInstancePerTest {
 
-  private val orgExamples = new DirectoryClassPathRoot(Paths.get("core", "target", "scala-2.13", "test-classes").toFile)
-  private val realClassParser: ClassParser = new ClassPathParser(item => item.asJavaName startsWith "org.example")
+  private val orgExamples = new DirectoryClassPathRoot(
+    Paths.get("core", "target", "scala-2.13", "test-classes").toFile
+  )
+  private val realClassParser: ClassParser = new ClassPathParser(item =>
+    item.asJavaName startsWith "org.example"
+  )
   private val classParser = spy(realClassParser)
   private val factory: ModuleGraphFactory = new GuavaGraphFactory
 
   private val MAIN = HWModule.make("Main", Seq("org.example.Main")).get
   private val CONTROLLER = HWModule.make("Controllers", Seq("org.example.controller.*")).get
   private val FACADE = HWModule.make("Facade", Seq("org.example.core.CoreFacade")).get
-  private val COREINTERNALS = HWModule.make("CoreInternals", Seq("org.example.core.internals.*")).get
+  private val COREINTERNALS =
+    HWModule.make("CoreInternals", Seq("org.example.core.internals.*")).get
   private val COREAPI = HWModule.make("CoreApi", Seq("org.example.core.api.*")).get
   private val MODEL = HWModule.make("Model", Seq("org.example.core.model.*")).get
   private val IO = HWModule.make("IO", Seq("org.example.io.*")).get
@@ -38,15 +52,27 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
   private def dep(source: HWModule, dest: HWModule): DependencyS = DependencyS(source, dest)
 
-  private def noSD(source: HWModule, dest: HWModule): NoStrictDependencyS = NoStrictDependencyS(source, dest)
+  private def noSD(source: HWModule, dest: HWModule): NoStrictDependencyS =
+    NoStrictDependencyS(source, dest)
 
-  private def violation(source: String, dest: String, specPath: Seq[String], actualPath: Seq[String]): EvidenceBackedViolation =
+  private def violation(
+    source: String,
+    dest: String,
+    specPath: Seq[String],
+    actualPath: Seq[String]
+  ): EvidenceBackedViolation =
     EvidenceBackedViolation(source, dest, specPath, actualPath, List())
 
   private def violation(source: String, dest: String): ModuleConnectionViolation =
     ModuleConnectionViolation(source, dest)
 
-  private def evidence(source: String, dest: String, specPath: Seq[String], actualPath: Seq[String], evidence: Seq[Seq[(String, String)]]) =
+  private def evidence(
+    source: String,
+    dest: String,
+    specPath: Seq[String],
+    actualPath: Seq[String],
+    evidence: Seq[Seq[(String, String)]]
+  ) =
     EvidenceBackedViolation(source, dest, specPath, actualPath, evidence)
 
   "when definitions are all strict, analyse" should {
@@ -109,32 +135,51 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
     }
 
     "provide evidence for dependency violations" in {
-      val definition = strictBuilder.copy(
-        modules = List(MAIN, CONTROLLER, FACADE)
-      )
+      val definition = strictBuilder.copy(modules = List(MAIN, CONTROLLER, FACADE))
 
       val actual = testee(orgExamples, None).analyse(List(definition)).get.head
 
       actual.evidenceBackedViolations should contain allElementsOf List(
-        evidence(MAIN.name, CONTROLLER.name, List(), List(CONTROLLER.name), List(List(
-          ("org.example.Main:main", "org.example.controller.Controller1:(init)"),
-          ("org.example.Main:main", "org.example.controller.Controller1:access")
-        ))),
-        evidence(MAIN.name, FACADE.name, List(), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
-        ))),
-        evidence(CONTROLLER.name, FACADE.name, List(), List(FACADE.name), List(List(
-          ("org.example.controller.Controller1", "org.example.core.CoreFacade"),
-          ("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade"),
-          ("org.example.controller.Controller1:access", "org.example.core.CoreFacade:facadeMethod1")
-        )))
+        evidence(
+          MAIN.name,
+          CONTROLLER.name,
+          List(),
+          List(CONTROLLER.name),
+          List(
+            List(
+              ("org.example.Main:main", "org.example.controller.Controller1:(init)"),
+              ("org.example.Main:main", "org.example.controller.Controller1:access")
+            )
+          )
+        ),
+        evidence(
+          MAIN.name,
+          FACADE.name,
+          List(),
+          List(FACADE.name),
+          List(List(("org.example.Main:main", "org.example.core.CoreFacade:(init)")))
+        ),
+        evidence(
+          CONTROLLER.name,
+          FACADE.name,
+          List(),
+          List(FACADE.name),
+          List(
+            List(
+              ("org.example.controller.Controller1", "org.example.core.CoreFacade"),
+              ("org.example.controller.Controller1:(init)", "org.example.core.CoreFacade"),
+              (
+                "org.example.controller.Controller1:access",
+                "org.example.core.CoreFacade:facadeMethod1"
+              )
+            )
+          )
+        )
       )
     }
 
     "limit evidence for dependency violations if evidence limit configured" in {
-      val definition = strictBuilder.copy(
-        modules = List(MAIN, CONTROLLER, FACADE)
-      )
+      val definition = strictBuilder.copy(modules = List(MAIN, CONTROLLER, FACADE))
 
       val actual = testee(orgExamples, Some(1)).analyse(List(definition)).get.head
 
@@ -142,9 +187,11 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
         .filter(v => v.sourceModule == MAIN.name && v.destinationModule == CONTROLLER.name)
         .head
         .evidences
-      List(("org.example.Main:main", "org.example.controller.Controller1:access"),
+      List(
+        ("org.example.Main:main", "org.example.controller.Controller1:access"),
         ("org.example.Main:main", "org.example.controller.Controller1"),
-        ("org.example.Main:main", "org.example.controller.Controller1:(init)")) should contain allElementsOf mainControllersEvidence.head
+        ("org.example.Main:main", "org.example.controller.Controller1:(init)")
+      ) should contain allElementsOf mainControllersEvidence.head
       mainControllersEvidence.size shouldEqual 1
 
       val mainFacadeEvidence = actual.evidenceBackedViolations
@@ -172,17 +219,23 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       val definition = strictBuilder.copy(
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(
-          dep(MAIN, CONTROLLER), dep(MAIN, FACADE), dep(MAIN, COREAPI), dep(MAIN, IO),
+          dep(MAIN, CONTROLLER),
+          dep(MAIN, FACADE),
+          dep(MAIN, COREAPI),
+          dep(MAIN, IO),
           dep(CONTROLLER, FACADE),
-          dep(COREINTERNALS, MODEL), dep(COREINTERNALS, UTILS),
-          dep(FACADE, COREINTERNALS), dep(FACADE, COREAPI), dep(FACADE, MODEL),
+          dep(COREINTERNALS, MODEL),
+          dep(COREINTERNALS, UTILS),
+          dep(FACADE, COREINTERNALS),
+          dep(FACADE, COREAPI),
+          dep(FACADE, MODEL),
           dep(COREAPI, MODEL),
-          dep(IO, COREAPI), dep(IO, MODEL), dep(IO, UTILS)
+          dep(IO, COREAPI),
+          dep(IO, MODEL),
+          dep(IO, UTILS)
         ),
-        noStrictDependencies = List(
-          noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS),
-          noSD(IO, COREINTERNALS)
-        )
+        noStrictDependencies =
+          List(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS))
       )
 
       val actual = testee(orgExamples, None).analyse(List(definition)).get.head
@@ -224,7 +277,6 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       )
     }
 
-
     "consider dependencies not in the blacklist" in {
       val definition = strictBuilder.copy(
         blacklist = AnonymousModule.make(Seq("org.example.Main", "org.example.commons.*")),
@@ -237,7 +289,8 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
           dep(FACADE, MODEL),
           dep(COREAPI, MODEL),
           dep(IO, COREAPI),
-          dep(IO, MODEL)),
+          dep(IO, MODEL)
+        ),
         noStrictDependencies = List(noSD(CONTROLLER, COREINTERNALS), noSD(IO, COREINTERNALS))
       )
 
@@ -265,9 +318,13 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
         dependencies = List(
           dep(CONTROLLER, FACADE),
           dep(COREINTERNALS, MODEL),
-          dep(FACADE, COREINTERNALS), dep(FACADE, COREAPI), dep(FACADE, MODEL),
+          dep(FACADE, COREINTERNALS),
+          dep(FACADE, COREAPI),
+          dep(FACADE, MODEL),
           dep(COREAPI, MODEL),
-          dep(IO, COREAPI), dep(IO, MODEL)),
+          dep(IO, COREAPI),
+          dep(IO, MODEL)
+        ),
         noStrictDependencies = List(noSD(CONTROLLER, COREINTERNALS), noSD(IO, COREINTERNALS))
       )
 
@@ -290,25 +347,35 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
     "perform analysis of multiple definitions" in {
       val definition1 = strictBuilder.copy(
         modules = List(MAIN, CONTROLLER, FACADE),
-        dependencies = List(dep(MAIN, CONTROLLER),
-          dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)),
+        dependencies = List(dep(MAIN, CONTROLLER), dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)),
         noStrictDependencies = List(noSD(MAIN, FACADE))
       )
       val definition2 = strictBuilder.copy(
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(
-          dep(MAIN, CONTROLLER), dep(MAIN, FACADE), dep(MAIN, COREAPI), dep(MAIN, IO),
+          dep(MAIN, CONTROLLER),
+          dep(MAIN, FACADE),
+          dep(MAIN, COREAPI),
+          dep(MAIN, IO),
           dep(CONTROLLER, FACADE),
-          dep(COREINTERNALS, MODEL), dep(COREINTERNALS, UTILS),
-          dep(FACADE, COREINTERNALS), dep(FACADE, COREAPI), dep(FACADE, MODEL),
+          dep(COREINTERNALS, MODEL),
+          dep(COREINTERNALS, UTILS),
+          dep(FACADE, COREINTERNALS),
+          dep(FACADE, COREAPI),
+          dep(FACADE, MODEL),
           dep(COREAPI, MODEL),
-          dep(IO, COREAPI), dep(IO, MODEL), dep(IO, UTILS)),
-        noStrictDependencies = List(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS))
+          dep(IO, COREAPI),
+          dep(IO, MODEL),
+          dep(IO, UTILS)
+        ),
+        noStrictDependencies =
+          List(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS))
       )
 
-      val (actual1, actual2) = testee(orgExamples, None).analyse(List(definition1, definition2)).get match {
-        case Seq(a1, a2) => (a1, a2)
-      }
+      val (actual1, actual2) =
+        testee(orgExamples, None).analyse(List(definition1, definition2)).get match {
+          case Seq(a1, a2) => (a1, a2)
+        }
 
       verify(classParser).parse(refEq(orgExamples), any)
 
@@ -391,9 +458,13 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
         violation(CONTROLLER.name, MAIN.name)
       )
       actual.evidenceBackedViolations should contain allElementsOf List(
-        evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
-        )))
+        evidence(
+          MAIN.name,
+          FACADE.name,
+          List(MAIN.name, FACADE.name),
+          List(FACADE.name),
+          List(List(("org.example.Main:main", "org.example.core.CoreFacade:(init)")))
+        )
       )
       actual.metrics should contain theSameElementsAs List(
         metric("Main", 0, 2),
@@ -411,10 +482,18 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       val actual = testee(orgExamples, None).analyse(List(definition)).get.head
 
       actual.evidenceBackedViolations should contain allElementsOf List(
-        evidence(MAIN.name, CONTROLLER.name, List(MAIN.name, CONTROLLER.name), List(CONTROLLER.name), List(List(
-          ("org.example.Main:main", "org.example.controller.Controller1:(init)"),
-          ("org.example.Main:main", "org.example.controller.Controller1:access")
-        )))
+        evidence(
+          MAIN.name,
+          CONTROLLER.name,
+          List(MAIN.name, CONTROLLER.name),
+          List(CONTROLLER.name),
+          List(
+            List(
+              ("org.example.Main:main", "org.example.controller.Controller1:(init)"),
+              ("org.example.Main:main", "org.example.controller.Controller1:access")
+            )
+          )
+        )
       )
     }
 
@@ -428,9 +507,11 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       val mainController = actual.evidenceBackedViolations
         .filter(v => v.sourceModule == MAIN.name && v.destinationModule == CONTROLLER.name)
         .head
-      List(("org.example.Main:main", "org.example.controller.Controller1:access"),
+      List(
+        ("org.example.Main:main", "org.example.controller.Controller1:access"),
         ("org.example.Main:main", "org.example.controller.Controller1"),
-        ("org.example.Main:main", "org.example.controller.Controller1:(init)")) should contain allElementsOf List(mainController.evidences.head.head)
+        ("org.example.Main:main", "org.example.controller.Controller1:(init)")
+      ) should contain allElementsOf List(mainController.evidences.head.head)
       mainController.evidences.head.size shouldEqual 1
     }
 
@@ -438,13 +519,17 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       val definition = looseBuilder.copy(
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(
-          dep(MAIN, CONTROLLER), dep(MAIN, IO), dep(MAIN, MODEL),
+          dep(MAIN, CONTROLLER),
+          dep(MAIN, IO),
+          dep(MAIN, MODEL),
           dep(CONTROLLER, FACADE),
           dep(COREINTERNALS, MODEL),
           dep(FACADE, COREINTERNALS),
           dep(FACADE, MODEL),
           dep(COREAPI, MODEL),
-          dep(IO, COREAPI), dep(IO, MODEL)),
+          dep(IO, COREAPI),
+          dep(IO, MODEL)
+        ),
         noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN))
       )
 
@@ -466,7 +551,9 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
 
     "consider only dependencies in the whitelist" in {
       val definition = looseBuilder.copy(
-        whitelist = AnonymousModule.make(Seq("org.example.controller.*", "org.example.core.CoreFacade", "org.example.core.model.*")),
+        whitelist = AnonymousModule.make(
+          Seq("org.example.controller.*", "org.example.core.CoreFacade", "org.example.core.model.*")
+        ),
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(dep(CONTROLLER, FACADE), dep(FACADE, MODEL)),
         noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN))
@@ -495,9 +582,12 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
         dependencies = List(
           dep(CONTROLLER, FACADE),
           dep(COREINTERNALS, MODEL),
-          dep(FACADE, COREINTERNALS), dep(FACADE, MODEL),
+          dep(FACADE, COREINTERNALS),
+          dep(FACADE, MODEL),
           dep(COREAPI, MODEL),
-          dep(IO, COREAPI), dep(IO, MODEL)),
+          dep(IO, COREAPI),
+          dep(IO, MODEL)
+        ),
         noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN))
       )
 
@@ -525,9 +615,11 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
         dependencies = List(
           dep(CONTROLLER, FACADE),
           dep(COREINTERNALS, MODEL),
-          dep(FACADE, COREINTERNALS), dep(FACADE, MODEL),
+          dep(FACADE, COREINTERNALS),
+          dep(FACADE, MODEL),
           dep(COREAPI, MODEL),
-          dep(IO, COREAPI), dep(IO, MODEL)
+          dep(IO, COREAPI),
+          dep(IO, MODEL)
         )
       )
 
@@ -556,19 +648,24 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       val definition2 = looseBuilder.copy(
         modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
         dependencies = List(
-          dep(MAIN, CONTROLLER), dep(MAIN, IO),
+          dep(MAIN, CONTROLLER),
+          dep(MAIN, IO),
           dep(MAIN, MODEL),
           dep(CONTROLLER, FACADE),
           dep(COREINTERNALS, MODEL),
-          dep(FACADE, COREINTERNALS), dep(FACADE, MODEL),
+          dep(FACADE, COREINTERNALS),
+          dep(FACADE, MODEL),
           dep(COREAPI, MODEL),
-          dep(IO, COREAPI), dep(IO, MODEL)),
+          dep(IO, COREAPI),
+          dep(IO, MODEL)
+        ),
         noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN))
       )
 
-      val (actual1, actual2) = testee(orgExamples, None).analyse(List(definition1, definition2)).get match {
-        case Seq(a1, a2) => (a1, a2)
-      }
+      val (actual1, actual2) =
+        testee(orgExamples, None).analyse(List(definition1, definition2)).get match {
+          case Seq(a1, a2) => (a1, a2)
+        }
 
       verify(classParser).parse(refEq(orgExamples), any)
 
@@ -576,9 +673,13 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
         violation(CONTROLLER.name, MAIN.name)
       )
       actual1.evidenceBackedViolations should contain allElementsOf List(
-        evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-          ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
-        )))
+        evidence(
+          MAIN.name,
+          FACADE.name,
+          List(MAIN.name, FACADE.name),
+          List(FACADE.name),
+          List(List(("org.example.Main:main", "org.example.core.CoreFacade:(init)")))
+        )
       )
       actual1.metrics should contain theSameElementsAs List(
         metric("Main", 0, 2),
@@ -605,21 +706,30 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
     val definition1 = Definition(
       mode = STRICT,
       modules = List(MAIN, CONTROLLER, FACADE),
-      dependencies = List(dep(MAIN, CONTROLLER),
-        dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)),
+      dependencies = List(dep(MAIN, CONTROLLER), dep(CONTROLLER, FACADE), dep(CONTROLLER, MAIN)),
       noStrictDependencies = List(noSD(MAIN, FACADE))
     )
     val definition2 = Definition(
       mode = STRICT,
       modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
       dependencies = List(
-        dep(MAIN, CONTROLLER), dep(MAIN, FACADE), dep(MAIN, COREAPI), dep(MAIN, IO),
+        dep(MAIN, CONTROLLER),
+        dep(MAIN, FACADE),
+        dep(MAIN, COREAPI),
+        dep(MAIN, IO),
         dep(CONTROLLER, FACADE),
-        dep(COREINTERNALS, MODEL), dep(COREINTERNALS, UTILS),
-        dep(FACADE, COREINTERNALS), dep(FACADE, COREAPI), dep(FACADE, MODEL),
+        dep(COREINTERNALS, MODEL),
+        dep(COREINTERNALS, UTILS),
+        dep(FACADE, COREINTERNALS),
+        dep(FACADE, COREAPI),
+        dep(FACADE, MODEL),
         dep(COREAPI, MODEL),
-        dep(IO, COREAPI), dep(IO, MODEL), dep(IO, UTILS)),
-      noStrictDependencies = List(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS))
+        dep(IO, COREAPI),
+        dep(IO, MODEL),
+        dep(IO, UTILS)
+      ),
+      noStrictDependencies =
+        List(noSD(CONTROLLER, COREINTERNALS), noSD(MAIN, COREINTERNALS), noSD(IO, COREINTERNALS))
     )
     val definition3 = Definition(
       mode = LOOSE,
@@ -631,17 +741,23 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       mode = LOOSE,
       modules = List(MAIN, CONTROLLER, FACADE, COREINTERNALS, IO, COREAPI, UTILS, MODEL),
       dependencies = List(
-        dep(MAIN, CONTROLLER), dep(MAIN, IO),
+        dep(MAIN, CONTROLLER),
+        dep(MAIN, IO),
         dep(MAIN, MODEL),
         dep(CONTROLLER, FACADE),
         dep(COREINTERNALS, MODEL),
-        dep(FACADE, COREINTERNALS), dep(FACADE, MODEL),
+        dep(FACADE, COREINTERNALS),
+        dep(FACADE, MODEL),
         dep(COREAPI, MODEL),
-        dep(IO, COREAPI), dep(IO, MODEL)),
+        dep(IO, COREAPI),
+        dep(IO, MODEL)
+      ),
       noStrictDependencies = List(noSD(IO, COREINTERNALS), noSD(UTILS, MAIN))
     )
 
-    val (actual1, actual2, actual3, actual4) = testee(orgExamples, None).analyse(List(definition1, definition2, definition3, definition4)).get match {
+    val (actual1, actual2, actual3, actual4) = testee(orgExamples, None)
+      .analyse(List(definition1, definition2, definition3, definition4))
+      .get match {
       case Seq(a1, a2, a3, a4) => (a1, a2, a3, a4)
     }
 
@@ -677,9 +793,13 @@ class ModuleAnalyserSest extends AnyWordSpec with Matchers with MockitoSugar wit
       violation(CONTROLLER.name, MAIN.name)
     )
     actual3.evidenceBackedViolations should contain allElementsOf List(
-      evidence(MAIN.name, FACADE.name, List(MAIN.name, FACADE.name), List(FACADE.name), List(List(
-        ("org.example.Main:main", "org.example.core.CoreFacade:(init)")
-      )))
+      evidence(
+        MAIN.name,
+        FACADE.name,
+        List(MAIN.name, FACADE.name),
+        List(FACADE.name),
+        List(List(("org.example.Main:main", "org.example.core.CoreFacade:(init)")))
+      )
     )
     actual3.metrics should contain theSameElementsAs List(
       metric("Main", 0, 2),
