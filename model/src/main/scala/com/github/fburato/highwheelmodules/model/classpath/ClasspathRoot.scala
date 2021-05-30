@@ -7,9 +7,9 @@ import scala.util.Try
 
 trait ClasspathRoot {
 
-  def getData(elementName: ElementName): Try[InputStream]
+  def getData(elementName: ElementName): Try[Option[InputStream]]
 
   def classNames: Try[Seq[ElementName]]
 
-  def getResource(name: String): Try[InputStream]
+  def getResource(name: String): Try[Option[InputStream]]
 }

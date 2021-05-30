@@ -7,11 +7,11 @@ import java.io.InputStream
 import scala.util.{Success, Try}
 
 class ClassLoaderClassPathRoot(classLoader: ClassLoader) extends ClasspathRoot {
-  override def getData(elementName: ElementName): Try[InputStream] =
-    Try(classLoader.getResourceAsStream(elementName.asInternalName + ".class"))
+  override def getData(elementName: ElementName): Try[Option[InputStream]] =
+    Try(Option(classLoader.getResourceAsStream(elementName.asInternalName + ".class")))
 
   override def classNames: Try[Seq[ElementName]] = Success(Seq())
 
-  override def getResource(name: String): Try[InputStream] =
-    Try(classLoader.getResourceAsStream(name))
+  override def getResource(name: String): Try[Option[InputStream]] =
+    Try(Option(classLoader.getResourceAsStream(name)))
 }

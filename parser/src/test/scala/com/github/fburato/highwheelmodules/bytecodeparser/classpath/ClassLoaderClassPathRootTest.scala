@@ -26,23 +26,23 @@ class ClassLoaderClassPathRootTest
     "return not null for classes visible to loader" in {
       testee.getData(
         ElementName.fromClass(classOf[ClassLoaderClassPathRootTest])
-      ) should beSuccessWith[InputStream](stream => stream should not be null)
+      ) should beSuccessWith[Option[InputStream]](maybeStream => maybeStream should not be empty)
     }
 
     "return null for classes not visible to loader" in {
-      testee.getData(ElementName.fromString("FooFoo")) shouldBe Success(null)
+      testee.getData(ElementName.fromString("FooFoo")) shouldBe Success(None)
     }
   }
 
   "getResource" should {
     "return not null for resources visible to loader" in {
-      testee.getResource("aresource.txt") should beSuccessWith[InputStream](stream =>
-        stream should not be null
+      testee.getResource("aresource.txt") should beSuccessWith[Option[InputStream]](maybeStream =>
+        maybeStream should not be empty
       )
     }
 
     "return null for resource not visible to loader" in {
-      testee.getResource("not defined") shouldBe Success(null)
+      testee.getResource("not defined") shouldBe Success(None)
     }
   }
 }

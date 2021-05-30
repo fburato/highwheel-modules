@@ -17,7 +17,7 @@ class SpecificClassPathRoot(classes: Array[Class[_]]) extends ClasspathRoot {
       .filter(el => internalClassLoaderClassPathRoot.getData(el).get != null)
       .toList
 
-  override def getData(elementName: ElementName): Try[InputStream] =
+  override def getData(elementName: ElementName): Try[Option[InputStream]] =
     internalClassLoaderClassPathRoot.getData(elementName)
 
   override def classNames: Try[Seq[ElementName]] = Try {
@@ -27,6 +27,6 @@ class SpecificClassPathRoot(classes: Array[Class[_]]) extends ClasspathRoot {
       .toIndexedSeq
   }
 
-  override def getResource(name: String): Try[InputStream] =
+  override def getResource(name: String): Try[Option[InputStream]] =
     internalClassLoaderClassPathRoot.getResource(name)
 }

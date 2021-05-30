@@ -9,7 +9,7 @@ import scala.collection.mutable
 import scala.util.Try
 
 class DirectoryClassPathRoot(root: File) extends ClasspathRoot {
-  override def getData(elementName: ElementName): Try[InputStream] =
+  override def getData(elementName: ElementName): Try[Option[InputStream]] =
     getResource(elementName.asJavaName.replace('.', File.separatorChar).concat(".class"))
 
   override def classNames: Try[Seq[ElementName]] = Try {
@@ -38,12 +38,10 @@ class DirectoryClassPathRoot(root: File) extends ClasspathRoot {
     classNames(mutable.ArrayBuffer(), mutable.ArrayBuffer(root)).toSeq
   }
 
-  override def getResource(name: String): Try[InputStream] = Try {
+  override def getResource(name: String): Try[Option[InputStream]] = Try {
     val file = new File(root, name)
-    if (file.canRead) {
-      new FileInputStream(file)
-    } else {
-      null
-    }
+    Some(file)
+      .filter(_.canRead)
+      .map(new FileInputStream(_))
   }
 }

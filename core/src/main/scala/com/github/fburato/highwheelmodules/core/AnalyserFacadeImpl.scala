@@ -3,7 +3,7 @@ package com.github.fburato.highwheelmodules.core
 import com.github.fburato.highwheelmodules.bytecodeparser.ClassPathParser
 import com.github.fburato.highwheelmodules.bytecodeparser.classpath.{
   ArchiveClassPathRoot,
-  ClassPathRoot,
+  CompoundClassPathRoot,
   DirectoryClassPathRoot
 }
 import com.github.fburato.highwheelmodules.core.analysis._
@@ -126,7 +126,7 @@ class AnalyserFacadeImpl private[core] (
     pathEventSink directories classification.dirs.map(_.getAbsolutePath).asJava
     pathEventSink jars classification.jars.map(_.getAbsolutePath).asJava
 
-    new ClassPathRoot(
+    new CompoundClassPathRoot(
       classification.dirs.map(f => new DirectoryClassPathRoot(f).asInstanceOf[ClasspathRoot]) ++
         classification.jars.map(f => new ArchiveClassPathRoot(f).asInstanceOf[ClasspathRoot])
     )
