@@ -32,8 +32,8 @@ class ClassPathParser(filter: ElementName => Boolean) extends ClassParser {
 
     def parseElement(elementName: ElementName): Try[Unit] =
       for {
-        stream <- cpr.getData(elementName)
-        compute <- Using(stream)(readAndVisitClassStream)
+        maybeStream <- cpr.getData(elementName)
+        compute <- maybeStream.map(stream => Using(stream)(readAndVisitClassStream)).getOrElse(Success(Success()))
         _ <- compute
       } yield ()
 

@@ -19,7 +19,7 @@ class CompoundClassPathRootTest
     with OneInstancePerTest {
   private val child1 = mock[ClasspathRoot]
   private val child2 = mock[ClasspathRoot]
-  private val testee = new ClassPathRoot(Seq(child1, child2))
+  private val testee = new CompoundClassPathRoot(Seq(child1, child2))
   private val inputStream1 = new ByteArrayInputStream(new Array[Byte](10))
   private val inputStream2 = new ByteArrayInputStream(new Array[Byte](20))
 
@@ -28,14 +28,14 @@ class CompoundClassPathRootTest
     "fail if any of the children fail" in {
       val exception = new RuntimeException
       when(child2.getData(any)) thenReturn Failure(exception)
-      when(child1.getData(any)) thenReturn Success(inputStream1)
+      when(child1.getData(any)) thenReturn Success(Some(inputStream1))
 
       testee.getData(elementName) shouldEqual Failure(exception)
     }
 
     "invoke getData on the children" in {
-      when(child1.getData(any)) thenReturn Success(inputStream1)
-      when(child2.getData(any)) thenReturn Success(inputStream1)
+      when(child1.getData(any)) thenReturn Success(Some(inputStream1))
+      when(child2.getData(any)) thenReturn Success(Some(inputStream1))
 
       testee.getData(elementName)
 
@@ -43,25 +43,25 @@ class CompoundClassPathRootTest
       verify(child2).getData(elementName)
     }
 
-    "return null if no child returns not null input stream" in {
-      when(child1.getData(any)) thenReturn Success(null)
-      when(child2.getData(any)) thenReturn Success(null)
+    "return empty if no child returns not null input stream" in {
+      when(child1.getData(any)) thenReturn Success(None)
+      when(child2.getData(any)) thenReturn Success(None)
 
-      testee.getData(elementName) shouldEqual Success(null)
+      testee.getData(elementName) shouldEqual Success(None)
     }
 
     "return first not null child stream if every child returns" in {
-      when(child1.getData(any)) thenReturn Success(inputStream1)
-      when(child2.getData(any)) thenReturn Success(inputStream2)
+      when(child1.getData(any)) thenReturn Success(Some(inputStream1))
+      when(child2.getData(any)) thenReturn Success(Some(inputStream2))
 
-      testee.getData(elementName) shouldEqual Success(inputStream1)
+      testee.getData(elementName) shouldEqual Success(Some(inputStream1))
     }
 
     "return first not null child stream if some child returns null" in {
-      when(child1.getData(any)) thenReturn Success(null)
-      when(child2.getData(any)) thenReturn Success(inputStream2)
+      when(child1.getData(any)) thenReturn Success(None)
+      when(child2.getData(any)) thenReturn Success(Some(inputStream2))
 
-      testee.getData(elementName) shouldEqual Success(inputStream2)
+      testee.getData(elementName) shouldEqual Success(Some(inputStream2))
     }
   }
 
@@ -70,14 +70,14 @@ class CompoundClassPathRootTest
     "fail if any of the children fail" in {
       val exception = new RuntimeException
       when(child2.getResource(any)) thenReturn Failure(exception)
-      when(child1.getResource(any)) thenReturn Success(inputStream1)
+      when(child1.getResource(any)) thenReturn Success(Some(inputStream1))
 
       testee.getResource(resourceName) shouldEqual Failure(exception)
     }
 
     "invoke getData on the children" in {
-      when(child1.getResource(any)) thenReturn Success(inputStream1)
-      when(child2.getResource(any)) thenReturn Success(inputStream1)
+      when(child1.getResource(any)) thenReturn Success(Some(inputStream1))
+      when(child2.getResource(any)) thenReturn Success(Some(inputStream1))
 
       testee.getResource(resourceName)
 
@@ -85,25 +85,25 @@ class CompoundClassPathRootTest
       verify(child2).getResource(resourceName)
     }
 
-    "return null if no child returns not null input stream" in {
-      when(child1.getResource(any)) thenReturn Success(null)
-      when(child2.getResource(any)) thenReturn Success(null)
+    "return empty if no child returns not empty input stream" in {
+      when(child1.getResource(any)) thenReturn Success(None)
+      when(child2.getResource(any)) thenReturn Success(None)
 
-      testee.getResource(resourceName) shouldEqual Success(null)
+      testee.getResource(resourceName) shouldEqual Success(None)
     }
 
-    "return first not null child stream if every child returns" in {
-      when(child1.getResource(any)) thenReturn Success(inputStream1)
-      when(child2.getResource(any)) thenReturn Success(inputStream2)
+    "return first not empty child stream if every child returns" in {
+      when(child1.getResource(any)) thenReturn Success(Some(inputStream1))
+      when(child2.getResource(any)) thenReturn Success(Some(inputStream2))
 
-      testee.getResource(resourceName) shouldEqual Success(inputStream1)
+      testee.getResource(resourceName) shouldEqual Success(Some(inputStream1))
     }
 
-    "return first not null child stream if some child returns null" in {
-      when(child1.getResource(any)) thenReturn Success(null)
-      when(child2.getResource(any)) thenReturn Success(inputStream2)
+    "return first not empty child stream if some child returns empty" in {
+      when(child1.getResource(any)) thenReturn Success(None)
+      when(child2.getResource(any)) thenReturn Success(Some(inputStream2))
 
-      testee.getResource(resourceName) shouldEqual Success(inputStream2)
+      testee.getResource(resourceName) shouldEqual Success(Some(inputStream2))
     }
   }
 

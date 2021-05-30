@@ -28,19 +28,19 @@ class DirectoryClassPathRootTest
 
       validRootTestee.getData(
         ElementName.fromClass(classOf[DirectoryClassPathRootTest])
-      ) should beSuccessWith[InputStream] { stream =>
-        stream should not be null
+      ) should beSuccessWith[Option[InputStream]] { maybeStream =>
+        maybeStream should not be empty
       }
     }
 
-    "return null for unrecognised class" in {
+    "return empty for unrecognised class" in {
 
-      validRootTestee.getData(ElementName.fromString("Foo")) shouldEqual Success(null)
+      validRootTestee.getData(ElementName.fromString("Foo")) shouldEqual Success(None)
     }
 
-    "return null for not existing class" in {
+    "return empty for not existing class" in {
 
-      invalidRootTestee.getData(ElementName.fromString("Foo")) shouldEqual Success(null)
+      invalidRootTestee.getData(ElementName.fromString("Foo")) shouldEqual Success(None)
     }
   }
 

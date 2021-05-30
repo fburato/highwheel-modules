@@ -33,13 +33,13 @@ class ArchiveClassPathRootTest
   }
 
   "getData" should {
-    "return null for unknown class" in {
-      testee.getData(ElementName.fromString("bar")) shouldEqual Success(null)
+    "return empty for unknown class" in {
+      testee.getData(ElementName.fromString("bar")) shouldEqual Success(None)
     }
 
     "return input stream for known class" in {
-      testee.getData(ElementName.fromString("injar.p1.P1Test")) should beSuccessWith[InputStream](
-        result => result should not be null
+      testee.getData(ElementName.fromString("injar.p1.P1Test")) should beSuccessWith[Option[InputStream]](
+        result => result should not be empty
       )
     }
 
@@ -48,7 +48,7 @@ class ArchiveClassPathRootTest
 
       testee
         .getData(ElementName.fromString("injar.p1.P1Test"))
-        .map(stream => stream.read(bytes)) should beSuccess
+        .map(maybeStream => maybeStream.get.read(bytes)) should beSuccess
     }
   }
 }

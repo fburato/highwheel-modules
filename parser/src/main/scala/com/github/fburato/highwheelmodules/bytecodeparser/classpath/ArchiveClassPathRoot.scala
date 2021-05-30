@@ -10,7 +10,7 @@ import scala.jdk.CollectionConverters.EnumerationHasAsScala
 import scala.util.{Try, Using}
 
 class ArchiveClassPathRoot(file: File) extends ClasspathRoot {
-  override def getData(elementName: ElementName): Try[InputStream] = getResource(
+  override def getData(elementName: ElementName): Try[Option[InputStream]] = getResource(
     elementName.asInternalName + ".class"
   )
 
@@ -26,14 +26,10 @@ class ArchiveClassPathRoot(file: File) extends ClasspathRoot {
     })
   }
 
-  override def getResource(name: String): Try[InputStream] = {
-    def readAndCopyStream(zipFile: ZipFile): InputStream = {
+  override def getResource(name: String): Try[Option[InputStream]] = {
+    def readAndCopyStream(zipFile: ZipFile): Option[InputStream] = {
       val entry = zipFile.getEntry(name)
-      if (entry == null) {
-        null
-      } else {
-        StreamUtilS.copyStream(zipFile.getInputStream(entry))
-      }
+      Option(entry).map(e => StreamUtilS.copyStream(zipFile.getInputStream(entry)))
     }
 
     for {
