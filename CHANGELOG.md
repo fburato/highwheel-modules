@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2020-12-25
+
+Version `2.0.2` includes a bug-fix that would cause null pointer exceptions in multi-classpath configurations. Since the 
+classes identified in one of the part of the analysis are normally available in one of the compound classpaths, looking
+for the class in where it does not exist produces null input streams of byte-code that crash the entire analysis.
+
+## [2.0.1] - 2020-12-25
+
+Version `2.0.1` is just a general clean-up after the scala migration
+
 ## [2.0.0] - 2020-12-25
 
 Version `2.0.0` includes a complete rewrite of the tool from Java to Scala. The migration has produced no
