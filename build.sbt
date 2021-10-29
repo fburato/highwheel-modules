@@ -35,44 +35,38 @@ lazy val enablingPublishingSettings = Seq(
   Test / publishArtifact := false
 )
 
+crossScalaVersions := supportedScalaVersions
+
 lazy val hwmParent = (project in file("."))
   .disablePlugins(AssemblyPlugin)
   .aggregate(utils, model, parser, core)
   .settings(
     crossScalaVersions := Nil,
+    releaseCrossBuild := false,
     disablingPublishingSettings,
     releaseProcess := Seq[ReleaseStep](
-      releaseStepCommand("++2.12.4 publishM2"),
-      releaseStepCommand("++2.13.6 publishM2")
-//      checkSnapshotDependencies,
-//      inquireVersions,
-//      runClean,
-//      runTest,
-//      setReleaseVersion,
-//      commitReleaseVersion,
-//      tagRelease,
-//      releaseStepCommand("publishM2"),
-//      releaseStepCommand("publishSigned"),
-//      releaseStepCommand("sonatypeRelease"),
-//      setNextVersion,
-//      commitNextVersion,
-//      runClean,
-//      runTest,
-//      releaseStepCommand("publishM2"),
-//      releaseStepCommand("publishSigned"),
-//      pushChanges
+      checkSnapshotDependencies,
+      inquireVersions,
+      runClean,
+      releaseStepCommandAndRemaining("+test"),
+      setReleaseVersion,
+      commitReleaseVersion,
+      tagRelease,
+      releaseStepCommandAndRemaining("+publishM2"),
+      releaseStepCommandAndRemaining("+publishSigned"),
+      releaseStepCommandAndRemaining("+sonatypeRelease"),
+      setNextVersion,
+      commitNextVersion,
+      runClean,
+      runTest,
+      releaseStepCommand("publishM2"),
+      releaseStepCommand("publishSigned"),
+      pushChanges
     )
   )
 
 lazy val core = (project in file("core"))
   .settings(
-    releaseCrossBuild := true,
-    scalaVersion := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n <= 12 => scala212
-        case _                       => scalaLibraryVersion
-      }
-    },
     enablingPublishingSettings,
     commonSettings,
     setName("highwheel-modules-core"),
@@ -83,13 +77,6 @@ lazy val core = (project in file("core"))
 
 lazy val model = (project in file("model"))
   .settings(
-    releaseCrossBuild := true,
-    scalaVersion := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n <= 12 => scala212
-        case _                       => scalaLibraryVersion
-      }
-    },
     commonSettings,
     enablingPublishingSettings,
     setName("highwheel-modules-model"),
@@ -106,13 +93,6 @@ lazy val model = (project in file("model"))
 
 lazy val utils = (project in file("utils"))
   .settings(
-    releaseCrossBuild := true,
-    scalaVersion := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n <= 12 => scala212
-        case _                       => scalaLibraryVersion
-      }
-    },
     enablingPublishingSettings,
     commonSettings,
     setName("highwheel-modules-utils"),
@@ -128,13 +108,6 @@ lazy val utils = (project in file("utils"))
 
 lazy val parser = (project in file("parser"))
   .settings(
-    releaseCrossBuild := true,
-    scalaVersion := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n <= 12 => scala212
-        case _                       => scalaLibraryVersion
-      }
-    },
     enablingPublishingSettings,
     commonSettings,
     setName("highwheel-modules-parser"),
