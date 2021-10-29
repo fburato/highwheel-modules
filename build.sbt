@@ -39,7 +39,6 @@ lazy val hwmParent = (project in file("."))
   .disablePlugins(AssemblyPlugin)
   .aggregate(utils, model, parser, core)
   .settings(
-    releaseCrossBuild := true,
     crossScalaVersions := Nil,
     disablingPublishingSettings,
     releaseProcess := Seq[ReleaseStep](
@@ -65,6 +64,7 @@ lazy val hwmParent = (project in file("."))
 
 lazy val core = (project in file("core"))
   .settings(
+    releaseCrossBuild := true,
     scalaVersion := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, n)) if n <= 12 => scala212
@@ -81,6 +81,7 @@ lazy val core = (project in file("core"))
 
 lazy val model = (project in file("model"))
   .settings(
+    releaseCrossBuild := true,
     scalaVersion := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, n)) if n <= 12 => scala212
@@ -103,6 +104,7 @@ lazy val model = (project in file("model"))
 
 lazy val utils = (project in file("utils"))
   .settings(
+    releaseCrossBuild := true,
     scalaVersion := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, n)) if n <= 12 => scala212
@@ -124,6 +126,7 @@ lazy val utils = (project in file("utils"))
 
 lazy val parser = (project in file("parser"))
   .settings(
+    releaseCrossBuild := true,
     scalaVersion := {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, n)) if n <= 12 => scala212
