@@ -39,6 +39,7 @@ lazy val hwmParent = (project in file("."))
   .disablePlugins(AssemblyPlugin)
   .aggregate(utils, model, parser, core)
   .settings(
+    releaseCrossBuild := true,
     crossScalaVersions := Nil,
     disablingPublishingSettings,
     releaseProcess := Seq[ReleaseStep](
