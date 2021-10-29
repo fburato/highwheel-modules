@@ -17,6 +17,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
+import java.io.File
 import java.nio.file.Paths
 import scala.util.Failure
 
@@ -26,9 +27,16 @@ class ModuleAnalyserTest
     with MockitoSugar
     with OneInstancePerTest {
 
-  private val orgExamples = new DirectoryClassPathRoot(
-    Paths.get("core", "target", "scala-2.13", "test-classes").toFile
-  )
+  private def getFileToClassPath: File = {
+    val alternatives = Seq("scala-2.12", "scala-2.13")
+    alternatives
+      .map(scalaVersion => Paths.get("core", "target", scalaVersion, "test-classes"))
+      .map(_.toFile)
+      .find(_.exists())
+      .get
+  }
+
+  private val orgExamples = new DirectoryClassPathRoot(getFileToClassPath)
   private val realClassParser: ClassParser = new ClassPathParser(item =>
     item.asJavaName startsWith "org.example"
   )

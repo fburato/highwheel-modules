@@ -12,7 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.nio.file.Paths
 import java.util.{Optional, List => JList}
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters._
+import com.github.fburato.highwheelmodules.utils.Conversions._
 
 class AnalyserFacadeTest
     extends AnyWordSpec
@@ -33,33 +33,29 @@ class AnalyserFacadeTest
     looseAnalysisEventSink
   )
 
-  private val defaultSpec =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "spec.hwm").toString
-  private val defaultSpecWhiteBlack =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "spec-whiteblack.hwm").toString
-  private val wrongSpecWhiteBlack =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-spec-whiteblack.hwm").toString
-  private val alternativeStrictSpec =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "alternate-strict-spec.hwm").toString
-  private val jarPath =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "highwheel-model.jar").toString
-  private val wrongSpec =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-syntax-spec.hwm").toString
-  private val wrongSemanticsSpec =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-semantics-spec.hwm").toString
-  private val wrongStrictDefinitionSpec =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-strict-spec.hwm").toString
-  private val looseSpec =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "loose-spec.hwm").toString
-  private val looseSpecWhiteBlack =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "loose-spec-whiteblack.hwm").toString
-  private val wrongLooseSpecWhiteBlack = Paths
-    .get("core", "target", "scala-2.13", "test-classes", "wrong-loose-spec-whiteblack.hwm")
-    .toString
-  private val orgExamplePath =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "org").toString
-  private val wrongLooseDefinitionSpec =
-    Paths.get("core", "target", "scala-2.13", "test-classes", "wrong-loose-spec.hwm").toString
+  private val defaultSpec = getPathToExistingFile("spec.hwm")
+
+  private def getPathToExistingFile(file: String): String = {
+    val alternatives = Seq("scala-2.12", "scala-2.13")
+    alternatives
+      .map(scalaVersion => Paths.get("core", "target", scalaVersion, "test-classes", file))
+      .find(p => p.toFile.exists())
+      .map(_.toString)
+      .get
+  }
+
+  private val defaultSpecWhiteBlack = getPathToExistingFile("spec-whiteblack.hwm")
+  private val wrongSpecWhiteBlack = getPathToExistingFile("wrong-spec-whiteblack.hwm")
+  private val alternativeStrictSpec = getPathToExistingFile("alternate-strict-spec.hwm")
+  private val jarPath = getPathToExistingFile("highwheel-model.jar")
+  private val wrongSpec = getPathToExistingFile("wrong-syntax-spec.hwm")
+  private val wrongSemanticsSpec = getPathToExistingFile("wrong-semantics-spec.hwm")
+  private val wrongStrictDefinitionSpec = getPathToExistingFile("wrong-strict-spec.hwm")
+  private val looseSpec = getPathToExistingFile("loose-spec.hwm")
+  private val looseSpecWhiteBlack = getPathToExistingFile("loose-spec-whiteblack.hwm")
+  private val wrongLooseSpecWhiteBlack = getPathToExistingFile("wrong-loose-spec-whiteblack.hwm")
+  private val orgExamplePath = getPathToExistingFile("org")
+  private val wrongLooseDefinitionSpec = getPathToExistingFile("wrong-loose-spec.hwm")
 
   def list[T](args: T*): JList[T] = args.asJava
 

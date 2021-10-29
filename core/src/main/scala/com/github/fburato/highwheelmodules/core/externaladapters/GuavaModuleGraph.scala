@@ -4,8 +4,7 @@ import com.github.fburato.highwheelmodules.model.modules._
 import com.google.common.graph.MutableNetwork
 
 import java.util
-import scala.jdk.CollectionConverters._
-import scala.jdk.OptionConverters.RichOptional
+import com.github.fburato.highwheelmodules.utils.Conversions._
 
 class GuavaModuleGraph(private val graph: MutableNetwork[HWModule, ModuleDependency])
     extends MetricModuleGraph[ModuleDependency] {

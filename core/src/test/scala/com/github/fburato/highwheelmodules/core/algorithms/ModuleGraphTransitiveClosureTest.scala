@@ -138,12 +138,12 @@ class ModuleGraphTransitiveClosureTest
   class TransitiveClosureBuilder(init: TransitiveClosureBuilder => Unit) {
     private val modules = new ArrayBuffer[HWModule]()
     private val mutableNetwork: MutableNetwork[HWModule, ModuleDependency] =
-      NetworkBuilder.directed().allowsSelfLoops(true).build()
+      NetworkBuilder.directed().allowsSelfLoops(true).build[HWModule, ModuleDependency]()
     private val guavaModuleGraph = new GuavaModuleGraph(mutableNetwork)
 
     def module(name: String, globs: String*): HWModule = {
       val module = HWModule.make(name, globs.toList).get
-      modules.addOne(module)
+      modules.append(module)
       guavaModuleGraph.addModule(module)
       module
     }

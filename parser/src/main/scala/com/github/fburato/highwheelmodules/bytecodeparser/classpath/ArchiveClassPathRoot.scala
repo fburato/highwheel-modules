@@ -2,12 +2,12 @@ package com.github.fburato.highwheelmodules.bytecodeparser.classpath
 
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import com.github.fburato.highwheelmodules.model.classpath.ClasspathRoot
-import com.github.fburato.highwheelmodules.utils.StreamUtilS
+import com.github.fburato.highwheelmodules.utils.{StreamUtilS, Using}
 
 import java.io.{File, InputStream}
 import java.util.zip.ZipFile
-import scala.jdk.CollectionConverters.EnumerationHasAsScala
-import scala.util.{Try, Using}
+import com.github.fburato.highwheelmodules.utils.Conversions._
+import scala.util.Try
 
 class ArchiveClassPathRoot(file: File) extends ClasspathRoot {
   override def getData(elementName: ElementName): Try[Option[InputStream]] = getResource(

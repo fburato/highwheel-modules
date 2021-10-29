@@ -6,7 +6,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.jdk.CollectionConverters._
+import com.github.fburato.highwheelmodules.utils.Conversions._
 
 class GuavaModuleGraphTest extends AnyWordSpec with Matchers with OneInstancePerTest {
   private val graph: MutableNetwork[HWModule, ModuleDependency] =

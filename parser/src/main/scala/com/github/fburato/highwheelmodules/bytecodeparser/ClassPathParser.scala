@@ -3,10 +3,11 @@ package com.github.fburato.highwheelmodules.bytecodeparser
 import com.github.fburato.highwheelmodules.model.bytecode.ElementName
 import com.github.fburato.highwheelmodules.model.classpath._
 import com.github.fburato.highwheelmodules.utils.TryUtils._
+import com.github.fburato.highwheelmodules.utils.Using
 import org.objectweb.asm.ClassReader
 
 import java.io.InputStream
-import scala.util.{Success, Try, Using}
+import scala.util.{Success, Try}
 
 class ClassPathParser(filter: ElementName => Boolean) extends ClassParser {
 
@@ -33,7 +34,9 @@ class ClassPathParser(filter: ElementName => Boolean) extends ClassParser {
     def parseElement(elementName: ElementName): Try[Unit] =
       for {
         maybeStream <- cpr.getData(elementName)
-        compute <- maybeStream.map(stream => Using(stream)(readAndVisitClassStream)).getOrElse(Success(Success()))
+        compute <- maybeStream
+          .map(stream => Using(stream)(readAndVisitClassStream))
+          .getOrElse(Success(Success(())))
         _ <- compute
       } yield ()
 

@@ -31,7 +31,9 @@ class StreamUtilTest extends AnyWordSpec with Matchers with MockitoSugar with On
   "should copy contents of stream to other" in {
     val expected = RandomUtils.nextBytes(10 * 1024 + 17)
     val actualStream =
-      StreamUtilS.copyStream(new ByteArrayInputStream(Array.copyAs(expected, expected.length)))
+      StreamUtilS.copyStream(
+        new ByteArrayInputStream(java.util.Arrays.copyOf(expected, expected.length))
+      )
     val actualContents = StreamUtilS.streamToByteArray(actualStream)
 
     actualContents shouldEqual expected
