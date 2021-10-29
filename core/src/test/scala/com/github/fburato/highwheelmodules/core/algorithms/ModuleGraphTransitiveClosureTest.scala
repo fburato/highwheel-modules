@@ -135,7 +135,7 @@ class ModuleGraphTransitiveClosureTest
     ()
   }
 
-  class TransitiveClosureBuilder(init: TransitiveClosureBuilder => ()) {
+  class TransitiveClosureBuilder(init: TransitiveClosureBuilder => Unit) {
     private val modules = new ArrayBuffer[HWModule]()
     private val mutableNetwork: MutableNetwork[HWModule, ModuleDependency] =
       NetworkBuilder.directed().allowsSelfLoops(true).build()

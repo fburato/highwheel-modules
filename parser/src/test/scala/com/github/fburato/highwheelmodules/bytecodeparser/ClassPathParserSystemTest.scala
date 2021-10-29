@@ -97,16 +97,69 @@ class ClassPathParserSystemTest
       checkApply(classOf[ImplementsAnInterface], classOf[AnInterface], IMPLEMENTS)
     }
 
-    "detect a composition dependency when class includes another" in {
-      parseClasses(classOf[HasFooAsMember], classOf[Foo])
-
-      checkApply(classOf[HasFooAsMember], classOf[Foo], COMPOSED)
-    }
-
     "detect a composition dependency when class includes array field" in {
       parseClasses(classOf[HasArrayOfFooAsMember], classOf[Foo])
 
       checkApply(classOf[HasArrayOfFooAsMember], classOf[Foo], COMPOSED)
+    }
+
+    "detect a composition dependency when a record uses an interface" in {
+      parseClasses(classOf[TestRecord], classOf[Foo])
+
+      checkApply(classOf[TestRecord], classOf[Foo], COMPOSED)
+    }
+
+    "detect generated constructor in records" in {
+      parseClasses(classOf[TestRecord], classOf[Foo])
+
+      checkApply(
+        classOf[TestRecord],
+        methodWithParameter("(init)", classOf[Foo]),
+        classOf[Foo],
+        SIGNATURE
+      )
+    }
+
+    "detect use of other type in record method signature" in {
+      parseClasses(classOf[TestRecord], classOf[Foo])
+
+      checkApply(
+        classOf[TestRecord],
+        methodWithParameter("aFoo", classOf[Foo]),
+        classOf[Foo],
+        SIGNATURE
+      )
+    }
+
+    "detect use of other type in record method code" in {
+      parseClasses(classOf[TestRecord], classOf[Foo])
+
+      verify(accessVisitor)
+        .apply(
+          AccessPoint(
+            ElementName.fromClass(classOf[TestRecord]),
+            AccessPointName.create("bar", "()V")
+          ),
+          AccessPoint(ElementName.fromClass(classOf[Foo]), AccessPointName.create("(init)", "()V")),
+          USES
+        )
+    }
+
+    "detect use of other type in record return type" in {
+      parseClasses(classOf[TestRecord], classOf[Foo])
+
+      checkApply(classOf[TestRecord], method("baz", classOf[Foo]), classOf[Foo], SIGNATURE)
+    }
+
+    "detect use of a record" in {
+      parseClasses(classOf[TestRecord], classOf[UsesARecord])
+
+      checkApply(
+        classOf[UsesARecord],
+        methodWithParameter("foo", classOf[TestRecord]),
+        classOf[TestRecord],
+        SIGNATURE
+      )
     }
 
     "detect signature dependency when method returns a type" in {
@@ -155,6 +208,17 @@ class ClassPathParserSystemTest
         classOf[DeclaresAnException],
         method("foo", "()V"),
         classOf[AnException],
+        SIGNATURE
+      )
+    }
+
+    "detect signature dependency when record code uses in a signature " in {
+      parseClasses(classOf[TestRecord], classOf[Foo])
+
+      checkApply(
+        classOf[TestRecord],
+        methodWithParameter("aFoo", classOf[Foo]),
+        classOf[Foo],
         SIGNATURE
       )
     }

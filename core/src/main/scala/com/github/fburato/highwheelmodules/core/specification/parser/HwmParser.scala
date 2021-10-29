@@ -105,6 +105,8 @@ object HwmParser extends Parsers {
     p(input) match {
       case Success(r, _)     => Right(r)
       case NoSuccess(msg, _) => Left(msg)
+      case Error(msg, _)     => Left(msg)
+      case Failure(msg, _)   => Left(msg)
     }
 
   private val definitionParser = {
@@ -139,6 +141,9 @@ object HwmParser extends Parsers {
       case NoSuccess(msg, next) =>
         Left(ParserException(s"$msg at ${next.pos}, content ${next.first}"))
       case Success(result, _) => Right(result)
+      case Failure(msg, next) =>
+        Left(ParserException(s"$msg at ${next.pos}, content ${next.first}"))
+      case Error(msg, next) => Left(ParserException(s"$msg at ${next.pos}, content ${next.first}"))
     }
   }
 }

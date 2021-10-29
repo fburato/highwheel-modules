@@ -1,8 +1,8 @@
 import sbtrelease.ReleaseStateTransformations._
-val scalaLibraryVersion = "2.13.3"
+val scalaLibraryVersion = "2.13.6"
 
 lazy val disablingPublishingSettings =
-  Seq(skip in publish := true, publishArtifact := false)
+  Seq(publish / skip := true, publishArtifact := false)
 
 lazy val enablingPublishingSettings = Seq(
   publishArtifact := true, // Enable publish
@@ -12,33 +12,33 @@ lazy val enablingPublishingSettings = Seq(
     if (isSnapshot.value)
       Some("snapshots" at nexus + "content/repositories/snapshots")
     else
-      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+      Some("releases" at nexus + "service/local/staging/deploy/maven2")
   },
   licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
-
   homepage := Some(url("https://github.com/fburato/highwheel-modules")),
   scmInfo := Some(
     ScmInfo(
       url("https://github.com/fburato/highwheel-modules"),
       "scm:git@github.com:fburato/highwheel-modules.git"
-    )),
-  developers := List(
-    Developer(id="fburato", name="Francesco Burato", email="francesco.burato@gmail.com", url=url("https://github.com/fburato"))
+    )
   ),
-  publishArtifact in Test := false,
+  developers := List(
+    Developer(
+      id = "fburato",
+      name = "Francesco Burato",
+      email = "francesco.burato@gmail.com",
+      url = url("https://github.com/fburato")
+    )
+  ),
+  Test / publishArtifact := false
 )
 
 lazy val hwmParent = (project in file("."))
   .disablePlugins(AssemblyPlugin)
-  .aggregate(
-    utils,
-    model,
-    parser,
-    core
-  )
+  .aggregate(utils, model, parser, core)
   .settings(
     disablingPublishingSettings,
-    releaseProcess := Seq[ReleaseStep] (
+    releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
       runClean,
@@ -64,26 +64,20 @@ lazy val core = (project in file("core"))
     enablingPublishingSettings,
     commonSettings,
     setName("highwheel-modules-core"),
-    libraryDependencies ++= makeDependencies(
-      dependencies.guava,
-      dependencies.parserCombinators
-    ),
+    libraryDependencies ++= makeDependencies(dependencies.guava, dependencies.parserCombinators),
     excludeScalaAndDependencies
   )
-  .dependsOn(
-    parser
-  )
+  .dependsOn(parser)
 
 lazy val model = (project in file("model"))
-  .settings(commonSettings,
+  .settings(
+    commonSettings,
     enablingPublishingSettings,
     setName("highwheel-modules-model"),
     libraryDependencies ++= commonDependencies,
     excludeScalaAndDependencies
   )
-  .dependsOn(
-    utils
-  )
+  .dependsOn(utils)
 
 lazy val utils = (project in file("utils"))
   .settings(
@@ -99,68 +93,57 @@ lazy val parser = (project in file("parser"))
     enablingPublishingSettings,
     commonSettings,
     setName("highwheel-modules-parser"),
-    libraryDependencies ++= makeDependencies(
-      dependencies.asm
-    ),
-    assemblyOption in assembly := (assemblyOption in assembly).value.copy(
-      includeScala = false
-    ),
-    assemblyShadeRules in assembly ++= Seq(
-      ShadeRule.rename("org.objectweb.asm.**" -> "com.github.fburato.highwheelmodules.bytecodeparser.asm.@1")
+    libraryDependencies ++= makeDependencies(dependencies.asm),
+    assembly / assemblyOption := (assembly / assemblyOption).value.copy(includeScala = false),
+    assembly / assemblyShadeRules ++= Seq(
+      ShadeRule
+        .rename(
+          "org.objectweb.asm.**" -> "com.github.fburato.highwheelmodules.bytecodeparser.asm.@1"
+        )
         .inLibrary(dependencies.asm)
         .inProject
     ),
-    assemblyMergeStrategy in assembly := {
+    assembly / assemblyMergeStrategy := {
       case x @ PathList("com", "github", "fburato", "highwheelmodules", pack, _*) =>
-        if(pack == "bytecodeparser") {
-          val oldStrategy = (assemblyMergeStrategy in assembly).value
+        if (pack == "bytecodeparser") {
+          val oldStrategy = (assembly / assemblyMergeStrategy).value
           oldStrategy(x)
         } else {
           MergeStrategy.discard
         }
       case x =>
-        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        val oldStrategy = (assembly / assemblyMergeStrategy).value
         oldStrategy(x)
     }
   )
-  .dependsOn(
-    model
-  )
+  .dependsOn(model)
 
 def setName(artifactName: String) =
-  Seq(
-    name := artifactName,
-    assemblyJarName in assembly := s"$artifactName-${version.value}.jar"
-  )
+  Seq(name := artifactName, assembly / assemblyJarName := s"$artifactName-${version.value}.jar")
 
 def makeDependencies(dependencies: ModuleID*): Seq[ModuleID] =
   dependencies.toSeq ++ commonDependencies
 
 def excludeScalaAndDependencies = {
-  assemblyOption in assembly := (assemblyOption in assembly).value.copy(
-    includeScala = false,
-    includeDependency = false
-  )
+  assembly / assemblyOption := (assembly / assemblyOption).value
+    .copy(includeScala = false, includeDependency = false)
 }
 
 lazy val commonSettings = Seq(
   scalaVersion := scalaLibraryVersion,
   organization := "com.github.fburato",
-  resolvers ++= Seq(
-    Resolver.mavenLocal,
-    DefaultMavenRepository
-  )
+  resolvers ++= Seq(Resolver.mavenLocal, DefaultMavenRepository)
 ) ++ compilerSettings
-
 
 lazy val compilerSettings = Seq(
   scalacOptions ++= compilerOptions,
   compileOrder := CompileOrder.JavaThenScala,
-  javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+  javacOptions ++= Seq("-source", "17", "-target", "17", "--enable-preview")
 )
 
 lazy val compilerOptions = Seq(
-  "-encoding", "utf8",
+  "-encoding",
+  "utf8",
   "-language:implicitConversions",
   "-language:higherKinds",
   "-language:postfixOps",
@@ -168,20 +151,21 @@ lazy val compilerOptions = Seq(
 )
 
 lazy val dependencies = new {
-  private val asmVersion = "8.0.1"
-  private val guavaVersion = "30.1-jre"
-  private val parserCombinatorsVersion = "1.1.2"
+  private val asmVersion = "9.2"
+  private val guavaVersion = "31.0.1-jre"
+  private val parserCombinatorsVersion = "2.0.0"
 
   val asm = "org.ow2.asm" % "asm" % asmVersion
   val guava = "com.google.guava" % "guava" % guavaVersion
-  val parserCombinators = "org.scala-lang.modules" %% "scala-parser-combinators" % parserCombinatorsVersion
+  val parserCombinators =
+    "org.scala-lang.modules" %% "scala-parser-combinators" % parserCombinatorsVersion
 }
 
 lazy val testDependencies = new {
-  private val scalaTestVersion = "3.1.1"
-  private val mockitoScalaVersion = "1.15.0"
-  private val mockitoVersion = "3.5.2"
-  private val apacheCommonsLangVersion = "3.11"
+  private val scalaTestVersion = "3.2.9"
+  private val mockitoScalaVersion = "1.16.46"
+  private val mockitoVersion = "4.0.0"
+  private val apacheCommonsLangVersion = "3.12.0"
 
   val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
   val mockitoScalaTest = "org.mockito" %% "mockito-scala-scalatest" % mockitoScalaVersion % "test"

@@ -59,5 +59,7 @@ object HwmLexer extends RegexParsers {
     ) match {
       case Success(r, _)        => Right(r filterNot (t => t == Comment || t == Backslash))
       case NoSuccess(msg, next) => Left(ParserException(s"$msg at ${next.pos}"))
+      case Error(msg, next)     => Left(ParserException(s"$msg at ${next.pos}"))
+      case Failure(msg, next)   => Left(ParserException(s"$msg at ${next.pos}"))
     }
 }
