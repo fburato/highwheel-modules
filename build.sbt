@@ -42,23 +42,25 @@ lazy val hwmParent = (project in file("."))
     crossScalaVersions := Nil,
     disablingPublishingSettings,
     releaseProcess := Seq[ReleaseStep](
-      checkSnapshotDependencies,
-      inquireVersions,
-      runClean,
-      runTest,
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      releaseStepCommand("publishM2"),
-      releaseStepCommand("publishSigned"),
-      releaseStepCommand("sonatypeRelease"),
-      setNextVersion,
-      commitNextVersion,
-      runClean,
-      runTest,
-      releaseStepCommand("publishM2"),
-      releaseStepCommand("publishSigned"),
-      pushChanges
+      releaseStepCommand("++2.12.4 publishM2"),
+      releaseStepCommand("++2.13.6 publishM2")
+//      checkSnapshotDependencies,
+//      inquireVersions,
+//      runClean,
+//      runTest,
+//      setReleaseVersion,
+//      commitReleaseVersion,
+//      tagRelease,
+//      releaseStepCommand("publishM2"),
+//      releaseStepCommand("publishSigned"),
+//      releaseStepCommand("sonatypeRelease"),
+//      setNextVersion,
+//      commitNextVersion,
+//      runClean,
+//      runTest,
+//      releaseStepCommand("publishM2"),
+//      releaseStepCommand("publishSigned"),
+//      pushChanges
     )
   )
 
