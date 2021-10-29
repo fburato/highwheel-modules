@@ -47,7 +47,7 @@ lazy val hwmParent = (project in file("."))
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
       inquireVersions,
-      runClean,
+      releaseStepCommandAndRemaining("+clean"),
       releaseStepCommandAndRemaining("+test"),
       setReleaseVersion,
       commitReleaseVersion,
@@ -57,10 +57,10 @@ lazy val hwmParent = (project in file("."))
       releaseStepCommandAndRemaining("+sonatypeRelease"),
       setNextVersion,
       commitNextVersion,
-      runClean,
-      runTest,
-      releaseStepCommand("publishM2"),
-      releaseStepCommand("publishSigned"),
+      releaseStepCommandAndRemaining("+clean"),
+      releaseStepCommandAndRemaining("+test"),
+      releaseStepCommand("+publishM2"),
+      releaseStepCommand("+publishSigned"),
       pushChanges
     )
   )
