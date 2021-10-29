@@ -75,8 +75,10 @@ package object lexer {
     }
 
     def apply(code: String): Either[Exception, List[HwmToken]] = parse(tokens, code) match {
-      case NoSuccess(msg, next)  => Left(new Exception(msg + next))
-      case Success(result, next) => Right(result)
+      case NoSuccess(msg, next) => Left(new Exception(msg + next))
+      case Success(result, _)   => Right(result)
+      case Failure(msg, next)   => Left(new Exception(msg + next))
+      case Error(msg, next)     => Left(new Exception(msg + next))
     }
   }
 
