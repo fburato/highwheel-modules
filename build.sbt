@@ -64,6 +64,12 @@ lazy val hwmParent = (project in file("."))
 
 lazy val core = (project in file("core"))
   .settings(
+    scalaVersion := {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => scala212
+        case _                       => scalaLibraryVersion
+      }
+    },
     enablingPublishingSettings,
     commonSettings,
     setName("highwheel-modules-core"),
@@ -74,6 +80,12 @@ lazy val core = (project in file("core"))
 
 lazy val model = (project in file("model"))
   .settings(
+    scalaVersion := {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => scala212
+        case _                       => scalaLibraryVersion
+      }
+    },
     commonSettings,
     enablingPublishingSettings,
     setName("highwheel-modules-model"),
@@ -90,6 +102,12 @@ lazy val model = (project in file("model"))
 
 lazy val utils = (project in file("utils"))
   .settings(
+    scalaVersion := {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => scala212
+        case _                       => scalaLibraryVersion
+      }
+    },
     enablingPublishingSettings,
     commonSettings,
     setName("highwheel-modules-utils"),
@@ -105,6 +123,12 @@ lazy val utils = (project in file("utils"))
 
 lazy val parser = (project in file("parser"))
   .settings(
+    scalaVersion := {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => scala212
+        case _                       => scalaLibraryVersion
+      }
+    },
     enablingPublishingSettings,
     commonSettings,
     setName("highwheel-modules-parser"),
