@@ -21,7 +21,15 @@ class DirectoryClassPathRootTest
     new DirectoryClassPathRoot(new File("foo"))
 
   private val validRootTestee =
-    new DirectoryClassPathRoot(Paths.get("parser", "target", "scala-2.13", "test-classes").toFile)
+    new DirectoryClassPathRoot(getAppropriateDirectory)
+
+  private def getAppropriateDirectory: File = {
+    val alternatives = Seq("scala-2.12", "scala-2.13")
+    alternatives
+      .map(scalaVersion => Paths.get("parser", "target", scalaVersion, "test-classes").toFile)
+      .find(file => file.exists())
+      .get
+  }
 
   "getData" should {
     "return an input stream for an existing class" in {

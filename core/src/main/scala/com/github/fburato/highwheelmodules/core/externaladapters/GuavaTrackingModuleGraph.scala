@@ -8,8 +8,8 @@ import com.github.fburato.highwheelmodules.model.modules.{
 import com.google.common.graph.MutableNetwork
 
 import java.util
-import scala.jdk.CollectionConverters._
-import scala.jdk.OptionConverters.RichOptional
+import scala.collection.JavaConverters._
+import com.github.fburato.highwheelmodules.utils.OptionConverters._
 
 class GuavaTrackingModuleGraph(
   private val graph: MutableNetwork[HWModule, TrackingModuleDependency]

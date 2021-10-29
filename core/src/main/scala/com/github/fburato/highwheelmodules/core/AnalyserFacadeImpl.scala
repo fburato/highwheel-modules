@@ -16,9 +16,9 @@ import com.github.fburato.highwheelmodules.utils.Pair
 import java.io.File
 import java.util.{List => JList, Optional => JOptional}
 import scala.collection.mutable.ArrayBuffer
-import scala.jdk.CollectionConverters._
-import scala.jdk.OptionConverters._
+import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
+import com.github.fburato.highwheelmodules.utils.OptionConverters._
 
 class AnalyserFacadeImpl private[core] (
   printer: Printer,

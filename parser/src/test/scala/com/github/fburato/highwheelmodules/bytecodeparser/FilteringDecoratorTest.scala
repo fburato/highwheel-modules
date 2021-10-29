@@ -14,7 +14,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.jdk.CollectionConverters.CollectionHasAsScala
+import scala.collection.JavaConverters._
 
 class FilteringDecoratorTest
     extends AnyWordSpec

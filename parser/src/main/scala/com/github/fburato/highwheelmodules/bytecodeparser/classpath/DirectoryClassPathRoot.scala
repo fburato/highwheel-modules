@@ -29,7 +29,8 @@ class DirectoryClassPathRoot(root: File) extends ClasspathRoot {
         if (!f.exists) {
           classNames(accumulated, toProcess.tail)
         } else if (!f.isDirectory) {
-          classNames(accumulated.append(fileToClassName(f)), toProcess.tail)
+          accumulated.append(fileToClassName(f))
+          classNames(accumulated, toProcess.tail)
         } else {
           classNames(accumulated, toProcess.tail ++ f.listFiles())
         }

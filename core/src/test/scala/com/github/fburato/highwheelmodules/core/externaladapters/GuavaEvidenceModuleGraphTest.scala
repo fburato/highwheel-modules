@@ -11,7 +11,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.jdk.CollectionConverters._
+import scala.collection.JavaConverters._
 
 class GuavaEvidenceModuleGraphTest extends AnyWordSpec with Matchers with OneInstancePerTest {
   private val graph: MutableNetwork[HWModule, TrackingModuleDependency] = NetworkBuilder

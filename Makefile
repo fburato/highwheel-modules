@@ -12,9 +12,9 @@ ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 
 release:
-	sbt clean release
+	sbt +clean +release
 .PHONY: release
 
 releaseSnapshot:
-	sbt publishSigned
+	sbt +publishSigned
 .PHONE: releaseSnapshot

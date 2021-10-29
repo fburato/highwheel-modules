@@ -81,10 +81,4 @@ package object lexer {
       case Error(msg, next)     => Left(new Exception(msg + next))
     }
   }
-
-  def main(args: Array[String]): Unit = {
-    val string = """"""
-    val regex = "[ \t\r\f]+".r
-    println(regex.matches(string))
-  }
 }

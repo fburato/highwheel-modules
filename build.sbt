@@ -1,5 +1,7 @@
 import sbtrelease.ReleaseStateTransformations._
-val scalaLibraryVersion = "2.13.6"
+lazy val scala212 = "2.12.14"
+lazy val scalaLibraryVersion = "2.13.6"
+lazy val supportedScalaVersions = List(scala212, scalaLibraryVersion)
 
 lazy val disablingPublishingSettings =
   Seq(publish / skip := true, publishArtifact := false)
@@ -37,6 +39,7 @@ lazy val hwmParent = (project in file("."))
   .disablePlugins(AssemblyPlugin)
   .aggregate(utils, model, parser, core)
   .settings(
+    crossScalaVersions := Nil,
     disablingPublishingSettings,
     releaseProcess := Seq[ReleaseStep](
       checkSnapshotDependencies,
@@ -75,6 +78,12 @@ lazy val model = (project in file("model"))
     enablingPublishingSettings,
     setName("highwheel-modules-model"),
     libraryDependencies ++= commonDependencies,
+    libraryDependencies ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => List("org.scala-lang" % "scala-library" % scala212)
+        case _                       => List("org.scala-lang" % "scala-library" % scalaLibraryVersion)
+      }
+    },
     excludeScalaAndDependencies
   )
   .dependsOn(utils)
@@ -85,6 +94,12 @@ lazy val utils = (project in file("utils"))
     commonSettings,
     setName("highwheel-modules-utils"),
     libraryDependencies ++= commonDependencies,
+    libraryDependencies ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => List("org.scala-lang" % "scala-library" % scala212)
+        case _                       => List("org.scala-lang" % "scala-library" % scalaLibraryVersion)
+      }
+    },
     excludeScalaAndDependencies
   )
 
@@ -94,7 +109,14 @@ lazy val parser = (project in file("parser"))
     commonSettings,
     setName("highwheel-modules-parser"),
     libraryDependencies ++= makeDependencies(dependencies.asm),
-    assembly / assemblyOption := (assembly / assemblyOption).value.copy(includeScala = false),
+    libraryDependencies ++= {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, n)) if n <= 12 => List("org.scala-lang" % "scala-library" % scala212)
+        case _                       => List("org.scala-lang" % "scala-library" % scalaLibraryVersion)
+      }
+    },
+    assembly / assemblyOption := (assembly / assemblyOption).value
+      .withIncludeScala(includeScala = false),
     assembly / assemblyShadeRules ++= Seq(
       ShadeRule
         .rename(
@@ -126,11 +148,12 @@ def makeDependencies(dependencies: ModuleID*): Seq[ModuleID] =
 
 def excludeScalaAndDependencies = {
   assembly / assemblyOption := (assembly / assemblyOption).value
-    .copy(includeScala = false, includeDependency = false)
+    .withIncludeScala(false)
+    .withIncludeDependency(false)
 }
 
 lazy val commonSettings = Seq(
-  scalaVersion := scalaLibraryVersion,
+  crossScalaVersions := supportedScalaVersions,
   organization := "com.github.fburato",
   resolvers ++= Seq(Resolver.mavenLocal, DefaultMavenRepository)
 ) ++ compilerSettings
@@ -142,6 +165,7 @@ lazy val compilerSettings = Seq(
 )
 
 lazy val compilerOptions = Seq(
+  "-deprecation",
   "-encoding",
   "utf8",
   "-language:implicitConversions",
@@ -177,6 +201,5 @@ lazy val commonDependencies = Seq(
   testDependencies.scalaTest,
   testDependencies.mockitoScalaTest,
   testDependencies.mockito,
-  testDependencies.apacheCommonsLang,
-  "org.scala-lang" % "scala-library" % scalaLibraryVersion
+  testDependencies.apacheCommonsLang
 )
