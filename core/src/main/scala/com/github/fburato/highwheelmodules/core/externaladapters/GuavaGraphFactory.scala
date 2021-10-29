@@ -6,7 +6,7 @@ import com.google.common.graph.NetworkBuilder
 class GuavaGraphFactory extends ModuleGraphFactory {
   override def buildMetricModuleGraph: MetricModuleGraph[ModuleDependency] =
     new GuavaModuleGraph(
-      NetworkBuilder.directed.allowsSelfLoops(true).build[HWModule, ModuleDependency]
+      NetworkBuilder.directed.allowsSelfLoops(true).build[HWModule, ModuleDependency]()
     )
 
   override def buildEvidenceModuleGraph(
@@ -17,6 +17,6 @@ class GuavaGraphFactory extends ModuleGraphFactory {
 
   override def buildTrackingModuleGraph: ModuleGraph[TrackingModuleDependency] =
     new GuavaTrackingModuleGraph(
-      NetworkBuilder.directed.allowsSelfLoops(true).build[HWModule, TrackingModuleDependency]
+      NetworkBuilder.directed.allowsSelfLoops(true).build[HWModule, TrackingModuleDependency]()
     )
 }

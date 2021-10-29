@@ -12,7 +12,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.nio.file.Paths
 import java.util.{Optional, List => JList}
 import scala.collection.mutable.ArrayBuffer
-import scala.collection.JavaConverters._
+import com.github.fburato.highwheelmodules.utils.Conversions._
 
 class AnalyserFacadeTest
     extends AnyWordSpec

@@ -6,7 +6,7 @@ import com.github.fburato.highwheelmodules.utils.{StreamUtilS, Using}
 
 import java.io.{File, InputStream}
 import java.util.zip.ZipFile
-import scala.collection.JavaConverters._
+import com.github.fburato.highwheelmodules.utils.Conversions._
 import scala.util.Try
 
 class ArchiveClassPathRoot(file: File) extends ClasspathRoot {

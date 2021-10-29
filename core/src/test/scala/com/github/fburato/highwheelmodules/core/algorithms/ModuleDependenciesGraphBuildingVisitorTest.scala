@@ -13,7 +13,7 @@ import org.scalatest.OneInstancePerTest
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.collection.JavaConverters._
+import com.github.fburato.highwheelmodules.utils.Conversions._
 
 class ModuleDependenciesGraphBuildingVisitorTest
     extends AnyWordSpec
