@@ -36,6 +36,7 @@ class ClassPathParserTest
       when(classPathRoot.classNames).thenReturn(Success(Seq(foo)))
       val is = mock[InputStream]
       when(classPathRoot.getData(foo)).thenReturn(Success(Some(is)))
+      when(is.available()).thenReturn(1)
       val exception = new IOException()
       doThrow(exception).when(is).read(any, anyInt, anyInt)
 
