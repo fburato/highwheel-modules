@@ -1,6 +1,6 @@
 import sbtrelease.ReleaseStateTransformations._
-lazy val scala212 = "2.12.14"
-lazy val scalaLibraryVersion = "2.13.6"
+lazy val scala212 = "2.12.17"
+lazy val scalaLibraryVersion = "2.13.10"
 lazy val supportedScalaVersions = List(scala212, scalaLibraryVersion)
 
 lazy val disablingPublishingSettings =
@@ -178,9 +178,9 @@ lazy val compilerOptions = Seq(
 )
 
 lazy val dependencies = new {
-  private val asmVersion = "9.2"
-  private val guavaVersion = "31.0.1-jre"
-  private val parserCombinatorsVersion = "2.0.0"
+  private val asmVersion = "9.4"
+  private val guavaVersion = "31.1-jre"
+  private val parserCombinatorsVersion = "2.2.0"
 
   val asm = "org.ow2.asm" % "asm" % asmVersion
   val guava = "com.google.guava" % "guava" % guavaVersion
@@ -189,9 +189,9 @@ lazy val dependencies = new {
 }
 
 lazy val testDependencies = new {
-  private val scalaTestVersion = "3.2.9"
-  private val mockitoScalaVersion = "1.16.46"
-  private val mockitoVersion = "4.0.0"
+  private val scalaTestVersion = "3.2.15"
+  private val mockitoScalaVersion = "1.17.12"
+  private val mockitoVersion = "4.6.1"
   private val apacheCommonsLangVersion = "3.12.0"
 
   val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion % "test"

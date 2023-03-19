@@ -422,6 +422,14 @@ class ClassPathParserSystemTest
         USES
       )
     }
+
+    "detect uses dependency when method declares an array in multiple dimensions" in {
+      parseClasses(classOf[DefinesMultiArray], classOf[Foo])
+
+      verify(accessVisitor)
+        .apply(AccessPoint(ElementName.fromClass(classOf[DefinesMultiArray]), method("declaresMultiArray", "()V")),
+          AccessPoint(ElementName.fromClass(classOf[Foo])), USES)
+    }
   }
 
 }

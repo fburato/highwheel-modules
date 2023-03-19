@@ -104,6 +104,11 @@ private[bytecodeparser] class DependencyMethodVisitor(
     index: Int
   ): Unit = {
     val element = ElementName.fromString(Type.getType(descriptor).getClassName)
-    typeReceiver.apply(parent, AccessPoint(element), USES)
+    typeReceiver(parent, AccessPoint(element), USES)
+  }
+
+  override def visitMultiANewArrayInsn(descriptor: String, numDimensions: Int): Unit = {
+    val element = ElementName.fromString(Type.getType(descriptor.replaceAll("\\[", "")).getClassName)
+    typeReceiver(parent, AccessPoint(element), USES)
   }
 }
