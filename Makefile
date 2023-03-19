@@ -17,4 +17,4 @@ release:
 
 releaseSnapshot:
 	sbt +publishSigned
-.PHONE: releaseSnapshot
+.PHONY: releaseSnapshot

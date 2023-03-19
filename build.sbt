@@ -57,10 +57,6 @@ lazy val hwmParent = (project in file("."))
       releaseStepCommandAndRemaining("+sonatypeRelease"),
       setNextVersion,
       commitNextVersion,
-      releaseStepCommandAndRemaining("+clean"),
-      releaseStepCommandAndRemaining("+test"),
-      releaseStepCommand("+publishM2"),
-      releaseStepCommand("+publishSigned"),
       pushChanges
     )
   )
