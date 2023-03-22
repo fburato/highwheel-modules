@@ -430,6 +430,14 @@ class ClassPathParserSystemTest
         .apply(AccessPoint(ElementName.fromClass(classOf[DefinesMultiArray]), method("declaresMultiArray", "()V")),
           AccessPoint(ElementName.fromClass(classOf[Foo])), USES)
     }
+
+    "detect usage of sealed interface" in {
+      parseClasses(classOf[UsesSealed], classOf[Sealed])
+
+      verify(accessVisitor)
+        .apply(AccessPoint(ElementName.fromClass(classOf[UsesSealed]), method("usesSealed", "()V")),
+          AccessPoint(ElementName.fromClass(classOf[Sealed]), method("foo", "()V")), USES)
+    }
   }
 
 }

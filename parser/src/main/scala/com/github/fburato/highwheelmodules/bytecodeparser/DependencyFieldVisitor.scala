@@ -7,7 +7,7 @@ import org.objectweb.asm.{AnnotationVisitor, FieldVisitor, Opcodes, Type}
 private[bytecodeparser] class DependencyFieldVisitor(
   parent: AccessPoint,
   accessVisitor: AccessVisitor
-) extends FieldVisitor(Opcodes.ASM8, null) {
+) extends FieldVisitor(Opcodes.ASM9, null) {
 
   override def visitAnnotation(descriptor: String, visible: Boolean): AnnotationVisitor = {
     accessVisitor(

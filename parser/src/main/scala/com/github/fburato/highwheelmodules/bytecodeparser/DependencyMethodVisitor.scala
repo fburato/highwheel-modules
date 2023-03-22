@@ -8,7 +8,7 @@ private[bytecodeparser] class DependencyMethodVisitor(
   parent: AccessPoint,
   typeReceiver: AccessVisitor,
   nameTransformer: NameTransformer
-) extends MethodVisitor(Opcodes.ASM8, null) {
+) extends MethodVisitor(Opcodes.ASM9, null) {
 
   override def visitMethodInsn(
     opcode: Int,

@@ -9,7 +9,7 @@ private[bytecodeparser] class DependencySignatureVisitor(
   parent: AccessPoint,
   typeReceiver: AccessVisitor,
   accessType: AccessType
-) extends SignatureVisitor(Opcodes.ASM8) {
+) extends SignatureVisitor(Opcodes.ASM9) {
 
   override def visitClassType(name: String): Unit = {
     typeReceiver(parent, AccessPoint(ElementName.fromString(name)), accessType)

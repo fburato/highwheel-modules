@@ -10,7 +10,7 @@ private[bytecodeparser] class DependencyClassVisitor(
   classVisitor: ClassVisitor,
   typeReceiver: AccessVisitor,
   nameTransformer: NameTransformer
-) extends ClassVisitor(Opcodes.ASM8, classVisitor) {
+) extends ClassVisitor(Opcodes.ASM9, classVisitor) {
   private val dependencyVisitor = filterOutJavaLangObject(typeReceiver)
   private var parent: AccessPoint = null
 
