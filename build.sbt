@@ -1,4 +1,3 @@
-import sbtrelease.ReleaseStateTransformations._
 lazy val scala212 = "2.12.17"
 lazy val scalaLibraryVersion = "2.13.10"
 lazy val supportedScalaVersions = List(scala212, scalaLibraryVersion)
@@ -9,13 +8,6 @@ lazy val disablingPublishingSettings =
 lazy val enablingPublishingSettings = Seq(
   publishArtifact := true, // Enable publish
   publishMavenStyle := true,
-  publishTo := {
-    val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value)
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  },
   licenses := Seq("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   homepage := Some(url("https://github.com/fburato/highwheel-modules")),
   scmInfo := Some(
@@ -42,23 +34,7 @@ lazy val hwmParent = (project in file("."))
   .aggregate(utils, model, parser, core)
   .settings(
     crossScalaVersions := Nil,
-    releaseCrossBuild := false,
-    disablingPublishingSettings,
-    releaseProcess := Seq[ReleaseStep](
-      checkSnapshotDependencies,
-      inquireVersions,
-      releaseStepCommandAndRemaining("+clean"),
-      releaseStepCommandAndRemaining("+test"),
-      setReleaseVersion,
-      commitReleaseVersion,
-      tagRelease,
-      releaseStepCommandAndRemaining("+publishM2"),
-      releaseStepCommandAndRemaining("publishSigned"),
-      releaseStepCommandAndRemaining("sonatypeRelease"),
-      setNextVersion,
-      commitNextVersion,
-      pushChanges
-    )
+    disablingPublishingSettings
   )
 
 lazy val core = (project in file("core"))
