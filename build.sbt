@@ -1,5 +1,5 @@
-lazy val scala212 = "2.12.17"
-lazy val scalaLibraryVersion = "2.13.10"
+lazy val scala212 = "2.12.18"
+lazy val scalaLibraryVersion = "2.13.12"
 lazy val supportedScalaVersions = List(scala212, scalaLibraryVersion)
 
 lazy val disablingPublishingSettings =
@@ -150,7 +150,7 @@ lazy val compilerOptions = Seq(
 )
 
 lazy val dependencies = new {
-  private val asmVersion = "9.4"
+  private val asmVersion = "9.6"
   private val guavaVersion = "31.1-jre"
   private val parserCombinatorsVersion = "2.2.0"
 
@@ -162,9 +162,9 @@ lazy val dependencies = new {
 
 lazy val testDependencies = new {
   private val scalaTestVersion = "3.2.15"
-  private val mockitoScalaVersion = "1.17.12"
-  private val mockitoVersion = "4.6.1"
-  private val apacheCommonsLangVersion = "3.12.0"
+  private val mockitoScalaVersion = "1.17.29"
+  private val mockitoVersion = "5.7.0"
+  private val apacheCommonsLangVersion = "3.13.0"
 
   val scalaTest = "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
   val mockitoScalaTest = "org.mockito" %% "mockito-scala-scalatest" % mockitoScalaVersion % "test"
